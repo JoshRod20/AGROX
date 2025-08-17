@@ -20,7 +20,7 @@ export const loginStyle = StyleSheet.create({
     height: hp('7%'), // Altura relativa
     paddingVertical: hp('1.5%'),
     paddingHorizontal: wp('5%'),
-    borderRadius: wp('2.5%'), // Border radius relativo
+    borderRadius: wp('2.5%'), // Border radius relativo.
     alignItems: 'center',
     justifyContent: 'center',
   },
