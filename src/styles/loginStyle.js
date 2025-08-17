@@ -40,7 +40,7 @@ export const loginStyle = StyleSheet.create({
     textAlign: 'center',
   },
   buttonTextRegister: {
-    color: '#fff', // Cambiado a blanco para mejor contraste con el gradiente
+    color: '#000000ff', // Cambiado a negro para mejor contraste con el fondo blanco
     fontSize: wp('4.5%'),
     fontWeight: 'bold',
     textAlign: 'center',
