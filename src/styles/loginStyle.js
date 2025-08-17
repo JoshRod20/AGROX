@@ -1,34 +1,48 @@
 import { StyleSheet } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export const loginStyle = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: wp('5%'), // Margen lateral del 5% del ancho de la pantalla
+  },
+  logo: {
+    width: wp('80%'), // 80% del ancho de la pantalla para el logo
+    height: hp('30%'), // 30% de la altura de la pantalla
+    alignSelf: 'center',
+    marginBottom: hp('10%'), // Margen inferior relativo
+  },
+  buttonsesion: {
+    width: wp('80%'), // 80% del ancho de la pantalla
+    height: hp('7%'), // Altura relativa
+    paddingVertical: hp('1.5%'),
+    paddingHorizontal: wp('5%'),
+    borderRadius: wp('2.5%'), // Border radius relativo
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-  },
-  buttonsesion: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
   buttonregister: {
-    marginTop: 10,
-    backgroundColor: '#007AFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    width: wp('80%'),
+    height: hp('7%'),
+    marginTop: hp('2%'),
+    borderRadius: wp('2.5%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: hp('2%'),
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: wp('5%'), // Tamaño de fuente relativo
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  buttonTextRegister: {
+    color: '#fff', // Cambiado a blanco para mejor contraste con el gradiente
+    fontSize: wp('4.5%'),
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
