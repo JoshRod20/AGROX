@@ -27,44 +27,35 @@ export default function SignIn() {
 
   return (
     <SafeAreaView style={loginStyle.container}>
-      <Image
-        source={require('../assets/AgroxLogo.jpg')}
-        style={loginStyle.logo}
-        resizeMode="contain"
-      />
+<Image
+  source={require('../assets/LogoSignIn.png')}
+  style={loginStyle.logoSignIn}
+  resizeMode="contain"
+/>
+<Text style={loginStyle.logtext}>Inicio de sesión</Text>
+<Text style={loginStyle.sesionText}>Inicia sesión con tu cuenta de <Text style={loginStyle.agroxText}>Agrox</Text></Text>
+      {/* Label y Input de usuario/correo */}
+      <Text style={loginStyle.textEmail}>Nombre de usuario o correo</Text>
       <TextInput
-        style={{
-          width: '80%',
-          height: 50,
-          borderColor: '#ccc',
-          borderWidth: 1,
-          borderRadius: 8,
-          marginBottom: 16,
-          paddingHorizontal: 12,
-          fontSize: 16,
-        }}
-        placeholder="Correo electrónico"
+        style={loginStyle.inputEmail}
+        placeholder="Introduzca su nombre o correo"
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
       />
+
+      {/* Label y Input de contraseña */}
+      <Text style={loginStyle.textPassword}>Contraseña</Text>
       <TextInput
-        style={{
-          width: '80%',
-          height: 50,
-          borderColor: '#ccc',
-          borderWidth: 1,
-          borderRadius: 8,
-          marginBottom: 16,
-          paddingHorizontal: 12,
-          fontSize: 16,
-        }}
-        placeholder="Contraseña"
+        style={loginStyle.inputPassword}
+        placeholder="Introduzca su contraseña"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
+
+      {/* Botón de inicio */}
       <TouchableOpacity onPress={handleSignIn} disabled={loading}>
         <LinearGradient
           colors={['#2E7D32', '#4CAF50']}
@@ -72,15 +63,19 @@ export default function SignIn() {
           end={{ x: 1, y: 1 }}
           style={loginStyle.buttonSignIn}
         >
-          <Text style={loginStyle.buttonText}>{loading ? 'Ingresando...' : 'Iniciar Sesión'}</Text>
+          <Text style={loginStyle.buttonText}>
+            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
+
+      {/* Botón de registro */}
       <TouchableOpacity
-        style={loginStyle.buttonSignUp}
+        style={loginStyle.signUpTextContainer}
         onPress={() => navigation.navigate('SignUp')}
         disabled={loading}
       >
-        <Text style={loginStyle.buttonTextSignUp}>Registrar cuenta</Text>
+        <Text style={loginStyle.signUpText}>¿No tienes cuenta? <Text style={loginStyle.signUpLink}>Regístrate</Text></Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
