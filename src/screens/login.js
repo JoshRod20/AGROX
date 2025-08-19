@@ -15,9 +15,9 @@ export default function Login() {
         style={loginStyle.logo}
         resizeMode="contain"
       />
-      <TouchableOpacity
-        onPress={() => navigation.replace('SignIn')}
-      >
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('SignIn')}
+        >
         <LinearGradient
           colors={['#2E7D32', '#4CAF50']} // Gradiente de verde oscuro a verde claro
           start={{ x: 0, y: 0 }} // Comienza en la esquina superior izquierda.

@@ -16,9 +16,27 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="SignUp" 
+            component={SignUp} 
+            options={{
+              headerShown: true,           // Necesario para que aparezca la flecha
+              headerTitle: '',             // Oculta el título
+              headerTransparent: true,     // Fondo transparente
+              headerTintColor: '#2E7D32', // Color de la flecha
+              headerBackTitleVisible: false }} />
           <Stack.Screen name="Drawer" component={NavigationDrawer} options={{ headerShown: false }} />
-          <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="SignIn" 
+            component={SignIn} 
+            options={{
+              headerShown: true,           // Necesario para que aparezca la flecha
+              headerTitle: '',             // Oculta el título
+              headerTransparent: true,     // Fondo transparente
+              headerTintColor: '#2E7D32', // Color de la flecha
+              headerBackTitleVisible: false // Oculta texto al lado de la flecha
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />

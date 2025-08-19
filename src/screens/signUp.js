@@ -10,6 +10,9 @@ export default function SignUp() {
   return (
     <SafeAreaView style={signUpStyle.container}>
       <Text style={signUpStyle.title}>Registrarse</Text>
+      <TouchableOpacity 
+                onPress={() => navigation.navigate('SignIn')}
+              ></TouchableOpacity>
       <TouchableOpacity
         style={signUpStyle.button}
         onPress={() => navigation.navigate('Login')}
