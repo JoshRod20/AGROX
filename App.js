@@ -5,7 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Login from './src/screens/login';
 import NavigationDrawer from './src/navigation/navigationDrawer';
-import Register from './src/screens/register';
+import SignUp from './src/screens/signUp';
+import SignIn from './src/screens/signIn';
 
 const Stack = createStackNavigator();
 
@@ -15,8 +16,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+          <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
           <Stack.Screen name="Drawer" component={NavigationDrawer} options={{ headerShown: false }} />
+          <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />

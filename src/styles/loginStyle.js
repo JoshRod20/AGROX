@@ -15,7 +15,7 @@ export const loginStyle = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: hp('10%'), // Margen inferior relativo
   },
-  buttonsesion: {
+  buttonSignIn: {
     width: wp('80%'), // 80% del ancho de la pantalla
     height: hp('7%'), // Altura relativa
     paddingVertical: hp('1.5%'),
@@ -24,7 +24,7 @@ export const loginStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonregister: {
+  buttonSignUp: {
     width: wp('80%'),
     height: hp('7%'),
     marginTop: hp('2%'),
@@ -39,7 +39,7 @@ export const loginStyle = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  buttonTextRegister: {
+  buttonTextSignUp: {
     color: '#000000ff', // Cambiado a negro para mejor contraste con el fondo blanco
     fontSize: wp('4.5%'),
     fontWeight: 'bold',

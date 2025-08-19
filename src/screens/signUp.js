@@ -2,19 +2,19 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import  {registerStyle}  from '../styles/registerStyle';
+import { signUpStyle } from '../styles/signUpStyle'; 
 
-export default function Register() {
+export default function SignUp() {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={registerStyle.container}>
-      <Text style={registerStyle.title}>Registrarse</Text>
+    <SafeAreaView style={signUpStyle.container}>
+      <Text style={signUpStyle.title}>Registrarse</Text>
       <TouchableOpacity
-        style={registerStyle.button}
+        style={signUpStyle.button}
         onPress={() => navigation.navigate('Login')}
       >
-        <Text style={registerStyle.buttonText}>Volver a Iniciar Sesión</Text>
+        <Text style={signUpStyle.buttonText}>Volver a Iniciar Sesión</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

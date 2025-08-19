@@ -16,22 +16,22 @@ export default function Login() {
         resizeMode="contain"
       />
       <TouchableOpacity
-        onPress={() => navigation.replace('Drawer')}
+        onPress={() => navigation.replace('SignIn')}
       >
         <LinearGradient
           colors={['#2E7D32', '#4CAF50']} // Gradiente de verde oscuro a verde claro
           start={{ x: 0, y: 0 }} // Comienza en la esquina superior izquierda.
           end={{ x: 1, y: 1 }}   // Termina en la esquina inferior derecha (diagonal)
-          style={loginStyle.buttonsesion}
+          style={loginStyle.buttonSignIn}
         >
           <Text style={loginStyle.buttonText}>Iniciar Sesión</Text>
         </LinearGradient>
       </TouchableOpacity>
       <TouchableOpacity
-        style={loginStyle.buttonregister}
-        onPress={() => navigation.navigate('Register')}
+        style={loginStyle.buttonSignUp}
+        onPress={() => navigation.navigate('SignUp')}
       >
-        <Text style={loginStyle.buttonTextRegister}>Registrar cuenta</Text>
+        <Text style={loginStyle.buttonTextSignUp}>Registrar cuenta</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
