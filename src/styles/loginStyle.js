@@ -28,7 +28,7 @@ export const loginStyle = StyleSheet.create({
   },
   buttonSignUp: {
     width: wp('80%'),
-    height: hp('7%'),
+    height: hp('6%'),
     marginTop: hp('0%'),
     borderRadius: wp('2.5%'),
     alignItems: 'center',
@@ -83,7 +83,7 @@ agroxText: {
 },
   textEmail: {
   width: '90%',
-  fontSize: wp('4.5%'),
+  fontSize: wp('4%'),
   fontWeight: 'bold',
   color: '#BC6C25',
   marginTop: hp('5%'),
@@ -91,7 +91,7 @@ agroxText: {
 },
 textPassword: {
   width: '90%',
-  fontSize: wp('4.5%'),
+  fontSize: wp('4%'),
   fontWeight: 'bold',
   color: '#BC6C25',
   marginBottom: hp('0.5%'),
@@ -99,8 +99,8 @@ textPassword: {
 inputEmail: {
   width: '90%',
   height: hp('6%'),
-  borderColor: '#ccc',
-  borderWidth: 1,
+  borderColor: '#2E7D32',
+  borderWidth: 3,
   borderRadius: 8,
   marginBottom: hp('4%'),
   paddingHorizontal: 12,
@@ -109,13 +109,29 @@ inputEmail: {
 inputPassword: {
   width: '90%',
   height: hp('6%'),
-  borderColor: '#ccc',
-  borderWidth: 1,
+  borderColor: '#2E7D32',
+  borderWidth: 3,
   borderRadius: 8,
   marginBottom: hp('2%'),
   paddingHorizontal: 12,
   fontSize: wp('4%'),
 },
+  inputPasswordContainer: {
+    width: '90%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: hp('2%'),
+    backgroundColor: '#fff',
+    paddingHorizontal: 12,
+  },
+    inputPassword: {
+    flex: 1,
+    height: hp('6%'),
+    fontSize: wp('4%'),
+  },
   buttonSignIn: {
     width: wp('80%'), // 80% del ancho de la pantalla
     height: hp('5.6%'), // Altura relativa

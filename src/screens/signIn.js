@@ -6,12 +6,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { loginStyle } from '../styles/loginStyle';
 import { auth } from '../services/database';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { signUpStyle } from '../styles/signUpStyle';
 
 export default function SignIn() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -47,13 +50,18 @@ export default function SignIn() {
 
       {/* Label y Input de contraseña */}
       <Text style={loginStyle.textPassword}>Contraseña</Text>
-      <TextInput
-        style={loginStyle.inputPassword}
-        placeholder="Introduzca su contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+      <View style={signUpStyle.inputPasswordContainer}>
+        <TextInput
+          style={loginStyle.inputPassword}
+          placeholder="Introduzca su contraseña"
+          secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
+          </TouchableOpacity>
+      </View>
 
       {/* Botón de inicio */}
       <TouchableOpacity onPress={handleSignIn} disabled={loading}>

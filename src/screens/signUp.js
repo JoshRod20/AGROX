@@ -58,9 +58,8 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={signUpStyle.container}>
-      <Text style={signUpStyle.title}>Registro</Text>
       {/* Correo electrónico */}
-      <Text style={signUpStyle.label}>Correo electrónico</Text>
+      <Text style={signUpStyle.label2}>Correo electrónico</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ingrese su correo electrónico"
@@ -70,7 +69,7 @@ const SignUp = () => {
         autoCapitalize="none"
       />
       {/* Sexo */}
-      <Text style={signUpStyle.label}>Sexo</Text>
+      <Text style={signUpStyle.label2}>Sexo</Text>
       <View style={signUpStyle.input}>
         <Picker
           selectedValue={gender}
@@ -83,7 +82,7 @@ const SignUp = () => {
         </Picker>
       </View>
       {/* Tipo de cultivos o producción */}
-      <Text style={signUpStyle.label}>Tipo de cultivos o producción</Text>
+      <Text style={signUpStyle.label2}>Tipo de cultivos o producción</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ej: maíz, café, ganado, etc."
@@ -91,7 +90,7 @@ const SignUp = () => {
         onChangeText={setProductionType}
       />
       {/* Tamaño de la finca */}
-      <Text style={signUpStyle.label}>Tamaño de la finca (mz/ha)</Text>
+      <Text style={signUpStyle.label2}>Tamaño de la finca (mz/ha)</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ej: 5 mz o 3 ha"
@@ -100,7 +99,7 @@ const SignUp = () => {
         keyboardType="numeric"
       />
       {/* Número de parcelas */}
-      <Text style={signUpStyle.label}>Número de parcelas</Text>
+      <Text style={signUpStyle.label2}>Número de parcelas</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ingrese el número de parcelas"
@@ -110,7 +109,7 @@ const SignUp = () => {
       />
       {/* Botón de registrarse */}
       <TouchableOpacity
-        style={signUpStyle.button}
+        style={signUpStyle.buttonSR}
         onPress={handleRegister}
         disabled={loading}
       >
@@ -128,7 +127,7 @@ const SignUp = () => {
         style={signUpStyle.signUpTextContainer}
         onPress={() => navigation.navigate('SignIn')}
       >
-  <Text style={signUpStyle.signUpText}>¿Ya tienes cuenta? <Text style={signUpStyle.signUpLink}>Inicia sesión</Text></Text>
+  <Text style={signUpStyle.signUpText2}>¿Ya tienes cuenta? <Text style={signUpStyle.signUpLink2}>Inicia sesión</Text></Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

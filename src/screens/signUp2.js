@@ -38,6 +38,7 @@ const SignUp2 = () => {
   return (
     <SafeAreaView style={signUpStyle.container}>
       <Text style={signUpStyle.title}>Registro</Text>
+      <Text style={signUpStyle.signUpTitle}>Crea una cuenta de <Text style={signUpStyle.signUpLinkTitle}>AGROX</Text></Text>
       {/* Nombre */}
       <Text style={signUpStyle.label}>Nombre</Text>
       <TextInput
@@ -87,7 +88,7 @@ const SignUp2 = () => {
         </Picker>
       </View>
       {/* Comunidad o Comarca */}
-      <Text style={signUpStyle.label}>Comunidad o Comarca</Text>
+      <Text style={signUpStyle.label}>Comunidad o comarca</Text>
       <View style={signUpStyle.input}>
         <Picker
           selectedValue={community}
