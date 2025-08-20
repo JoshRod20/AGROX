@@ -29,7 +29,7 @@ export default function Login() {
       </TouchableOpacity>
       <TouchableOpacity
         style={loginStyle.buttonSignUp}
-        onPress={() => navigation.navigate('SignUp')}
+        onPress={() => navigation.navigate('SignUp2')}
       >
         <Text style={loginStyle.buttonTextSignUp}>Registrar cuenta</Text>
       </TouchableOpacity>

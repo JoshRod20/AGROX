@@ -72,7 +72,7 @@ export default function SignIn() {
       {/* Botón de registro */}
       <TouchableOpacity
         style={loginStyle.signUpTextContainer}
-        onPress={() => navigation.navigate('SignUp')}
+        onPress={() => navigation.navigate('SignUp2')}
         disabled={loading}
       >
         <Text style={loginStyle.signUpText}>¿No tienes cuenta? <Text style={loginStyle.signUpLink}>Regístrate</Text></Text>
