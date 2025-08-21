@@ -82,7 +82,6 @@ agroxText: {
   textEmail: {
   width: '90%',
   fontSize: wp('4%'),
-  fontWeight: 'bold',
   color: '#BC6C25',
   marginTop: hp('5%'),
   marginBottom: hp('0.5%'),
@@ -90,7 +89,6 @@ agroxText: {
 textPassword: {
   width: '90%',
   fontSize: wp('4%'),
-  fontWeight: 'bold',
   color: '#BC6C25',
   marginBottom: hp('0.5%'),
 },
@@ -102,7 +100,7 @@ inputEmail: {
   borderRadius: 8,
   marginBottom: hp('4%'),
   paddingHorizontal: 12,
-  fontSize: wp('4%'),
+  fontSize: wp('3.5%'),
 },
 inputPassword: {
   width: '90%',
@@ -112,7 +110,6 @@ inputPassword: {
   borderRadius: 8,
   marginBottom: hp('2%'),
   paddingHorizontal: 12,
-  fontSize: wp('4%'),
 },
   inputPasswordContainer: {
     width: '90%',
@@ -128,7 +125,7 @@ inputPassword: {
     inputPassword: {
     flex: 1,
     height: hp('6%'),
-    fontSize: wp('4%'),
+    fontSize: wp('3.5%'),
   },
   buttonSignIn: {
     width: wp('80%'), // 80% del ancho de la pantalla
@@ -146,7 +143,7 @@ signUpTextContainer: {
     justifyContent: 'center',
   },
   signUpText: {
-    color: '#000000ff',
+    color: '#00000095',
     fontSize: wp('4%'),
     textAlign: 'center',
   },

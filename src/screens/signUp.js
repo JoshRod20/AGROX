@@ -140,7 +140,7 @@ const SignUp = () => {
           end={{ x: 1, y: 1 }}
           style={signUpStyle.button}
         >
-          <Text style={[{ fontFamily: 'CarterOne'},signUpStyle.buttonText]}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
+          <Text style={signUpStyle.buttonText}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
         </LinearGradient>
       </TouchableOpacity>
        {/* Botón de registro */}
