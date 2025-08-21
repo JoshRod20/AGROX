@@ -37,13 +37,12 @@ export const loginStyle = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp('5%'), // Tamaño de fuente relativo
-    fontWeight: 'bold',
+    fontSize: wp('4.5%'), // Tamaño de fuente relativo
     textAlign: 'center',
   },
   buttonTextSignUp: {
     color: '#000000ff', // Cambiado a negro para mejor contraste con el fondo blanco
-    fontSize: wp('4.5%'),
+    fontSize: wp('4.3%'),
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -60,8 +59,7 @@ export const loginStyle = StyleSheet.create({
   marginBottom: hp('5%'), // Margen inferior relativo
   },
   logtext: {
-  fontSize: wp('8%'),
-  fontWeight: 'bold',
+  fontSize: wp('7.7%'),
   color: '#2E7D32',
   marginBottom: hp('1%'),
   textAlign: 'left',
@@ -79,7 +77,7 @@ sesionText: {
 agroxText: {
   color: '#000000ff',
   fontWeight: 'bold',
-  fontSize: wp('4.5%'),
+  fontSize: wp('4.2%'),
 },
   textEmail: {
   width: '90%',

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { signUpStyle } from '../styles/signUpStyle';
 import { db } from '../services/database';
 import { collection, getDocs, query } from 'firebase/firestore';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Evita que se oculte el SplashScreen automáticamente
+SplashScreen.preventAutoHideAsync();
 
 function generateUserId(usersLength) {
   // Generates a userId like U0001, U0002, etc.
@@ -35,9 +40,25 @@ const SignUp2 = () => {
   const municipalities = ['Municipio 1', 'Municipio 2', 'Municipio 3'];
   const communities = ['Comunidad 1', 'Comunidad 2', 'Comunidad 3'];
 
+    // Carga la fuente
+    const [fontsLoaded] = useFonts({
+      CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'), // 👈 ajusta la ruta según tu proyecto
+    });
+  
+    // Oculta el Splash cuando ya cargó la fuente
+    const onLayoutRootView = useCallback(async () => {
+      if (fontsLoaded) {
+        await SplashScreen.hideAsync();
+      }
+    }, [fontsLoaded]);
+  
+    if (!fontsLoaded) {
+      return null; // mientras carga la fuente
+    }
+
   return (
-    <SafeAreaView style={signUpStyle.container}>
-      <Text style={signUpStyle.title}>Registro</Text>
+    <SafeAreaView style={signUpStyle.container} onLayout={onLayoutRootView}>
+      <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, signUpStyle.title]}>Registro</Text>
       <Text style={signUpStyle.signUpTitle}>Crea una cuenta de <Text style={signUpStyle.signUpLinkTitle}>AGROX</Text></Text>
       {/* Nombre */}
       <Text style={signUpStyle.label}>Nombre</Text>
@@ -102,7 +123,7 @@ const SignUp2 = () => {
       </View>
       {/* Botón siguiente */}
       <TouchableOpacity
-        style={signUpStyle.button}
+        style={[{ fontFamily: 'CarterOne'},signUpStyle.button]}
         onPress={async () => {
           if (!name || !password || !department || !municipality || !community) {
             Alert.alert('Campos incompletos', 'Por favor, complete todos los campos.');
@@ -135,7 +156,7 @@ const SignUp2 = () => {
           end={{ x: 1, y: 1 }}
           style={signUpStyle.button}
         >
-          <Text style={signUpStyle.buttonText}>{loading ? 'Cargando...' : 'Siguiente'}</Text>
+          <Text style={[{ fontFamily: 'CarterOne'},signUpStyle.buttonTextSR]}>{loading ? 'Cargando...' : 'Siguiente'}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </SafeAreaView>

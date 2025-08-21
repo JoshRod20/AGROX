@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,11 @@ import { auth } from '../services/database';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { signUpStyle } from '../styles/signUpStyle';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Evita que el Splash se oculte antes de tiempo
+SplashScreen.preventAutoHideAsync();
 
 export default function SignIn() {
   const navigation = useNavigation();
@@ -28,16 +33,39 @@ export default function SignIn() {
     }
   };
 
+  // Carga la fuente
+  const [fontsLoaded] = useFonts({
+    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'), // 👈 Ajusta ruta
+  });
+
+  // Oculta el Splash cuando ya cargó la fuente
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null; // mientras carga la fuente
+  }
+
   return (
-    <SafeAreaView style={loginStyle.container}>
-<Image
-  source={require('../assets/LogoSignIn.png')}
-  style={loginStyle.logoSignIn}
-  resizeMode="contain"
-/>
-<Text style={loginStyle.logtext}>Inicio de sesión</Text>
-<Text style={loginStyle.sesionText}>Inicia sesión con tu cuenta de <Text style={loginStyle.agroxText}>Agrox</Text></Text>
-      {/* Label y Input de usuario/correo */}
+    <SafeAreaView style={loginStyle.container} onLayout={onLayoutRootView}>
+      <Image
+        source={require('../assets/LogoSignIn.png')}
+        style={loginStyle.logoSignIn}
+        resizeMode="contain"
+      />
+
+      <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, loginStyle.logtext]}>
+        Inicio de sesión
+      </Text>
+
+      <Text style={loginStyle.sesionText}>
+        Inicia sesión con tu cuenta de <Text style={loginStyle.agroxText}>AGROX</Text>
+      </Text>
+
+      {/* Label e Input de usuario/correo */}
       <Text style={loginStyle.textEmail}>Nombre de usuario o correo</Text>
       <TextInput
         style={loginStyle.inputEmail}
@@ -48,19 +76,19 @@ export default function SignIn() {
         onChangeText={setEmail}
       />
 
-      {/* Label y Input de contraseña */}
+      {/* Label e Input de contraseña */}
       <Text style={loginStyle.textPassword}>Contraseña</Text>
       <View style={signUpStyle.inputPasswordContainer}>
         <TextInput
           style={loginStyle.inputPassword}
           placeholder="Introduzca su contraseña"
           secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
-          </TouchableOpacity>
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
+        </TouchableOpacity>
       </View>
 
       {/* Botón de inicio */}
@@ -71,7 +99,7 @@ export default function SignIn() {
           end={{ x: 1, y: 1 }}
           style={loginStyle.buttonSignIn}
         >
-          <Text style={loginStyle.buttonText}>
+          <Text style={[loginStyle.buttonText, { fontFamily: 'CarterOne' }]}>
             {loading ? 'Ingresando...' : 'Iniciar Sesión'}
           </Text>
         </LinearGradient>
@@ -83,7 +111,9 @@ export default function SignIn() {
         onPress={() => navigation.navigate('SignUp2')}
         disabled={loading}
       >
-        <Text style={loginStyle.signUpText}>¿No tienes cuenta? <Text style={loginStyle.signUpLink}>Regístrate</Text></Text>
+        <Text style={loginStyle.signUpText}>
+          ¿No tienes cuenta? <Text style={loginStyle.signUpLink}>Regístrate</Text>
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

@@ -10,9 +10,7 @@ export const signUpStyle = StyleSheet.create({
     paddingHorizontal: wp('5%'),
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#2E7D32',
+    fontSize: wp('7.5%'),
     marginTop: hp('3%'),
     marginBottom: 8,
     textAlign: 'left', // 👈 asegura alineación a la izquierda
@@ -21,7 +19,7 @@ export const signUpStyle = StyleSheet.create({
   },
     signUpTitle: {
     color: '#000000ff',
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.8%'),
     textAlign: 'left', // 👈 asegura alineación a la izquierda
     marginLeft: hp('2%'),
     alignSelf: 'flex-start',
@@ -81,7 +79,7 @@ export const signUpStyle = StyleSheet.create({
     fontSize: wp('4%'),
   },
   button: {
-     width: wp('80%'), // 80% del ancho de la pantalla
+    width: wp('80%'), // 80% del ancho de la pantalla
     height: hp('6%'), // Altura relativa
     paddingVertical: hp('1.5%'),
     paddingHorizontal: wp('5%'),
@@ -89,6 +87,11 @@ export const signUpStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: hp('3%'),
+  },
+    buttonTextSR: {
+    color: '#fff',
+    fontSize: wp('4.5%'), // Tamaño de fuente relativo
+    textAlign: 'center',
   },
     buttonSR: {
      width: wp('80%'), // 80% del ancho de la pantalla
@@ -102,8 +105,7 @@ export const signUpStyle = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp('5%'), // Tamaño de fuente relativo
-    fontWeight: 'bold',
+    fontSize: wp('4.5%'), // Tamaño de fuente relativo
     textAlign: 'center',
   },
    signUpText2: {

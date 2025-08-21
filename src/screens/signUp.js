@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,11 @@ import { signUpStyle } from '../styles/signUpStyle';
 import { db, auth } from '../services/database';
 import { collection, addDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Evita que se oculte el SplashScreen automáticamente
+SplashScreen.preventAutoHideAsync();
 
 const SignUp = () => {
   const navigation = useNavigation();
@@ -55,6 +60,22 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
+      // Carga la fuente
+      const [fontsLoaded] = useFonts({
+        CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'), // 👈 ajusta la ruta según tu proyecto
+      });
+    
+      // Oculta el Splash cuando ya cargó la fuente
+      const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded) {
+          await SplashScreen.hideAsync();
+        }
+      }, [fontsLoaded]);
+    
+      if (!fontsLoaded) {
+        return null; // mientras carga la fuente
+      }
 
   return (
     <SafeAreaView style={signUpStyle.container}>
@@ -119,7 +140,7 @@ const SignUp = () => {
           end={{ x: 1, y: 1 }}
           style={signUpStyle.button}
         >
-          <Text style={signUpStyle.buttonText}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
+          <Text style={[{ fontFamily: 'CarterOne'},signUpStyle.buttonText]}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
         </LinearGradient>
       </TouchableOpacity>
        {/* Botón de registro */}
