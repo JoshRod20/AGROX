@@ -24,16 +24,26 @@ const SignUp = () => {
   const [farmSize, setFarmSize] = useState('');
   const [plotsNumber, setPlotsNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const genderOptions = ['Masculino', 'Femenino', 'Otro'];
   // Data from signUp2
   const prevData = route.params || {};
 
   const handleRegister = async () => {
-    // Validar campos vacíos
-    if (!email || !gender || !productionType || !farmSize || !plotsNumber || !prevData.name || !prevData.password || !prevData.department || !prevData.municipality || !prevData.community || !prevData.userId) {
-      Alert.alert('Campos incompletos', 'Por favor, complete todos los campos.');
-      return;
-    }
+    let newErrors = {};
+    if (!email) newErrors.email = 'El correo electrónico es obligatorio.';
+    if (!gender) newErrors.gender = 'El sexo es obligatorio.';
+    if (!productionType) newErrors.productionType = 'El tipo de cultivos o producción es obligatorio.';
+    if (!farmSize) newErrors.farmSize = 'El tamaño de la finca es obligatorio.';
+    if (!plotsNumber) newErrors.plotsNumber = 'El número de parcelas es obligatorio.';
+    if (!prevData.name) newErrors.name = 'El nombre es obligatorio.';
+    if (!prevData.password) newErrors.password = 'La contraseña es obligatoria.';
+    if (!prevData.department) newErrors.department = 'El departamento es obligatorio.';
+    if (!prevData.municipality) newErrors.municipality = 'El municipio es obligatorio.';
+    if (!prevData.community) newErrors.community = 'La comunidad es obligatoria.';
+    if (!prevData.userId) newErrors.userId = 'Error interno de ID de usuario.';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
       // Crear usuario en Firebase Auth
@@ -52,10 +62,14 @@ const SignUp = () => {
         registrationDate: new Date().toISOString(),
       };
       await addDoc(collection(db, 'Users'), user);
-  Alert.alert('Registro exitoso', 'Usuario registrado correctamente.');
+      Alert.alert('Registro exitoso', 'Usuario registrado correctamente.');
       navigation.replace('SignIn');
     } catch (e) {
-  Alert.alert('Error', e.message || 'Error al registrar usuario');
+      if (e.code === 'auth/email-already-in-use') {
+        setErrors((prev) => ({ ...prev, email: 'El correo electrónico ya está en uso.' }));
+      } else {
+        Alert.alert('Error', e.message || 'Error al registrar usuario');
+      }
     } finally {
       setLoading(false);
     }
@@ -85,16 +99,23 @@ const SignUp = () => {
         style={signUpStyle.input}
         placeholder="Ingrese su correo electrónico"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => {
+          setEmail(text);
+          setErrors((prev) => ({ ...prev, email: undefined }));
+        }}
         keyboardType="email-address"
         autoCapitalize="none"
       />
+      {errors.email && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.email}</Text>}
       {/* Sexo */}
       <Text style={signUpStyle.label2}>Sexo</Text>
       <View style={signUpStyle.input}>
         <Picker
           selectedValue={gender}
-          onValueChange={setGender}
+          onValueChange={(value) => {
+            setGender(value);
+            setErrors((prev) => ({ ...prev, gender: undefined }));
+          }}
         >
           <Picker.Item label="Seleccione su sexo" value="" />
           {genderOptions.map((g) => (
@@ -102,32 +123,45 @@ const SignUp = () => {
           ))}
         </Picker>
       </View>
+      {errors.gender && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.gender}</Text>}
       {/* Tipo de cultivos o producción */}
       <Text style={signUpStyle.label2}>Tipo de cultivos o producción</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ej: maíz, café, ganado, etc."
         value={productionType}
-        onChangeText={setProductionType}
+        onChangeText={(text) => {
+          setProductionType(text);
+          setErrors((prev) => ({ ...prev, productionType: undefined }));
+        }}
       />
+      {errors.productionType && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.productionType}</Text>}
       {/* Tamaño de la finca */}
       <Text style={signUpStyle.label2}>Tamaño de la finca (mz/ha)</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ej: 5 mz o 3 ha"
         value={farmSize}
-        onChangeText={setFarmSize}
+        onChangeText={(text) => {
+          setFarmSize(text);
+          setErrors((prev) => ({ ...prev, farmSize: undefined }));
+        }}
         keyboardType="numeric"
       />
+      {errors.farmSize && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.farmSize}</Text>}
       {/* Número de parcelas */}
       <Text style={signUpStyle.label2}>Número de parcelas</Text>
       <TextInput
         style={signUpStyle.input}
         placeholder="Ingrese el número de parcelas"
         value={plotsNumber}
-        onChangeText={setPlotsNumber}
+        onChangeText={(text) => {
+          setPlotsNumber(text);
+          setErrors((prev) => ({ ...prev, plotsNumber: undefined }));
+        }}
         keyboardType="numeric"
       />
+      {errors.plotsNumber && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.plotsNumber}</Text>}
       {/* Botón de registrarse */}
       <TouchableOpacity
         style={signUpStyle.buttonSR}
@@ -140,7 +174,7 @@ const SignUp = () => {
           end={{ x: 1, y: 1 }}
           style={signUpStyle.button}
         >
-          <Text style={[{ fontFamily: 'CarterOne'},signUpStyle.buttonText]}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
+          <Text style={signUpStyle.buttonText}>{loading ? 'Registrando...' : 'Registrarse'}</Text>
         </LinearGradient>
       </TouchableOpacity>
        {/* Botón de registro */}

@@ -18,7 +18,7 @@ export const signUpStyle = StyleSheet.create({
     alignSelf: 'flex-start',
   },
     signUpTitle: {
-    color: '#000000ff',
+    color: '#000000aa',
     fontSize: wp('3.8%'),
     textAlign: 'left', // 👈 asegura alineación a la izquierda
     marginLeft: hp('2%'),
@@ -27,15 +27,13 @@ export const signUpStyle = StyleSheet.create({
   },
   signUpLinkTitle: {
     color: '#000000ff', // Color similar a otros elementos (como textEmail/textPassword)
-    fontWeight: 'bold',
     fontSize: wp('3.7%'),
   },
   label: {
     width: '90%',
     fontSize: wp('4%'),
-    fontWeight: 'bold',
     color: '#BC6C25',
-    marginTop: hp('3%'),
+    marginTop: hp('2%'),
     marginBottom: hp('0.5%'),
     alignSelf: 'flex-start',
     marginLeft: hp('2%'),
@@ -75,7 +73,7 @@ export const signUpStyle = StyleSheet.create({
   },
   inputPassword: {
     flex: 1,
-    height: hp('6%'),
+    height: hp('5.3%'),
     fontSize: wp('4%'),
   },
   button: {

@@ -35,7 +35,9 @@ export default function SignIn() {
 
   // Carga la fuente
   const [fontsLoaded] = useFonts({
-    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'), // 👈 Ajusta ruta
+    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
+    QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
+    QuicksandRegular: require('../utils/fonts/Quicksand-Regular.ttf'),
   });
 
   // Oculta el Splash cuando ya cargó la fuente
@@ -61,14 +63,14 @@ export default function SignIn() {
         Inicio de sesión
       </Text>
 
-      <Text style={loginStyle.sesionText}>
-        Inicia sesión con tu cuenta de <Text style={loginStyle.agroxText}>AGROX</Text>
+      <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.sesionText]}>
+        Inicia sesión con tu cuenta de <Text style={[{ fontFamily: 'QuicksandBold' }, loginStyle.agroxText]}>AGROX</Text>
       </Text>
 
       {/* Label e Input de usuario/correo */}
-      <Text style={loginStyle.textEmail}>Nombre de usuario o correo</Text>
+      <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.textEmail]}>Nombre de usuario o correo</Text>
       <TextInput
-        style={loginStyle.inputEmail}
+        style={[{ fontFamily: 'QuicksandBold'}, loginStyle.inputEmail]}
         placeholder="Introduzca su nombre o correo"
         autoCapitalize="none"
         keyboardType="email-address"
@@ -77,10 +79,10 @@ export default function SignIn() {
       />
 
       {/* Label e Input de contraseña */}
-      <Text style={loginStyle.textPassword}>Contraseña</Text>
+      <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.textPassword]}>Contraseña</Text>
       <View style={signUpStyle.inputPasswordContainer}>
         <TextInput
-          style={loginStyle.inputPassword}
+          style={[{ fontFamily: 'QuicksandBold'}, loginStyle.inputPassword]}
           placeholder="Introduzca su contraseña"
           secureTextEntry={!showPassword}
           value={password}
@@ -111,8 +113,8 @@ export default function SignIn() {
         onPress={() => navigation.navigate('SignUp2')}
         disabled={loading}
       >
-        <Text style={loginStyle.signUpText}>
-          ¿No tienes cuenta? <Text style={loginStyle.signUpLink}>Regístrate</Text>
+        <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.signUpText]}>
+          ¿No tienes cuenta? <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.signUpLink]}>Regístrate</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
