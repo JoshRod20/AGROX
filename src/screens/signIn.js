@@ -20,14 +20,20 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleSignIn = async () => {
+    let newErrors = {};
+    if (!email) newErrors.email = 'El correo es obligatorio.';
+    if (!password) newErrors.password = 'La contraseña es obligatoria.';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigation.replace('Drawer');
     } catch (error) {
-      Alert.alert('Error', 'Correo o contraseña incorrectos.');
+      setErrors({ password: 'Correo o contraseña incorrectos.' });
     } finally {
       setLoading(false);
     }
@@ -75,8 +81,12 @@ export default function SignIn() {
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={text => {
+          setEmail(text);
+          setErrors(prev => ({ ...prev, email: undefined }));
+        }}
       />
+      {errors.email && <Text style={{ color: 'red', marginTop: -30, alignSelf: 'center' }}>{errors.email}</Text>}
 
       {/* Label e Input de contraseña */}
       <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.textPassword]}>Contraseña</Text>
@@ -86,12 +96,16 @@ export default function SignIn() {
           placeholder="Introduzca su contraseña"
           secureTextEntry={!showPassword}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={text => {
+            setPassword(text);
+            setErrors(prev => ({ ...prev, password: undefined }));
+          }}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
         </TouchableOpacity>
       </View>
+      {errors.password && <Text style={{ color: 'red', marginBottom: 4, alignSelf: 'center', marginLeft: '5%' }}>{errors.password}</Text>}
 
       {/* Botón de inicio */}
       <TouchableOpacity onPress={handleSignIn} disabled={loading}>
