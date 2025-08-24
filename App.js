@@ -8,6 +8,8 @@ import NavigationDrawer from './src/navigation/navigationDrawer';
 import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
 import SignUp2 from './src/screens/signUp2';
+import Onboarding from './src/screens/onboardingScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -48,6 +50,12 @@ export default function App() {
               headerBackTitleVisible: false
              }} 
           />
+          <Stack.Screen 
+            name="Onboarding" 
+            component={Onboarding} 
+            options={{ headerShown: false }} 
+          />
+
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />
