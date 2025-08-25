@@ -100,7 +100,7 @@ const SignUp2 = () => {
           <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
         </TouchableOpacity>
       </View>
-    {errors.password && <Text style={{ color: 'red', marginBottom: 4, alignSelf: 'center', marginLeft: '5%' }}>{errors.password}</Text>}
+      {errors.password && <Text style={{ color: 'red', marginBottom: 4, alignSelf: 'center', marginLeft: '5%' }}>{errors.password}</Text>}
 
       {/* Departamento */}
       <Text style={[{ fontFamily: 'QuicksandBold'}, signUpStyle.label]}>Departamento</Text>
@@ -168,7 +168,15 @@ const SignUp2 = () => {
         onPress={async () => {
           let newErrors = {};
           if (!name) newErrors.name = 'El nombre es obligatorio.';
-          if (!password) newErrors.password = 'La contraseña es obligatoria.';
+          if (!password) {
+            newErrors.password = 'La contraseña es obligatoria.';
+          } else {
+            // Debe tener al menos 8 caracteres, una mayúscula, letras y un caracter especial
+            const passwordRegex = /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+            if (!passwordRegex.test(password)) {
+              newErrors.password = 'Debe tener al menos 8 caracteres, una letra mayúscula, letras y un carácter especial.';
+            }
+          }
           if (!department) newErrors.department = 'El departamento es obligatorio.';
           if (!municipality) newErrors.municipality = 'El municipio es obligatorio.';
           if (!community) newErrors.community = 'La comunidad es obligatoria.';
@@ -186,13 +194,6 @@ const SignUp2 = () => {
               municipality,
               community,
             });
-            // Limpiar campos después de pasar a la siguiente pantalla
-            setName('');
-            setPassword('');
-            setDepartment(null);
-            setMunicipality(null);
-            setCommunity(null);
-            setErrors({});
           } catch (e) {
             Alert.alert('Error', e.message || 'Error al generar ID de usuario');
           } finally {
