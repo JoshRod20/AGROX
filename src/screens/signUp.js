@@ -64,8 +64,14 @@ const SignUp = () => {
         registrationDate: new Date().toISOString(),
       };
       await addDoc(collection(db, 'Users'), user);
-      Alert.alert('Registro exitoso', 'Usuario registrado correctamente.');
-      navigation.replace('Onboarding');
+  // Limpiar campos después de registro exitoso
+  setEmail('');
+  setGender(null);
+  setProductionType('');
+  setFarmSize('');
+  setPlotsNumber('');
+  setErrors({});
+  navigation.replace('Onboarding');
     } catch (e) {
       if (e.code === 'auth/email-already-in-use') {
         setErrors(prev => ({ ...prev, email: 'El correo electrónico ya está en uso.' }));

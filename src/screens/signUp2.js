@@ -186,6 +186,13 @@ const SignUp2 = () => {
               municipality,
               community,
             });
+            // Limpiar campos después de pasar a la siguiente pantalla
+            setName('');
+            setPassword('');
+            setDepartment(null);
+            setMunicipality(null);
+            setCommunity(null);
+            setErrors({});
           } catch (e) {
             Alert.alert('Error', e.message || 'Error al generar ID de usuario');
           } finally {
