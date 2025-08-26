@@ -10,6 +10,7 @@ import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
 import SignUp2 from './src/screens/signUp2';
 import Onboarding from './src/screens/onboardingScreen';
+import FormCrop from './src/screens/formCrop';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,17 @@ export default function App() {
           <Stack.Screen 
             name="SignUp2" 
             component={SignUp2} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+             <Stack.Screen 
+            name="FormCrop" 
+            component={FormCrop} 
             options={{
               headerShown: true,
               headerTitle: '',
