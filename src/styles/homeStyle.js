@@ -6,7 +6,7 @@ export const homeStyle = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   menuButton: {
-    marginTop: 30,
+    marginTop: 9,
     padding: 15,
     position: 'absolute',
     top: 0,

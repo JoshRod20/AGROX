@@ -1,46 +1,56 @@
-// src/styles/drawerStyle.js
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, Platform } from "react-native";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export const drawerStyle = StyleSheet.create({
   drawerContainer: {
     flex: 1,
     backgroundColor: "#2E7D32", // verde principal
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+    marginTop: Platform.OS === 'android' ? 0 : 0,
+    borderTopRightRadius: width * 0.05, // proporcional al ancho
+    borderBottomRightRadius: width * 0.05,
     overflow: "hidden",
+    paddingTop: height * 0.02, // espacio superior proporcional
+  },
+  menuButton: {
+    marginTop: height * 0.01,
+    padding: width * 0.03,
+    position: 'absolute',
+    top: height * 0.01,
+    left: width * 0.02,
+    zIndex: 1, 
   },
   drawerScroll: {
     flex: 1,
-    paddingTop: 20,
+    paddingTop: height * 0.03,
   },
   drawerItem: {
-    marginVertical: 5,
-    borderRadius: 12,
-    paddingLeft: 10,
+    marginVertical: height * 0.007,
+    borderRadius: width * 0.03,
+    paddingLeft: width * 0.03,
   },
   drawerLabel: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: width * 0.045, // tamaño relativo al ancho
     fontWeight: "600",
   },
   drawerIcon: {
     color: "#fff",
-    fontSize: 22,
-    marginRight: -10,
+    fontSize: width * 0.06,
+    marginRight: -width * 0.01,
   },
   logoContainer: {
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: height * 0.015,
   },
   logo: {
-    width: 120,
-    height: 40,
+    width: width * 0.35,  // proporcional al ancho de la pantalla
+    height: height * 0.05, // proporcional al alto de la pantalla
     resizeMode: "contain",
+    marginTop: height * 0.005,
   },
   logoutContainer: {
-    marginBottom: 20,
-    paddingHorizontal: 15,
+    marginBottom: height * 0.03,
+    paddingHorizontal: width * 0.04,
   },
 });
