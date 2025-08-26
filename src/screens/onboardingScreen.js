@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  FlatList,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -92,17 +91,40 @@ const Onboarding = () => {
             });
             const opacity = scrollX.interpolate({
               inputRange,
-              outputRange: [0.5, 1, 0.5],
+              outputRange: [0.3, 1, 0.3],
               extrapolate: "clamp",
             });
 
             return (
               <View style={onboardingStyle.slide}>
-                <Animated.Image
-                  source={item.image}
-                  style={[onboardingStyle.image, { transform: [{ translateY }], opacity }]}
-                />
-                <Text style={[onboardingStyle.text, { fontFamily: "CarterOne" }]}>{item.text}</Text>
+                <View style={{ alignItems: "center", justifyContent: "center" }}>
+                  {/* Imagen */}
+                  <Animated.Image
+                    source={item.image}
+                    style={[
+                      onboardingStyle.image,
+                      { transform: [{ translateY }], opacity },
+                    ]}
+                  />
+
+                  {/* Overlay con logo animado igual que la imagen */}
+                  <Animated.View
+                    style={[
+                      onboardingStyle.overlay,
+                      { transform: [{ translateY }], opacity },
+                    ]}
+                  >
+                    <Image
+                      source={require("../assets/AGROX-Blanco.png")}
+                      style={onboardingStyle.logo}
+                      resizeMode="contain"
+                    />
+                  </Animated.View>
+                </View>
+
+                <Text style={[onboardingStyle.text, { fontFamily: "CarterOne" }]}>
+                  {item.text}
+                </Text>
               </View>
             );
           }}
@@ -128,7 +150,9 @@ const Onboarding = () => {
               style={onboardingStyle.button}
               onPress={() => slidesRef.current.scrollToIndex({ index: currentIndex - 1 })}
             >
-              <Text style={[onboardingStyle.buttonText, { fontFamily: "CarterOne" }]}>Anterior</Text>
+              <Text style={[onboardingStyle.buttonText, { fontFamily: "CarterOne" }]}>
+                Anterior
+              </Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={onboardingStyle.button} onPress={scrollTo}>
