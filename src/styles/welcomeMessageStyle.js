@@ -1,15 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    marginVertical: 10,
-    marginHorizontal: 15,
-  },
   title: {
-    fontSize: 18,
+    fontSize: Dimensions.get('window').width < 375 ? 16 : 18,
+    marginTop: Dimensions.get('window').width < 375 ? 12 : 16,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -17,8 +11,9 @@ const styles = StyleSheet.create({
     color: '#3A8D2D', // Verde AGROX
   },
   subtitle: {
-    marginTop: 4,
-    fontSize: 14,
+    marginTop: Dimensions.get('window').width < 375 ? 1 : 2,
+    marginBottom: Dimensions.get('window').width < 375 ? 8 : 12,
+    fontSize: Dimensions.get('window').width < 375 ? 12 : 14,
     color: '#555',
   },
 });

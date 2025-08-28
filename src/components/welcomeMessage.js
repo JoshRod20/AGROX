@@ -6,7 +6,7 @@ const WelcomeMessage = ({ isVisible }) => {
   if (!isVisible) return null;
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text style={styles.title}>
         ¡Bienvenido a <Text style={styles.highlight}>AGROX</Text>!
       </Text>
