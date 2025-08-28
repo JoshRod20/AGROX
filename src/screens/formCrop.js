@@ -1,5 +1,5 @@
-import React, { useState,useCallback} from 'react';
-import {Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { db } from '../services/database';
 import { collection, addDoc } from 'firebase/firestore';
@@ -7,6 +7,7 @@ import { cropStyle } from '../styles/cropStyle';
 import { useFonts } from 'expo-font';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importado
 
 // Evita que se oculte el SplashScreen automáticamente
 SplashScreen.preventAutoHideAsync();
@@ -21,22 +22,22 @@ const FormCrop = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-   // Carga la fuente
-    const [fontsLoaded] = useFonts({
-      CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
-      QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
-      QuicksandRegular: require('../utils/fonts/Quicksand-Regular.ttf'),
-    });
-  
-    const onLayoutRootView = useCallback(async () => {
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    }, [fontsLoaded]);
-  
-    if (!fontsLoaded) {
-      return null;
+  // Carga la fuente
+  const [fontsLoaded] = useFonts({
+    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
+    QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
+    QuicksandRegular: require('../utils/fonts/Quicksand-Regular.ttf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
     }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   const handleSave = async () => {
     let newErrors = {};
@@ -45,22 +46,31 @@ const FormCrop = () => {
     if (!lotLocation) newErrors.lotLocation = 'La ubicación del lote es obligatoria.';
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
+
     setLoading(true);
     try {
-      await addDoc(collection(db, 'Crops'), {
+      console.log('Intentando guardar en Firestore:', { cropName, cropType, lotLocation, technicalManager });
+      const docRef = await addDoc(collection(db, 'Crops'), {
         cropName,
         cropType,
         lotLocation,
-        technicalManager,
+        technicalManager: technicalManager || null, // Manejar caso vacío
         createdAt: new Date().toISOString(),
       });
+      console.log('Documento guardado con ID:', docRef.id);
+
+      // Marcar como visto al guardar
+      await AsyncStorage.setItem('hasSeenWelcome', 'true');
+      await AsyncStorage.setItem('hasSeenAboutUs', 'true');
+
       setCropName('');
       setLotLocation('');
       setTechnicalManager('');
       setErrors({});
-     navigation.replace('Drawer');
+      navigation.replace('Drawer');
     } catch (e) {
-      Alert.alert('Error', e.message || 'Error al guardar el cultivo.');
+      console.error('Error detallado:', e);
+      Alert.alert('Error', e.message || 'Error al guardar el cultivo. Verifica tu conexión o las reglas de Firestore.');
     } finally {
       setLoading(false);
     }
@@ -69,9 +79,9 @@ const FormCrop = () => {
   return (
     <SafeAreaView style={cropStyle.container} onLayout={onLayoutRootView}>
       <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, cropStyle.title]}>Datos generales del cultivo</Text>
-        {/* Nombre del cultivo */}
-        <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Nombre del cultivo</Text>
-        <TextInput
+      {/* Nombre del cultivo */}
+      <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Nombre del cultivo</Text>
+      <TextInput
         style={[cropStyle.input, { fontFamily: 'QuicksandRegular' }]}
         placeholder="Ingrese el nombre del cultivo"
         value={cropName}
@@ -115,7 +125,7 @@ const FormCrop = () => {
       >
         <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
       </TouchableOpacity>
-        </SafeAreaView>
+    </SafeAreaView>
   );
 };
 

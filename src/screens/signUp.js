@@ -10,6 +10,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import DropDownPicker from 'react-native-dropdown-picker';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -64,6 +65,12 @@ const SignUp = () => {
         registrationDate: new Date().toISOString(),
       };
       await addDoc(collection(db, 'Users'), user);
+
+      await addDoc(collection(db, 'Users'), user);
+
+      // Guardar flag de nuevo usuario
+      await AsyncStorage.setItem("isNewUser", "true");
+      
   // Limpiar campos después de registro exitoso
   setEmail('');
   setGender(null);

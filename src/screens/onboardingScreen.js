@@ -41,9 +41,12 @@ const Onboarding = () => {
   if (!fontsLoaded) return null;
 
   const finishOnboarding = async () => {
-    await AsyncStorage.setItem("hasOnboarded", "true");
-    navigation.replace("Drawer");
-  };
+  await AsyncStorage.setItem("hasOnboarded", "true");
+  await AsyncStorage.setItem("hasSeenWelcome", "false"); // aseguramos que se muestre en Home
+  await AsyncStorage.setItem("hasSeenAboutUs", "false"); // 👈 nuevo flag
+  navigation.replace("Drawer"); // o como entres al Home
+};
+
 
   // Escuchar scrollX para actualizar índice
   scrollX.addListener(({ value }) => {
