@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { db } from '../services/database';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import styles from '../styles/cropCardStyle';
+import { getCropActivities } from '../services/activitiesService';
 
 const { width } = Dimensions.get('window');
 
@@ -17,11 +18,17 @@ const CropCard = () => {
       try {
         const q = query(collection(db, 'Crops'), orderBy('createdAt', 'desc'));
         const querySnapshot = await getDocs(q);
-        const cropsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          progress: 0, // fijo en 0% como el diseño
-        }));
+        const cropsData = await Promise.all(
+          querySnapshot.docs.map(async doc => {
+            const acts = await getCropActivities(doc.id);
+            const progress = Math.round((acts.length / 9) * 100);
+            return {
+              id: doc.id,
+              ...doc.data(),
+              progress,
+            };
+          })
+        );
         setCrops(cropsData);
       } catch (error) {
         console.log('Error fetching crops:', error);
@@ -47,7 +54,7 @@ const CropCard = () => {
           <TouchableOpacity 
             key={crop.id} 
             style={[styles.wrapper, { width: width * 0.9 }]} 
-            onPress={() => navigation.navigate('CropsScreen')}
+            onPress={() => navigation.navigate('CropScreen', { crop: crop })}
             >
             {/* Etiqueta arriba, flotando */}
             <View style={styles.cropNameTag}>

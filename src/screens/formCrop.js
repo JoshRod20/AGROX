@@ -80,7 +80,7 @@ const FormCrop = () => {
     <SafeAreaView style={cropStyle.container} onLayout={onLayoutRootView}>
       <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, cropStyle.title]}>Datos generales del cultivo</Text>
       {/* Nombre del cultivo */}
-      <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Nombre del cultivo</Text>
+      <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold' }]}>Nombre del cultivo</Text>
       <TextInput
         style={[cropStyle.input, { fontFamily: 'QuicksandRegular' }]}
         placeholder="Ingrese el nombre del cultivo"
@@ -90,7 +90,7 @@ const FormCrop = () => {
       {errors.cropName && <Text style={{ color: 'red', marginBottom: 8, marginLeft: '5%' }}>{errors.cropName}</Text>}
 
       {/* Tipo de cultivo (no editable) */}
-      <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Tipo de cultivo</Text>
+      <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold' }]}>Tipo de cultivo</Text>
       <TextInput
         style={[cropStyle.input, { fontFamily: 'QuicksandRegular', backgroundColor: '#f0f0f0' }]}
         value={cropType}
@@ -99,7 +99,7 @@ const FormCrop = () => {
       {errors.cropType && <Text style={{ color: 'red', marginBottom: 8, marginLeft: '5%' }}>{errors.cropType}</Text>}
 
       {/* Ubicación del lote */}
-      <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Ubicación del lote</Text>
+      <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold' }]}>Ubicación del lote</Text>
       <TextInput
         style={[cropStyle.input, { fontFamily: 'QuicksandRegular' }]}
         placeholder="Ingrese la ubicación del lote"
@@ -109,7 +109,7 @@ const FormCrop = () => {
       {errors.lotLocation && <Text style={{ color: 'red', marginBottom: 8, marginLeft: '5%' }}>{errors.lotLocation}</Text>}
 
       {/* Responsable técnico (opcional) */}
-      <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Responsable técnico (opcional)</Text>
+      <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold' }]}>Responsable técnico (opcional)</Text>
       <TextInput
         style={[cropStyle.input, { fontFamily: 'QuicksandRegular' }]}
         placeholder="Ingrese el responsable técnico"

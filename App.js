@@ -11,6 +11,16 @@ import SignIn from './src/screens/signIn';
 import SignUp2 from './src/screens/signUp2';
 import Onboarding from './src/screens/onboardingScreen';
 import FormCrop from './src/screens/formCrop';
+import CropScreen from './src/screens/cropScreen';
+import CropPreparation from './src/screens/cropPreparation';
+import CropSowing from './src/screens/cropSowing'
+import CropFertilization from './src/screens/cropFertilization';
+import CropIrrigation from './src/screens/cropIrrigation';
+import CropPhytosanitary from './src/screens/cropPhytosanitary'
+import CropMonitoring from './src/screens/cropMonitoring';
+import CropHarvest from './src/screens/cropHarvest';
+import CropPostharvest from './src/screens/cropPostharvest'
+import CropDocumentation from './src/screens/cropDocumentation'
 
 const Stack = createStackNavigator();
 
@@ -68,6 +78,117 @@ export default function App() {
              <Stack.Screen 
             name="FormCrop" 
             component={FormCrop} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+            <Stack.Screen 
+            name="CropScreen" 
+            component={CropScreen} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+           <Stack.Screen 
+            name="CropPreparation" 
+            component={CropPreparation} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropSowing" 
+            component={CropSowing} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropFertilization" 
+            component={CropFertilization} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropIrrigation" 
+            component={CropIrrigation} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropPhytosanitary" 
+            component={CropPhytosanitary} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+             <Stack.Screen 
+            name="CropMonitoring" 
+            component={CropMonitoring} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          
+          <Stack.Screen 
+            name="CropHarvest" 
+            component={CropHarvest} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropPostharvest" 
+            component={CropPostharvest} 
+            options={{
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerTintColor: '#2E7D32',
+              headerBackTitleVisible: false
+            }} 
+          />
+          <Stack.Screen 
+            name="CropDocumentation" 
+            component={CropDocumentation} 
             options={{
               headerShown: true,
               headerTitle: '',
