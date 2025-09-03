@@ -1,10 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { View, Platform } from 'react-native';
+import { View, Platform, Image, TouchableOpacity, styles } from 'react-native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Login from './src/screens/login';
+import { loginStyle as loginStyles } from './src/styles/loginStyle';
 import NavigationDrawer from './src/navigation/navigationDrawer';
 import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
@@ -53,17 +55,29 @@ export default function App() {
             }} 
           />
           <Stack.Screen name="Drawer" component={NavigationDrawer} options={{ headerShown: false }} />
-          <Stack.Screen 
-            name="SignIn" 
-            component={SignIn} 
-            options={{
+          <Stack.Screen
+            name="SignIn"
+            component={SignIn}
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }}
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={loginStyles.backButton}
+                >
+                  <Image
+                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    style={loginStyles.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
+
+
           <Stack.Screen 
             name="SignUp2" 
             component={SignUp2} 

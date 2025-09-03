@@ -13,12 +13,12 @@ export const loginStyle = StyleSheet.create({
     width: wp('80%'), // 80% del ancho de la pantalla para el logo
     height: hp('30%'), // 30% de la altura de la pantalla
     alignSelf: 'center',
-    marginTop: hp('10%'), 
+    marginTop: hp('15%'), 
     marginBottom: hp('12%'), // Margen inferior relativo
   },
   buttonLogin: {
     width: wp('80%'), // 80% del ancho de la pantalla
-    height: hp('5.6%'), // Altura relativa
+    height: hp('6%'), // Altura relativa
     paddingVertical: hp('1.5%'),
     paddingHorizontal: wp('5%'),
     borderRadius: wp('2.5%'), // Border radius relativo.
@@ -37,107 +37,116 @@ export const loginStyle = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: wp('4.5%'), // Tamaño de fuente relativo
+    fontSize: wp('4.7%'), // Tamaño de fuente relativo
     textAlign: 'center',
   },
   buttonTextSignUp: {
     color: '#000000ff', // Cambiado a negro para mejor contraste con el fondo blanco
     fontSize: wp('4.3%'),
-    fontWeight: 'bold',
     textAlign: 'center',
   },
 
 
 
 
-//Estilos para la pantalla SignIn
-
+container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    paddingTop: hp('2%'),
+  },
+  backButton: {
+    marginLeft: wp('5%'),
+    marginTop: hp('-5%'),
+  },
+  backIcon: {
+    width: wp('8%'),
+    height: wp('8%'),
+    tintColor: '#2E7D32',
+    resizeMode: 'contain',
+  },
   logoSignIn: {
-  width: wp('70%'), // 80% del ancho de la pantalla para el logo
-  height: hp('20%'), // 30% de la altura de la pantalla
-  alignSelf: 'center',
-  marginBottom: hp('5%'), // Margen inferior relativo
+    width: wp('70%'),
+    height: hp('20%'),
+    alignSelf: 'center',
+    marginBottom: hp('5%'),
   },
   logtext: {
-  fontSize: wp('7.7%'),
-  color: '#2E7D32',
-  marginBottom: hp('1%'),
-  textAlign: 'left',
-  marginLeft: hp('2%'),
-  alignSelf: 'flex-start',
-},
-sesionText: {
-  fontSize: wp('4%'),
-  color: '#000000ff',
-  marginBottom: hp('3%'),
-  textAlign: 'left', // 👈 asegura alineación a la izquierda
-  marginLeft: hp('2%'),
-  alignSelf: 'flex-start',
-},
-agroxText: {
-  color: '#000000ff',
-  fontWeight: 'bold',
-  fontSize: wp('4.2%'),
-},
+    fontSize: wp('7.7%'),
+    color: '#2E7D32',
+    marginBottom: hp('1%'),
+    textAlign: 'left',
+    marginLeft: hp('3.3%'),
+    alignSelf: 'flex-start',
+  },
+  sesionText: {
+    fontSize: wp('4%'),
+    color: '#000000ff',
+    marginBottom: hp('0%'),
+    textAlign: 'left',
+    marginLeft: hp('3.5%'),
+    alignSelf: 'flex-start',
+  },
+  agroxText: {
+    color: '#000000ff',
+    fontWeight: 'bold',
+    fontSize: wp('4.2%'),
+  },
   textEmail: {
-  width: '90%',
-  fontSize: wp('4%'),
-  color: '#BC6C25',
-  marginTop: hp('5%'),
-  marginBottom: hp('0.5%'),
-},
-textPassword: {
-  width: '90%',
-  fontSize: wp('4%'),
-  color: '#BC6C25',
-  marginBottom: hp('0.5%'),
-},
-inputEmail: {
-  width: '90%',
-  height: hp('6%'),
-  borderColor: '#2E7D32',
-  borderWidth: 3,
-  borderRadius: 8,
-  marginBottom: hp('4%'),
-  paddingHorizontal: 12,
-  fontSize: wp('3.5%'),
-},
-inputPassword: {
-  width: '90%',
-  height: hp('6%'),
-  borderColor: '#2E7D32',
-  borderWidth: 3,
-  borderRadius: 8,
-  marginBottom: hp('2%'),
-  paddingHorizontal: 12,
-},
-  inputPasswordContainer: {
     width: '90%',
+    fontSize: wp('4%'),
+    color: '#BC6C25',
+    marginTop: hp('5%'),
+    marginBottom: hp('0.5%'),
+    marginLeft: hp('3%'),
+  },
+  textPassword: {
+    width: '90%',
+    fontSize: wp('4%'),
+    color: '#BC6C25',
+    marginTop: hp('2%'),
+    marginBottom: hp('0.5%'),
+    marginLeft: hp('3%'),
+  },
+
+  // Contenedor para input email
+  inputEmailContainer: {
+    width: wp('85%'), // 
+    borderBottomWidth: 2,
+    marginBottom: hp('1.5%'),
+  },
+  inputEmail: {
+    height: hp('6%'),
+    fontSize: wp('3.5%'),
+    color: '#000',
+  },
+
+  //Contenedor para input password
+  inputPasswordContainer: {
+    width: wp('85%'), 
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: hp('2%'),
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
+    borderBottomWidth: 2,
+    marginBottom: hp('1.5%'),
   },
-    inputPassword: {
+  inputPassword: {
     flex: 1,
     height: hp('6%'),
     fontSize: wp('3.5%'),
+    color: '#000',
   },
+
   buttonSignIn: {
-    width: wp('80%'), // 80% del ancho de la pantalla
-    height: hp('5.6%'), // Altura relativa
+    width: wp('80%'),
+    height: hp('5.6%'),
     paddingVertical: hp('1.5%'),
     paddingHorizontal: wp('5%'),
-    borderRadius: wp('2.5%'), // Border radius relativo.
+    borderRadius: wp('2.5%'),
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: hp('5%'),
   },
-signUpTextContainer: {
+  signUpTextContainer: {
     marginTop: hp('1%'),
     alignItems: 'center',
     justifyContent: 'center',
@@ -148,8 +157,9 @@ signUpTextContainer: {
     textAlign: 'center',
   },
   signUpLink: {
-    color: '#000000ff', // Color similar a otros elementos (como textEmail/textPassword)
+    color: '#000000ff',
     fontWeight: 'bold',
     fontSize: wp('4%'),
+    marginBottom: hp('2%'),
   },
 });

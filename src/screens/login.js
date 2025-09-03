@@ -15,7 +15,9 @@ export default function Login() {
 
   // Carga la fuente
   const [fontsLoaded] = useFonts({
-    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'), // 👈 ajusta la ruta según tu proyecto
+    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
+    QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
+    QuicksandRegular: require('../utils/fonts/Quicksand-Regular.ttf'),
   });
 
   // Oculta el Splash cuando ya cargó la fuente
@@ -53,7 +55,7 @@ export default function Login() {
         style={loginStyle.buttonSignUp}
         onPress={() => navigation.navigate('SignUp2')}
       >
-        <Text style={loginStyle.buttonTextSignUp}>Registrar cuenta</Text>
+        <Text style={[{ fontFamily: 'QuicksandBold', color: '#fff' },loginStyle.buttonTextSignUp]}>Registrar cuenta</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
