@@ -1,27 +1,27 @@
-import React, { useCallback} from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useNavigation,useRoute } from '@react-navigation/native';
+import React, { useCallback } from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';  // ✅ Importación correcta
 import { cropStyle } from '../styles/cropStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Evita que se oculte el SplashScreen automáticamente
 SplashScreen.preventAutoHideAsync();
 
 const Crop = () => {
-    const route = useRoute();
+  const route = useRoute();
   const navigation = useNavigation();
 
-const cropTypes = [
-  { label: 'Granos Básicos', value: 'Granos Básicos' },
-  { label: 'Hortalizas', value: 'Hortalizas' },
-  { label: 'Frutas', value: 'Frutas' },
-  { label: 'Tubérculos', value: 'Tubérculos' },
-];
+  const cropTypes = [
+    { label: 'Granos Básicos', value: 'Granos Básicos', image: require('../assets/granos basicos.webp') },
+    { label: 'Hortalizas', value: 'Hortalizas', image: require('../assets/hortalizas.jpg') },
+    { label: 'Frutas', value: 'Frutas', image: require('../assets/frutas.jpg') },
+    { label: 'Tubérculos', value: 'Tubérculos', image: require('../assets/tuberculos.jpg') },
+  ];
 
- // Carga la fuente
+  // Carga la fuente
   const [fontsLoaded] = useFonts({
     CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
     QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
@@ -40,25 +40,44 @@ const cropTypes = [
 
   return (
     <SafeAreaView style={cropStyle.containerCrop} onLayout={onLayoutRootView}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 30, marginLeft: 10 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 8, marginRight: 330 }}>
-          <Icon name="arrow-back" size={22} color="#2E7D32" />
+      {/* Botón de retroceso */}
+      <View style={cropStyle.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={cropStyle.backButton}>
+          <Image source={require('../assets/arrow-left.png')} style={cropStyle.backIcon} />
         </TouchableOpacity>
       </View>
-      <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, cropStyle.title]}>Seleccione el tipo de cultivo</Text>
+
+      {/* Título */}
+      <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, cropStyle.titleCrop]}>
+        Seleccione el tipo de cultivo
+      </Text>
+
+      {/* Botones con imagen + texto */}
       <View style={{ gap: 18, marginBottom: 24 }}>
         {cropTypes.map(option => (
           <TouchableOpacity
             key={option.value}
-            style={[cropStyle.buttonSR2, { backgroundColor: '#2E7D32', alignSelf: 'center', marginTop: 20 }]}
             onPress={() => navigation.navigate('FormCrop', { cropType: option.value })}
             activeOpacity={0.85}
           >
-            <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 18 }]}>{option.label}</Text>
+            <LinearGradient
+              colors={['#2E7D32', '#4CAF50']}   // ✅ Degradado verde
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={cropStyle.buttonSR2}
+            >
+              <View style={cropStyle.buttonContent}>
+                <Image source={option.image} style={cropStyle.cropIcon} />
+                <Text style={[{ fontFamily: 'QuicksandBold', color: '#fff' }, cropStyle.buttonTextCropTypes]}>
+                  {option.label}
+                </Text>
+              </View>
+            </LinearGradient>
           </TouchableOpacity>
         ))}
       </View>
     </SafeAreaView>
   );
-}
+};
+
 export default Crop;

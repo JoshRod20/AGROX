@@ -22,25 +22,66 @@ export const cropStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+
   //Diseño para pantalla crop
-      buttonSR2: {
-     width: wp('80%'), // 80% del ancho de la pantalla
-    height: hp('10%'), // Altura relativa
-    paddingVertical: hp('1.5%'),
-    paddingHorizontal: wp('5%'),
-    borderRadius: wp('2.5%'), // Border radius relativo.
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: hp('6%'),
-  },
-    containerCrop: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: wp('5%'),
-    marginTop: -200,
-  },
+
+backButton: {
+  marginLeft: wp('8%'), 
+  marginBottom: hp('1%'),
+},
+
+backIcon: {
+  width: wp('7.5%'), 
+  height: wp('7.5%'),
+  tintColor: '#2E7D32',
+  resizeMode: 'contain',
+},
+
+
+titleCrop: {
+  fontSize: wp('6%'),
+  marginTop: hp('1%'),
+  marginBottom: hp('1%'),
+  textAlign: 'center',
+  paddingHorizontal: wp('4%'),
+  alignSelf: 'center',
+},
+
+
+buttonSR2: {
+  width: wp('85%'),
+  height: hp('11%'),   // bajé un poco para pantallas pequeñas
+  borderRadius: wp('3%'),
+  justifyContent: 'center',
+  alignSelf: 'center',
+  marginTop: hp('2.5%'),
+  overflow: 'hidden',
+},
+
+buttonContent: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  width: '100%',
+  height: '100%',
+  paddingHorizontal: wp('3%'), 
+},
+
+cropIcon: {
+  width: hp('7.5%'),
+  height: hp('7.5%'),
+  borderRadius: wp('2%'),
+  marginRight: wp('5%'), // ahora es proporcional
+  resizeMode: 'cover',
+},
+
+buttonTextCropTypes: {
+  color: '#fff',
+  fontSize: wp('4.8%'),
+  textAlign: 'center',
+  flex: 1,
+},
 
     //Diseño para la pantalla formCrop
 
