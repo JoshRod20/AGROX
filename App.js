@@ -7,6 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Login from './src/screens/login';
 import { loginStyle as loginStyles } from './src/styles/loginStyle';
+import { signUpStyle } from './src/styles/signUpStyle';
+import { signUp1Style } from './src/styles/signUp1Style';
 import NavigationDrawer from './src/navigation/navigationDrawer';
 import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
@@ -46,13 +48,23 @@ export default function App() {
           <Stack.Screen 
             name="SignUp" 
             component={SignUp} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={signUp1Style.backButton}
+                >
+                  <Image
+                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    style={signUp1Style.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen name="Drawer" component={NavigationDrawer} options={{ headerShown: false }} />
           <Stack.Screen
@@ -81,14 +93,25 @@ export default function App() {
           <Stack.Screen 
             name="SignUp2" 
             component={SignUp2} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={signUpStyle.backButton}
+                >
+                  <Image
+                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    style={signUpStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
+
              <Stack.Screen 
             name="FormCrop" 
             component={FormCrop} 

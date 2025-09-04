@@ -21,23 +21,25 @@ export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Animaciones de bordes
-  const emailBorderAnim = useRef(new Animated.Value(0)).current;
-  const passwordBorderAnim = useRef(new Animated.Value(0)).current;
-
   // Animaciones de errores
   const emailErrorAnim = useRef(new Animated.Value(0)).current;
   const passErrorAnim = useRef(new Animated.Value(0)).current;
 
-  const animateBorder = (anim, state) => {
-    let toValue = state === "error" ? 1 : state === "ok" ? 2 : 0;
-    Animated.timing(anim, {
-      toValue,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+  // Animaciones de sacudida
+  const shakeAnimEmail = useRef(new Animated.Value(0)).current;
+  const shakeAnimPassword = useRef(new Animated.Value(0)).current;
+
+  // Función para animación de sacudida
+  const triggerShake = (anim) => {
+    Animated.sequence([
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+    ]).start();
   };
 
+  // Función para animación de errores
   const animateError = (anim, visible) => {
     Animated.timing(anim, {
       toValue: visible ? 1 : 0,
@@ -46,17 +48,22 @@ export default function SignIn() {
     }).start();
   };
 
-  const handleSignIn = async () => {
+  // Validación y manejo de inicio de sesión
+  const handleValidation = async () => {
     let newErrors = {};
-    if (!email) newErrors.email = 'El correo es obligatorio.';
-    if (!password) newErrors.password = 'La contraseña es obligatoria.';
+    if (!email) {
+      newErrors.email = 'El correo es obligatorio.';
+      triggerShake(shakeAnimEmail);
+    }
+    if (!password) {
+      newErrors.password = 'La contraseña es obligatoria.';
+      triggerShake(shakeAnimPassword);
+    }
 
     setErrors(newErrors);
 
     animateError(emailErrorAnim, !!newErrors.email);
     animateError(passErrorAnim, !!newErrors.password);
-    animateBorder(emailBorderAnim, newErrors.email ? "error" : email ? "ok" : "default");
-    animateBorder(passwordBorderAnim, newErrors.password ? "error" : password ? "ok" : "default");
 
     if (Object.keys(newErrors).length > 0) return;
 
@@ -68,18 +75,11 @@ export default function SignIn() {
       console.log("Firebase login error:", error.code, error.message);
       setErrors({ password: 'Correo o contraseña incorrectos.' });
       animateError(passErrorAnim, true);
-      animateBorder(passwordBorderAnim, "error");
+      triggerShake(shakeAnimPassword);
     } finally {
       setLoading(false);
     }
   };
-
-  // Interpolación de colores
-  const borderColorInterpolation = (anim) =>
-    anim.interpolate({
-      inputRange: [0, 1, 2], // default, error, ok
-      outputRange: ["#2E7D32", "#D32F2F", "#4CAF50"], // verde base, rojo error, verde claro ok
-    });
 
   // Fuentes
   const [fontsLoaded] = useFonts({
@@ -118,14 +118,15 @@ export default function SignIn() {
       </Text>
       <Animated.View
         style={[
-          loginStyle.inputEmailContainer, // 👈 ahora controlas el ancho desde estilos
-          { borderBottomColor: borderColorInterpolation(emailBorderAnim) }
+          loginStyle.inputEmailContainer,
+          errors.email && loginStyle.errorInput,
+          { transform: [{ translateX: shakeAnimEmail }] }
         ]}
       >
         <TextInput
-          style={[{ fontFamily: 'QuicksandBold'}, loginStyle.inputEmail]}
+          style={loginStyle.inputEmail}
           placeholder="Introduzca su nombre o correo"
-          placeholderTextColor="#9E9E9E"
+          placeholderTextColor="#888"
           autoCapitalize="none"
           keyboardType="email-address"
           value={email}
@@ -133,7 +134,6 @@ export default function SignIn() {
             setEmail(text);
             setErrors(prev => ({ ...prev, email: undefined }));
             animateError(emailErrorAnim, false);
-            animateBorder(emailBorderAnim, text ? "ok" : "default");
           }}
         />
       </Animated.View>
@@ -146,7 +146,7 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: "#D32F2F", fontSize: 13, fontFamily: "QuicksandBold" }}>
+          <Text style={{ color: "#ff0000", fontSize: 13, fontFamily: "QuicksandBold" }}>
             {errors.email}
           </Text>
         </Animated.View>
@@ -158,21 +158,21 @@ export default function SignIn() {
       </Text>
       <Animated.View
         style={[
-          loginStyle.inputPasswordContainer, // 👈 ahora controlas el ancho desde estilos
-          { borderBottomColor: borderColorInterpolation(passwordBorderAnim) }
+          loginStyle.inputPasswordContainer,
+          errors.password && loginStyle.errorInput,
+          { transform: [{ translateX: shakeAnimPassword }] }
         ]}
       >
         <TextInput
-          style={[{ fontFamily: 'QuicksandBold'}, loginStyle.inputPassword]}
+          style={loginStyle.inputPassword}
           placeholder="Introduzca su contraseña"
-          placeholderTextColor="#9E9E9E"
+          placeholderTextColor="#888"
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={text => {
             setPassword(text);
             setErrors(prev => ({ ...prev, password: undefined }));
             animateError(passErrorAnim, false);
-            animateBorder(passwordBorderAnim, text ? "ok" : "default");
           }}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -192,14 +192,14 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: "#D32F2F", fontSize: 13, fontFamily: "QuicksandBold" }}>
+          <Text style={{ color: "#ff0000", fontSize: 13, fontFamily: "QuicksandBold" }}>
             {errors.password}
           </Text>
         </Animated.View>
       )}
 
       {/* Botón de inicio */}
-      <TouchableOpacity onPress={handleSignIn} disabled={loading}>
+      <TouchableOpacity onPress={handleValidation} disabled={loading}>
         <LinearGradient
           colors={['#2E7D32', '#4CAF50']}
           start={{ x: 0, y: 0 }}

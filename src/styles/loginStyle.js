@@ -108,25 +108,24 @@ container: {
     marginBottom: hp('0.5%'),
     marginLeft: hp('3%'),
   },
-
-  // Contenedor para input email
   inputEmailContainer: {
-    width: wp('85%'), // 
+    width: wp('85%'),
     borderBottomWidth: 2,
+    borderColor: '#2E7D32',
     marginBottom: hp('1.5%'),
   },
   inputEmail: {
     height: hp('6%'),
     fontSize: wp('3.5%'),
     color: '#000',
+    fontFamily: 'QuicksandRegular',
   },
-
-  //Contenedor para input password
   inputPasswordContainer: {
-    width: wp('85%'), 
+    width: wp('85%'),
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 2,
+    borderColor: '#2E7D32',
     marginBottom: hp('1.5%'),
   },
   inputPassword: {
@@ -134,8 +133,8 @@ container: {
     height: hp('6%'),
     fontSize: wp('3.5%'),
     color: '#000',
+    fontFamily: 'QuicksandRegular',
   },
-
   buttonSignIn: {
     width: wp('80%'),
     height: hp('5.6%'),
@@ -145,6 +144,11 @@ container: {
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: hp('5%'),
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: wp('4.5%'),
+    textAlign: 'center',
   },
   signUpTextContainer: {
     marginTop: hp('1%'),
@@ -161,5 +165,14 @@ container: {
     fontWeight: 'bold',
     fontSize: wp('4%'),
     marginBottom: hp('2%'),
+  },
+  errorInput: {
+    borderColor: '#ff0000',
+  },
+  errorText: {
+    color: '#ff0000',
+    fontSize: wp('3.5%'),
+    marginBottom: hp('1%'),
+    alignSelf: 'center',
   },
 });
