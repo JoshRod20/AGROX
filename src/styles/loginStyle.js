@@ -10,11 +10,11 @@ export const loginStyle = StyleSheet.create({
     paddingHorizontal: wp('5%'), // Margen lateral del 5% del ancho de la pantalla
   },
   logo: {
-    width: wp('80%'), // 80% del ancho de la pantalla para el logo
-    height: hp('30%'), // 30% de la altura de la pantalla
+    width: wp('90%'), // 80% del ancho de la pantalla para el logo
+    height: hp('35%'), // 30% de la altura de la pantalla
     alignSelf: 'center',
     marginTop: hp('15%'), 
-    marginBottom: hp('12%'), // Margen inferior relativo
+    marginBottom: hp('8%'), // Margen inferior relativo
   },
   buttonLogin: {
     width: wp('80%'), // 80% del ancho de la pantalla

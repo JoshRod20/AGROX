@@ -19,11 +19,12 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({ email: '', password: '', general: '' });
 
   // Animaciones de errores
   const emailErrorAnim = useRef(new Animated.Value(0)).current;
   const passErrorAnim = useRef(new Animated.Value(0)).current;
+  const generalErrorAnim = useRef(new Animated.Value(0)).current;
 
   // Animaciones de sacudida
   const shakeAnimEmail = useRef(new Animated.Value(0)).current;
@@ -48,34 +49,71 @@ export default function SignIn() {
     }).start();
   };
 
-  // Validación y manejo de inicio de sesión
-  const handleValidation = async () => {
-    let newErrors = {};
-    if (!email) {
-      newErrors.email = 'El correo es obligatorio.';
-      triggerShake(shakeAnimEmail);
-    }
-    if (!password) {
-      newErrors.password = 'La contraseña es obligatoria.';
-      triggerShake(shakeAnimPassword);
-    }
+  // Validación de correo electrónico
+  const validateEmail = (email) => {
+    if (!email) return 'El correo es obligatorio.';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) return 'El correo electrónico no es válido.';
+    return '';
+  };
 
+  // Validación de contraseña
+  const validatePassword = (password) => {
+    if (!password) return 'La contraseña es obligatoria.';
+    if (password.length < 6) return 'La contraseña debe tener al menos 6 caracteres.';
+    return '';
+  };
+
+  // Manejo de inicio de sesión
+  const handleValidation = async () => {
+    const newErrors = {
+      email: validateEmail(email),
+      password: validatePassword(password),
+      general: '',
+    };
+
+    // Activar animaciones de sacudida solo para los campos con errores
+    if (newErrors.email) triggerShake(shakeAnimEmail);
+    if (newErrors.password) triggerShake(shakeAnimPassword);
+
+    // Actualizar estado de errores
     setErrors(newErrors);
 
+    // Activar animaciones de error
     animateError(emailErrorAnim, !!newErrors.email);
     animateError(passErrorAnim, !!newErrors.password);
+    animateError(generalErrorAnim, !!newErrors.general);
 
-    if (Object.keys(newErrors).length > 0) return;
+    // Si hay errores en los campos, no continuar
+    if (newErrors.email || newErrors.password) return;
 
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       navigation.replace('Drawer');
     } catch (error) {
-      console.log("Firebase login error:", error.code, error.message);
-      setErrors({ password: 'Correo o contraseña incorrectos.' });
-      animateError(passErrorAnim, true);
-      triggerShake(shakeAnimPassword);
+      let errorMessage = 'Error al iniciar sesión. Por favor, intenta de nuevo.';
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No se encontró una cuenta con este correo.';
+          triggerShake(shakeAnimEmail);
+          break;
+        case 'auth/wrong-password':
+          errorMessage = 'La contraseña es incorrecta.';
+          triggerShake(shakeAnimPassword);
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'El correo electrónico no es válido.';
+          triggerShake(shakeAnimEmail);
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Demasiados intentos. Intenta de nuevo más tarde.';
+          break;
+        default:
+          console.log("Firebase login error:", error.code, error.message);
+      }
+      setErrors({ email: '', password: '', general: errorMessage });
+      animateError(generalErrorAnim, true);
     } finally {
       setLoading(false);
     }
@@ -103,14 +141,28 @@ export default function SignIn() {
         style={loginStyle.logoSignIn}
         resizeMode="contain"
       />
-
       <Text style={[{ fontFamily: 'CarterOne', color: '#2E7D32' }, loginStyle.logtext]}>
         Inicio de sesión
       </Text>
-
       <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.sesionText]}>
         Inicia sesión con tu cuenta de <Text style={[{ fontFamily: 'QuicksandBold' }, loginStyle.agroxText]}>AGROX</Text>
       </Text>
+
+      {/* General Error */}
+      {errors.general && (
+        <Animated.View
+          style={{
+            opacity: generalErrorAnim,
+            transform: [{ translateY: generalErrorAnim.interpolate({ inputRange: [0, 1], outputRange: [-5, 0] }) }],
+            marginBottom: 10,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#ff0000', fontSize: 14, fontFamily: 'QuicksandBold', textAlign: 'center' }}>
+            {errors.general}
+          </Text>
+        </Animated.View>
+      )}
 
       {/* EMAIL */}
       <Text style={[{ fontFamily: 'QuicksandBold'}, loginStyle.textEmail]}>
@@ -132,8 +184,9 @@ export default function SignIn() {
           value={email}
           onChangeText={text => {
             setEmail(text);
-            setErrors(prev => ({ ...prev, email: undefined }));
+            setErrors(prev => ({ ...prev, email: '', general: '' }));
             animateError(emailErrorAnim, false);
+            animateError(generalErrorAnim, false);
           }}
         />
       </Animated.View>
@@ -146,7 +199,7 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: "#ff0000", fontSize: 13, fontFamily: "QuicksandBold" }}>
+          <Text style={{ color: '#ff0000', fontSize: 13, fontFamily: 'QuicksandBold' }}>
             {errors.email}
           </Text>
         </Animated.View>
@@ -171,8 +224,9 @@ export default function SignIn() {
           value={password}
           onChangeText={text => {
             setPassword(text);
-            setErrors(prev => ({ ...prev, password: undefined }));
+            setErrors(prev => ({ ...prev, password: '', general: '' }));
             animateError(passErrorAnim, false);
+            animateError(generalErrorAnim, false);
           }}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -192,7 +246,7 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: "#ff0000", fontSize: 13, fontFamily: "QuicksandBold" }}>
+          <Text style={{ color: '#ff0000', fontSize: 13, fontFamily: 'QuicksandBold' }}>
             {errors.password}
           </Text>
         </Animated.View>
