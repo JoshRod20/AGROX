@@ -42,8 +42,8 @@ const Crop = () => {
     <SafeAreaView style={cropStyle.containerCrop} onLayout={onLayoutRootView}>
       {/* Botón de retroceso */}
       <View style={cropStyle.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={cropStyle.backButton}>
-          <Image source={require('../assets/arrow-left.png')} style={cropStyle.backIcon} />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={cropStyle.backButtonCrop}>
+          <Image source={require('../assets/arrow-left.png')} style={cropStyle.backIconCrop} />
         </TouchableOpacity>
       </View>
 
@@ -61,7 +61,7 @@ const Crop = () => {
             activeOpacity={0.85}
           >
             <LinearGradient
-              colors={['#2E7D32', '#4CAF50']}   // ✅ Degradado verde
+              colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={cropStyle.buttonSR2}

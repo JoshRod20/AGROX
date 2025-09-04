@@ -201,7 +201,7 @@ export default function SignIn() {
       {/* Botón de inicio */}
       <TouchableOpacity onPress={handleValidation} disabled={loading}>
         <LinearGradient
-          colors={['#2E7D32', '#4CAF50']}
+          colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={loginStyle.buttonSignIn}
