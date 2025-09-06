@@ -10,6 +10,7 @@ import { loginStyle as loginStyles } from './src/styles/loginStyle';
 import { signUpStyle } from './src/styles/signUpStyle';
 import { signUp1Style } from './src/styles/signUp1Style';
 import { cropStyle } from './src/styles/cropStyle';
+import { cropScreenStyle } from './src/styles/cropScreenStyle';
 import NavigationDrawer from './src/navigation/navigationDrawer';
 import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
@@ -138,14 +139,25 @@ export default function App() {
             <Stack.Screen 
             name="CropScreen" 
             component={CropScreen} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
+
            <Stack.Screen 
             name="CropPreparation" 
             component={CropPreparation} 

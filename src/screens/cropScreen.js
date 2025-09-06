@@ -1,11 +1,12 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Text, View, Image, TouchableOpacity, ScrollView, Modal, FlatList, Pressable } from 'react-native';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
+import { Text, View, Image, TouchableOpacity, ScrollView, Modal, FlatList, Pressable, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { cropStyle } from '../styles/cropStyle';
+import { cropScreenStyle } from '../styles/cropScreenStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useRoute, useNavigation, useIsFocused } from '@react-navigation/native';
 import { getCropActivities } from '../services/activitiesService';
+import { LinearGradient } from 'expo-linear-gradient';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +21,43 @@ const activities = [
   { id: '8', name: 'Postcosecha y comercialización', icon: require('../assets/point-of-sale-bill.png'), screen: 'CropPostharvest' },
   { id: '9', name: 'Documentación adicional', icon: require('../assets/document-signed.png'), screen: 'CropDocumentation' },
 ];
+
+// 🔹 Subcomponente para renderizar una actividad con animación
+const ActivityItem = ({ activity, done, isLast }) => {
+  const lineHeight = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!isLast) {
+      Animated.timing(lineHeight, {
+        toValue: 40,
+        duration: 600,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [isLast]);
+
+  return (
+    <View style={cropScreenStyle.activityContainer}>
+      {/* Columna del icono + línea */}
+      <View style={cropScreenStyle.activityIconWrapper}>
+        <Image source={activity.icon} style={{ width: 22, height: 22 }} />
+        {!isLast && (
+          <Animated.View
+            style={[cropScreenStyle.activityLine, { height: lineHeight }]}
+          />
+        )}
+      </View>
+
+      {/* Texto y fecha */}
+      <View style={cropScreenStyle.activityContent}>
+        <Text style={cropScreenStyle.activityTitle}>{activity.name}</Text>
+        <Text style={cropScreenStyle.activityDate}>
+          {done && done.date ? done.date : 'Sin fecha'}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 const CropScreen = () => {
   const route = useRoute();
@@ -61,78 +99,105 @@ const CropScreen = () => {
   }
 
   return (
-    <SafeAreaView style={cropStyle.container2} onLayout={onLayoutRootView}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1, }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-          <Text style={[cropStyle.title, { fontFamily: 'CarterOne', color: '#2E7D32', marginLeft: 10 }]}>
+    <SafeAreaView style={cropScreenStyle.container2} onLayout={onLayoutRootView}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={[cropScreenStyle.title, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>
             {crop?.cropName || 'Maíz'}
           </Text>
         </View>
 
         {/* Crop Image */}
-        <View style={cropStyle.imageContainer}>
+        <View style={cropScreenStyle.imageContainer}>
           {docImageBase64 ? (
             <Image
               source={{ uri: 'data:image/jpeg;base64,' + docImageBase64 }}
-              style={cropStyle.cropImage}
+              style={cropScreenStyle.cropImage}
               resizeMode="cover"
             />
           ) : (
-       <View style={{ width: 220, height: 180, borderRadius: 8, backgroundColor: '#eee', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#bbb' }}>
+            <View
+              style={{
+                width: 220,
+                height: 180,
+                borderRadius: 8,
+                backgroundColor: '#eee',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: '#bbb',
+              }}
+            >
               <Text style={{ color: '#888', fontSize: 16 }}>Sin imagen</Text>
             </View>
           )}
         </View>
 
         {/* Ver ficha del cultivo Button */}
-        <TouchableOpacity style={[cropStyle.buttonSR, { backgroundColor: '#BC6C25' }]}>
-          <Text style={[cropStyle.buttonText, { fontFamily: 'QuicksandBold', fontSize: 16 }]}>Ver ficha del cultivo</Text>
+        <TouchableOpacity style={cropScreenStyle.buttonFile}>
+          <Image
+            source={require('../assets/document-signed.png')}
+            style={{ width: 18, height: 18, marginRight: 8, tintColor: '#767E86' }}
+          />
+          <Text style={[cropScreenStyle.buttonTextFile, { fontFamily: 'QuicksandRegular' }]}>
+            Ver ficha del cultivo
+          </Text>
         </TouchableOpacity>
 
         {/* Actividades Section */}
         <View>
-          <Text style={[cropStyle.label2, { fontFamily: 'QuicksandBold' }]}>Actividades</Text>
+          <Text style={[cropScreenStyle.label2, { fontFamily: 'QuicksandBold' }]}>Actividades</Text>
           {activitiesDone.length === 0 ? (
-            <Text style={{ fontFamily: 'QuicksandRegular', color: '#666', marginLeft: 10 }}>Ninguna</Text>
+            <Text style={[cropScreenStyle.activitiesDone, { fontFamily: 'QuicksandRegular' }]}>Ninguna</Text>
           ) : (
             activities
               .filter(activity => activitiesDone.some(a => a.name === activity.name))
-              .map(activity => {
+              .map((activity, index, arr) => {
                 const done = activitiesDone.find(a => a.name === activity.name);
                 return (
-                  <View key={activity.id} style={cropStyle.activityItem}>
-                    <Image source={activity.icon} style={{ width: 20, height: 20 }} />
-                    <Text style={cropStyle.activityText}>
-                      {activity.name}
-                      {done && done.date ? ` - ${done.date}` : ''}
-                    </Text>
-                  </View>
+                  <ActivityItem
+                    key={activity.id}
+                    activity={activity}
+                    done={done}
+                    isLast={index === arr.length - 1}
+                  />
                 );
               })
           )}
         </View>
 
         {/* Progreso del cultivo */}
-        <View style={cropStyle.progressContainer}>
+        <View style={cropScreenStyle.progressContainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={[cropStyle.progressText, { fontFamily: 'QuicksandBold' }]}>Progreso del cultivo</Text>
-            <Text style={[cropStyle.progressText, { color: '#BC6C25' }]}>{progress}%</Text>
+            <Text style={[cropScreenStyle.progressText, { fontFamily: 'QuicksandBold' }]}>Progreso del cultivo</Text>
+            <Text style={[cropScreenStyle.progressText, { color: '#BC6C25' }]}>{progress}%</Text>
           </View>
-          <View style={cropStyle.progressBar}>
-            <View style={[cropStyle.progressFill, { width: `${progress}%` }]} />
+          <View style={cropScreenStyle.progressBar}>
+            <View style={[cropScreenStyle.progressFill, { width: `${progress}%` }]} />
           </View>
         </View>
 
         {/* Agregar actividad Button */}
         <TouchableOpacity
-          style={[cropStyle.buttonSR, { backgroundColor: progress === 100 ? '#ccc' : '#2E7D32' }]}
           onPress={() => {
             if (progress < 100) setModalVisible(true);
           }}
           disabled={progress === 100}
         >
-          <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>Agregar actividad</Text>
+          <LinearGradient
+            colors={progress === 100 
+              ? ['#ccc', '#ccc'] 
+              : ['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={cropScreenStyle.buttonSR}
+          >
+            <Text style={[cropScreenStyle.buttonText, { color: '#fff', fontFamily: 'CarterOne'}]}>
+              Agregar actividad
+            </Text>
+          </LinearGradient>
         </TouchableOpacity>
+
 
         {/* Modal de selección de actividad */}
         <Modal
@@ -141,21 +206,36 @@ const CropScreen = () => {
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
             <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 20, width: '85%' }}>
-              <Text style={{ fontFamily: 'QuicksandBold', fontSize: 18, marginBottom: 10 }}>Selecciona una actividad</Text>
+              <Text style={[cropScreenStyle.titleModal, { fontFamily: 'CarterOne' }]}>
+                Selecciona una actividad
+              </Text>
               <FlatList
                 data={activities}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => {
-                  // Si la actividad ya está registrada, deshabilitarla
                   const isDone = activitiesDone.some(a => a.name === item.name);
-                  // Si no existe la actividad 1, solo permitir seleccionar la 1
                   const prepDone = activitiesDone.some(a => a.name === 'Preparación del terreno');
                   const canSelect = !isDone && (item.id === '1' || prepDone);
+
                   return (
                     <Pressable
-                      style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderColor: '#ccc', opacity: canSelect ? 1 : 0.4 }}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingVertical: 12,
+                        borderBottomWidth: 0.5,
+                        borderColor: '#ccc',
+                        opacity: canSelect ? 1 : 0.4,
+                      }}
                       onPress={() => {
                         if (canSelect) {
                           setModalVisible(false);
@@ -166,7 +246,9 @@ const CropScreen = () => {
                     >
                       <Image source={item.icon} style={{ width: 28, height: 28, marginRight: 12 }} />
                       <Text style={{ fontSize: 16 }}>{item.name}</Text>
-                      {isDone && <Text style={{ color: '#2E7D32', marginLeft: 8, fontSize: 13 }}>(Registrada)</Text>}
+                      {isDone && (
+                        <Text style={{ color: '#2E7D32', marginLeft: 8, fontSize: 13 }}>(Registrada)</Text>
+                      )}
                     </Pressable>
                   );
                 }}
