@@ -60,7 +60,7 @@ export default function App() {
                   style={signUp1Style.backButton}
                 >
                   <Image
-                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    source={require('./src/assets/arrow-left.png')}
                     style={signUp1Style.backIcon}
                   />
                 </TouchableOpacity>
@@ -82,7 +82,7 @@ export default function App() {
                   style={loginStyles.backButton}
                 >
                   <Image
-                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    source={require('./src/assets/arrow-left.png')}
                     style={loginStyles.backIcon}
                   />
                 </TouchableOpacity>
@@ -105,7 +105,7 @@ export default function App() {
                   style={signUpStyle.backButton}
                 >
                   <Image
-                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    source={require('./src/assets/arrow-left.png')}
                     style={signUpStyle.backIcon}
                   />
                 </TouchableOpacity>
@@ -127,7 +127,7 @@ export default function App() {
                   style={cropStyle.backButton}
                 >
                   <Image
-                    source={require('../AGROX/src/assets/arrow-left.png')}
+                    source={require('./src/assets/arrow-left.png')}
                     style={cropStyle.backIcon}
                   />
                 </TouchableOpacity>

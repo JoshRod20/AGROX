@@ -121,7 +121,7 @@ export const cropStyle = StyleSheet.create({
     borderColor: '#ff0000',
   },
   errorText: {
-    color: '#ff0000',
+    color: '#ff0000ff',
     fontSize: wp('3.5%'),
     marginBottom: hp('1%'),
     alignSelf: 'center',
