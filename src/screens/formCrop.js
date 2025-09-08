@@ -155,7 +155,8 @@ const FormCrop = () => {
           label="Área cultivada (mz/ha)"
           value={formData.cultivatedArea}
           onChangeText={val => setFormData({ ...formData, cultivatedArea: val })}
-          placeholder="Ingrese el área cultivada"
+          placeholder="0"
+          keyboardType="numeric"
           error={errors.cultivatedArea}
           shakeAnim={shakeAnim.cultivatedArea}
         />
