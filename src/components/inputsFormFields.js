@@ -21,6 +21,7 @@ const InputsFormFields = forwardRef(({
     errorStyle,
     shakeAnim,
     editable = true,
+    rightAdornment, // NUEVA PROP
     ...rest
 }, ref) => {
     return (
@@ -30,24 +31,20 @@ const InputsFormFields = forwardRef(({
                 <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold', color: '#BC6C25' }]}>{label}</Text>
             ) : null}
 
-            {/*
-                Animated.View aplica la animación shake tanto al input como a la línea (borderBottom)
-                cropStyle.inputContainer define el borderBottomWidth y borderColor (verde por defecto)
-                Si hay error, cropStyle.errorInput cambia el borderColor a rojo
-            */}
+            {/* Animated.View ahora soporta adornment derecho */}
             <Animated.View
                 style={[
-                    cropStyle.inputContainer, // Aquí se define la línea inferior (borderBottom)
-                    error ? cropStyle.errorInput : null, // Si hay error, la línea se pone roja
-                    shakeAnim ? { transform: [{ translateX: shakeAnim }] } : null
+                    cropStyle.inputContainer,
+                    error ? cropStyle.errorInput : null,
+                    shakeAnim ? { transform: [{ translateX: shakeAnim }] } : null,
+                    { flexDirection: 'row', alignItems: 'center' }
                 ]}
             >
-                {/* TextInput: el campo editable */}
                 <TextInput
                     ref={ref}
                     style={[
-                        cropStyle.input, // Estilo base del input
-                        { fontFamily: 'QuicksandRegular', color: '#000' },
+                        cropStyle.input,
+                        { fontFamily: 'QuicksandRegular', color: '#000', flex: 1 },
                         inputStyle
                     ]}
                     value={value}
@@ -61,13 +58,12 @@ const InputsFormFields = forwardRef(({
                     editable={editable}
                     {...rest}
                 />
+                {rightAdornment ? (
+                    <View style={{ marginLeft: 4 }}>{rightAdornment}</View>
+                ) : null}
             </Animated.View>
 
-            {/*
-                Mensaje de error:
-                Siempre aparece debajo de la línea, nunca la desplaza ni la superpone.
-                cropStyle.errorText define el color y fuente del mensaje.
-            */}
+            {/* Mensaje de error debajo de la línea */}
             {error ? (
                 <Text style={[cropStyle.errorText, { fontFamily: 'QuicksandRegular', color: '#ff0000ff' }, errorStyle]}>
                     {error}

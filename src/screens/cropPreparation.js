@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
+import FormCheckBox from '../components/formCheckBox';
+import FormSelectPicker from '../components/formSelectPicker';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 const CropPreparation = () => {
   const route = useRoute();
   const navigation = useNavigation();
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const crop = route.params?.crop;
+  // Estado para los datos del formulario
   const [formData, setFormData] = useState({
     laborType: '',
     tillageType: '',
@@ -16,19 +21,66 @@ const CropPreparation = () => {
     tools: '',
     amendments: '',
     weedControl: '', // nada seleccionado al inicio
-    manHours: 0,
-    machineHours: 0,
-    laborCost: 0,
-    machineCost: 0,
-    inputCost: 0,
+    manHours: '',
+    laborCost: '',
+    machineHours: '',
+    machineCost: '',
+    inputCost: '',
     totalCost: 0,
     observations: '',
   });
+  // Estado para controlar la apertura de los selectores
+  const [openTillageType, setOpenTillageType] = useState(false);
+  const [openSoilCondition, setOpenSoilCondition] = useState(false);
+  const [openTools, setOpenTools] = useState(false);
+  const [openAmendments, setOpenAmendments] = useState(false);
+
+
+  // ScrollView ref para scroll a errores
+  const scrollViewRef = useRef(null);
+
+  // 1. Referencias Animated para animación shake de cada campo relevante
+  // Solo los campos que quieres que tiemblen (ejemplo: tillageType y soilCondition)
+  const shakeAnim = {
+    tillageType: useRef(new Animated.Value(0)).current,
+    soilCondition: useRef(new Animated.Value(0)).current,
+    laborType: useRef(new Animated.Value(0)).current,
+    tools: useRef(new Animated.Value(0)).current,
+    amendments: useRef(new Animated.Value(0)).current,
+    weedControl: useRef(new Animated.Value(0)).current,
+    manHours: useRef(new Animated.Value(0)).current,
+    machineHours: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    machineCost: useRef(new Animated.Value(0)).current,
+    inputCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+  };
+
+  // 2. Función para activar la animación shake
+  // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+  const triggerShake = (anim) => {
+    Animated.sequence([
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
+
 
   const [errors, setErrors] = useState({});
 
+  // Calcula el costo total automáticamente cada vez que cambian los valores relevantes
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      // Parsear valores numéricos
+      const laborCost = parseFloat(updated.laborCost) || 0;
+      const machineCost = parseFloat(updated.machineCost) || 0;
+      const inputCost = parseFloat(updated.inputCost) || 0;
+      const totalCost = laborCost + machineCost + inputCost;
+      return { ...updated, totalCost };
+    });
   };
 
   const initialForm = {
@@ -46,20 +98,57 @@ const CropPreparation = () => {
     totalCost: 0,
     observations: '',
   };
+  // 3. Validación con animación shake: dispara triggerShake si hay error en el campo
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.laborType) newErrors.laborType = 'Selecciona el tipo de labor.';
-    if (!formData.tillageType) newErrors.tillageType = 'Selecciona el tipo de labranza.';
-    if (!formData.soilCondition) newErrors.soilCondition = 'Selecciona la condición del suelo.';
-    if (!formData.tools) newErrors.tools = 'Ingresa las herramientas.';
-    if (!formData.amendments) newErrors.amendments = 'Ingresa las enmiendas.';
-    if (!formData.weedControl) newErrors.weedControl = 'Selecciona el control de malezas.';
-    if (!formData.manHours) newErrors.manHours = 'Ingresa las horas hombre.';
-    if (!formData.machineHours) newErrors.machineHours = 'Ingresa las horas máquina.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.machineCost) newErrors.machineCost = 'Ingresa el costo de maquinaria.';
-    if (!formData.inputCost) newErrors.inputCost = 'Ingresa el costo de insumos.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total.';
+    if (!formData.laborType) {
+      newErrors.laborType = 'Selecciona el tipo de labor.';
+      triggerShake(shakeAnim.laborType);
+    }
+    if (!formData.tillageType) {
+      newErrors.tillageType = 'Selecciona el tipo de labranza.';
+      triggerShake(shakeAnim.tillageType);
+    }
+    if (!formData.soilCondition) {
+      newErrors.soilCondition = 'Selecciona la condición del suelo.';
+      triggerShake(shakeAnim.soilCondition);
+    }
+    if (!formData.tools) {
+      newErrors.tools = 'Ingresa las herramientas.';
+      triggerShake(shakeAnim.tools);
+    }
+    if (!formData.amendments) {
+      newErrors.amendments = 'Ingresa las enmiendas.';
+      triggerShake(shakeAnim.amendments);
+    }
+    if (!formData.weedControl) {
+      newErrors.weedControl = 'Selecciona el control de malezas.';
+      triggerShake(shakeAnim.weedControl);
+    }
+    if (!formData.manHours) {
+      newErrors.manHours = 'Ingresa las horas hombre.';
+      triggerShake(shakeAnim.manHours);
+    }
+    if (!formData.machineHours) {
+      newErrors.machineHours = 'Ingresa las horas máquina.';
+      triggerShake(shakeAnim.machineHours);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.machineCost) {
+      newErrors.machineCost = 'Ingresa el costo de maquinaria.';
+      triggerShake(shakeAnim.machineCost);
+    }
+    if (!formData.inputCost) {
+      newErrors.inputCost = 'Ingresa el costo de insumos.';
+      triggerShake(shakeAnim.inputCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -86,213 +175,190 @@ const CropPreparation = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={[
-      { flexGrow: 1, paddingBottom: 40 },
-      { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
-    ]}>
+        { flexGrow: 1, paddingBottom: 40 },
+        { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
+      ]}>
         <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Preparación del terreno</Text>
-        <Text style={cropStyle.label}>Tipo de laboreo</Text>
-        <View style={{ width: '90%', alignSelf: 'center', marginBottom: 4 }}>
-          <View style={{ flexDirection: 'row' }}>
-            {['Manual', 'Mecanizado'].map(option => (
-              <TouchableOpacity
-                key={option}
-                style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 4 }}
-                onPress={() => handleInputChange('laborType', option)}
-                activeOpacity={0.7}
-              >
-                <View style={{
-                  width: 24,
-                  height: 24,
-                  borderWidth: 2,
-                  borderColor: '#2E7D32',
-                  borderRadius: 4,
-                  backgroundColor: formData.laborType === option ? '#2E7D32' : '#fff',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: 8,
-                }}>
-                  {formData.laborType === option && (
-                    <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-                  )}
-                </View>
-                <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <TouchableOpacity
-            key={'Otro'}
-            style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, marginHorizontal: 4 }}
-            onPress={() => handleInputChange('laborType', 'Otro')}
-            activeOpacity={0.7}
-          >
-            <View style={{
-              width: 24,
-              height: 24,
-              borderWidth: 2,
-              borderColor: '#2E7D32',
-              borderRadius: 4,
-              backgroundColor: formData.laborType === 'Otro' ? '#2E7D32' : '#fff',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: 8,
-            }}>
-              {formData.laborType === 'Otro' && (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-              )}
-            </View>
-            <Text style={{ color: '#222', fontSize: 16 }}>Otro</Text>
-          </TouchableOpacity>
-          {errors.laborType && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborType}</Text>}
-        </View>
+        <FormCheckBox
+          label="Tipo de laboreo"
+          options={['Manual', 'Mecanizado', 'Otro']}
+          value={formData.laborType}
+          onChange={val => handleInputChange('laborType', val)}
+          error={errors.laborType}
+          shakeAnim={shakeAnim.laborType}
+        />
         <Text style={cropStyle.label}>Tipo de labranza</Text>
-        <TextInput
-          style={cropStyle.input}
+        {/*
+          FormSelectPicker es un componente reutilizable para mostrar un selector tipo dropdown.
+          - open: controla si el menú está abierto (usa un estado local)
+          - setOpen: función para cambiar el estado de apertura
+          - value y setValue: valor seleccionado y función para actualizarlo
+          - items: opciones del selector
+          - error: mensaje de error si existe
+        */}
+        {/* Selector para Tipo de labranza */}
+        {/*
+          4. Pasa la prop shakeAnim al FormSelectPicker para que reciba la animación.
+          Así, cuando hay error, el campo tiembla visualmente.
+        */}
+        <FormSelectPicker
+          label={null}
           value={formData.tillageType}
-          onChangeText={text => handleInputChange('tillageType', text)}
+          setValue={callback => setFormData(prev => ({ ...prev, tillageType: callback(prev.tillageType) }))}
+          open={openTillageType}
+          setOpen={setOpenTillageType}
+          items={[
+            { label: 'Convencional', value: 'Convencional' },
+            { label: 'Mínima', value: 'Mínima' },
+            { label: 'Cero (siembra directa)', value: 'Cero (siembra directa)' },
+            { label: 'Vertical', value: 'Vertical' },
+          ]}
           placeholder="Seleccione"
+          error={errors.tillageType}
+          shakeAnim={shakeAnim.tillageType}
         />
-        {errors.tillageType && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.tillageType}</Text>}
         <Text style={cropStyle.label}>Condiciones del suelo previas</Text>
-        <TextInput
-          style={cropStyle.input}
+        {/* Selector para Condiciones del suelo previas */}
+        <FormSelectPicker
+          label={null}
           value={formData.soilCondition}
-          onChangeText={text => handleInputChange('soilCondition', text)}
+          setValue={callback => setFormData(prev => ({ ...prev, soilCondition: callback(prev.soilCondition) }))}
+          open={openSoilCondition}
+          setOpen={setOpenSoilCondition}
+          items={[
+            { label: 'Seco', value: 'Seco' },
+            { label: 'Húmedo', value: 'Húmedo' },
+            { label: 'Compactado', value: 'Compactado' },
+            { label: 'Con rastrojo', value: 'Con rastrojo' },
+            { label: 'Con malezas', value: 'Con malezas' },
+          ]}
           placeholder="Seleccione"
+          error={errors.soilCondition}
+          shakeAnim={shakeAnim.soilCondition}
         />
-        {errors.soilCondition && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.soilCondition}</Text>}
         <Text style={cropStyle.label}>Herramientas o maquinaria usada</Text>
-        <TextInput
-          style={cropStyle.input}
+        <FormSelectPicker
+          label={null}
           value={formData.tools}
-          onChangeText={text => handleInputChange('tools', text)}
+          setValue={callback => setFormData(prev => ({ ...prev, tools: callback(prev.tools) }))}
+          open={openTools}
+          setOpen={setOpenTools}
+          items={[
+            { label: 'Arado de disco', value: 'Arado de disco' },
+            { label: 'Arado de vertedera', value: 'Arado de vertedera' },
+            { label: 'Rastra', value: 'Rastra' },
+            { label: 'Subsolador', value: 'Subsolador' },
+            { label: 'Con Cincel', value: 'Con Cincel' },
+          ]}
           placeholder="Seleccione"
+          error={errors.tools}
+          shakeAnim={shakeAnim.tools}
         />
-        {errors.tools && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.tools}</Text>}
         <Text style={cropStyle.label}>Enmiendas aplicadas (cal, abono, etc)</Text>
-        <TextInput
-          style={cropStyle.input}
+        <FormSelectPicker
+          label={null}
           value={formData.amendments}
-          onChangeText={text => handleInputChange('amendments', text)}
+          setValue={callback => setFormData(prev => ({ ...prev, amendments: callback(prev.amendments) }))}
+          open={openAmendments}
+          setOpen={setOpenAmendments}
+          items={[
+            { label: 'Ninguna', value: 'Ninguna' },
+            { label: 'Cal agrícola', value: 'Cal agrícola' },
+            { label: 'Yeso agrícola', value: 'Yeso agrícola' },
+            { label: 'Compost', value: 'Compost' },
+            { label: 'Estiércol', value: 'Estiércol' },
+            { label: 'Humus de lombriz', value: 'Humus de lombriz' },
+            { label: 'Ceniza', value: 'Ceniza' },
+          ]}
           placeholder="Seleccione"
+          error={errors.amendments}
+          shakeAnim={shakeAnim.amendments}
         />
-        {errors.amendments && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.amendments}</Text>}
-        <Text style={cropStyle.label}>Control de malezas previo</Text>
-        <View style={{ flexDirection: 'row', marginBottom: 4, width: '90%', alignSelf: 'center' }}>
-          {['Sí', 'No'].map((option, idx) => (
-            <TouchableOpacity
-              key={option}
-              style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 4 }}
-              onPress={() => handleInputChange('weedControl', idx === 0 ? 'Sí' : 'No')}
-              activeOpacity={0.7}
-            >
-              <View style={{
-                width: 24,
-                height: 24,
-                borderWidth: 2,
-                borderColor: '#2E7D32',
-                borderRadius: 4,
-                backgroundColor: formData.weedControl === option ? '#2E7D32' : '#fff',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 8,
-              }}>
-                {formData.weedControl === option && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-                )}
-              </View>
-              <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {errors.weedControl && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.weedControl}</Text>}
-        <Text style={cropStyle.label}>Horas hombre invertidas</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.manHours.toString()}
-            onChangeText={text => handleInputChange('manHours', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>horas</Text>
-        </View>
-        {errors.manHours && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.manHours}</Text>}
-        <Text style={cropStyle.label}>Horas de maquinaria utilizadas</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.machineHours.toString()}
-            onChangeText={text => handleInputChange('machineHours', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>horas</Text>
-        </View>
-        {errors.machineHours && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.machineHours}</Text>}
-        <Text style={cropStyle.label}>Costo de mano de obra</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.laborCost.toString()}
-            onChangeText={text => handleInputChange('laborCost', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-        </View>
-        {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.laborCost}</Text>}
-        <Text style={cropStyle.label}>Costo de maquinaria</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.machineCost.toString()}
-            onChangeText={text => handleInputChange('machineCost', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-        </View>
-        {errors.machineCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.machineCost}</Text>}
-        <Text style={cropStyle.label}>Costo de insumos aplicados</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.inputCost.toString()}
-            onChangeText={text => handleInputChange('inputCost', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-        </View>
-        {errors.inputCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.inputCost}</Text>}
-        <Text style={cropStyle.label}>Costo total de preparación</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-          <TextInput
-            style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-            value={formData.totalCost.toString()}
-            onChangeText={text => handleInputChange('totalCost', parseInt(text) || 0)}
-            placeholder="0"
-            keyboardType="numeric"
-          />
-          <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-        </View>
-        {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, marginLeft: 4 }}>{errors.totalCost}</Text>}
-        <Text style={cropStyle.label}>Observaciones (opcional)</Text>
-        <TextInput
-          style={[cropStyle.input, { height: 80 }]}
+        <FormCheckBox
+          label="Control de malezas previo"
+          options={['Sí', 'No']}
+          value={formData.weedControl}
+          onChange={val => handleInputChange('weedControl', val)}
+          error={errors.weedControl}
+          shakeAnim={shakeAnim.weedControl}
+        />
+        <InputsFormFields
+          label="Horas hombre invertidas"
+          value={formData.manHours}
+          onChangeText={val => handleInputChange('manHours', val.replace(/[^0-9]/g, ''))}
+          placeholder="Ingrese las horas hombre invertidas"
+          keyboardType="numeric"
+          error={errors.manHours}
+          shakeAnim={shakeAnim.manHours}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>horas</Text>}
+        />
+        <InputsFormFields
+          label="Horas de maquinaria utilizadas"
+          value={formData.machineHours}
+          onChangeText={val => handleInputChange('machineHours', val.replace(/[^0-9]/g, ''))}
+          placeholder="Ingrese las horas de maquinaria utilizadas"
+          keyboardType="numeric"
+          error={errors.machineHours}
+          shakeAnim={shakeAnim.machineHours}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>horas</Text>}
+        />
+        <InputsFormFields
+          label="Costo de mano de obra"
+          value={formData.laborCost}
+          onChangeText={val => handleInputChange('laborCost', val.replace(/[^0-9]/g, ''))}
+          placeholder="Ingrese el costo de mano de obra"
+          keyboardType="numeric"
+          error={errors.laborCost}
+          shakeAnim={shakeAnim.laborCost}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        />
+        <InputsFormFields
+          label="Costo de maquinaria"
+          value={formData.machineCost}
+          onChangeText={val => handleInputChange('machineCost', val.replace(/[^0-9]/g, ''))}
+          placeholder="Ingrese el costo de maquinaria"
+          keyboardType="numeric"
+          error={errors.machineCost}
+          shakeAnim={shakeAnim.machineCost}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        />
+        {/* Los campos de costo de mano de obra y maquinaria ahora se calculan automáticamente */}
+        <InputsFormFields
+          label="Costo de insumos aplicados"
+          value={formData.inputCost}
+          onChangeText={val => handleInputChange('inputCost', val.replace(/[^0-9]/g, ''))}
+          placeholder="Ingrese el costo de insumos aplicados"
+          keyboardType="numeric"
+          error={errors.inputCost}
+          shakeAnim={shakeAnim.inputCost}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        />
+        <InputsFormFields
+          label="Costo total"
+          value={formData.totalCost.toString()}
+          onChangeText={() => { }}
+          placeholder="Costo total calculado"
+          keyboardType="numeric"
+          error={errors.totalCost}
+          shakeAnim={shakeAnim.totalCost}
+          rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+          editable={false}
+        />
+        <InputsFormFields
+          label="Observaciones (opcional)"
           value={formData.observations}
-          onChangeText={text => handleInputChange('observations', text)}
-          placeholder="Escriba aquí"
-          multiline
+          onChangeText={val => setFormData({ ...formData, observations: val })}
+          placeholder="Ingrese sus observaciones"
+          keyboardType="default"
+          error={errors.observations}
+          shakeAnim={shakeAnim.observations}
         />
-       {/* Botón Guardar */}
-             <TouchableOpacity
-               style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
-               onPress={handleSave}
-               disabled={loading}
-             >
-               <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-             </TouchableOpacity>
+        {/* Botón Guardar */}
+        <FormButton
+           onPress={handleSave}
+          loading={loading}
+          disabled={loading}
+        />
       </ScrollView>
     </View>
   );
