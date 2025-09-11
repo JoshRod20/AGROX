@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Image } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Image,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton'
+import FormCheckBox from '../components/formCheckBox';
+
 
 const CropPostharvest = () => {
   const route = useRoute();
@@ -23,13 +27,43 @@ const CropPostharvest = () => {
     transportCost: '',
     totalCost: '',
   });
+   const shakeAnim = {
+    postharvestSteps: useRef(new Animated.Value(0)).current,
+    packingDate: useRef(new Animated.Value(0)).current,
+    processedAmount: useRef(new Animated.Value(0)).current,
+    productDestination: useRef(new Animated.Value(0)).current,
+    salePrice: useRef(new Animated.Value(0)).current,
+    buyer: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    materialsCost: useRef(new Animated.Value(0)).current,
+    transportCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+  };
+      // 2. Función para activar la animación shake
+      // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+      const triggerShake = (anim) => {
+        Animated.sequence([
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+        ]).start();
+      };
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [errors, setErrors] = useState({});
 
+  // Lógica de cálculo automático del total adaptada
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      const laborCost = parseInt(updated.laborCost) || 0;
+      const materialsCost = parseInt(updated.materialsCost) || 0;
+      const transportCost = parseInt(updated.transportCost) || 0;
+      const totalCost = laborCost + materialsCost + transportCost;
+      return { ...updated, totalCost: String(totalCost) };
+    });
   };
 
   const handleStepToggle = (step) => {
@@ -58,16 +92,46 @@ const CropPostharvest = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.postharvestSteps || formData.postharvestSteps.length === 0) newErrors.postharvestSteps = 'Selecciona al menos un paso de postcosecha.';
-    if (!formData.packingDate) newErrors.packingDate = 'Ingresa la fecha de empaque/transporte.';
-    if (!formData.processedAmount) newErrors.processedAmount = 'Ingresa la cantidad procesada.';
-    if (!formData.productDestination) newErrors.productDestination = 'Ingresa el destino del producto.';
-    if (!formData.salePrice) newErrors.salePrice = 'Ingresa el precio de venta.';
-    if (!formData.buyer) newErrors.buyer = 'Ingresa el cliente o empresa compradora.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.materialsCost) newErrors.materialsCost = 'Ingresa el costo de materiales.';
-    if (!formData.transportCost) newErrors.transportCost = 'Ingresa el costo de transporte.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total postcosecha.';
+    if (!formData.postharvestSteps || formData.postharvestSteps.length === 0) { 
+      newErrors.postharvestSteps = 'Selecciona al menos un paso de postcosecha.';
+      triggerShake(shakeAnim.postharvestSteps);
+    }
+    if (!formData.packingDate) {
+      newErrors.packingDate = 'Ingresa la fecha de empaque/transporte.';
+      triggerShake(shakeAnim.packingDate);
+    }
+    if (!formData.processedAmount) {
+      newErrors.processedAmount = 'Ingresa la cantidad procesada.';
+      triggerShake(shakeAnim.processedAmount);
+    }
+    if (!formData.productDestination) {
+      newErrors.productDestination = 'Ingresa el destino del producto.';
+      triggerShake(shakeAnim.productDestination);
+    }
+    if (!formData.salePrice) {
+      newErrors.salePrice = 'Ingresa el precio de venta.';
+      triggerShake(shakeAnim.salePrice);
+    }
+    if (!formData.buyer) {
+      newErrors.buyer = 'Ingresa el cliente o empresa compradora.';
+      triggerShake(shakeAnim.buyer);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.materialsCost) {
+      newErrors.materialsCost = 'Ingresa el costo de materiales.';
+      triggerShake(shakeAnim.materialsCost);
+    }
+    if (!formData.transportCost) {
+      newErrors.transportCost = 'Ingresa el costo de transporte.';
+      triggerShake(shakeAnim.transportCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total postcosecha.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -98,38 +162,15 @@ const CropPostharvest = () => {
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Postcosecha y comercialización</Text>
-
       {/* Pasos de postcosecha */}
-      <Text style={cropStyle.label}>Pasos de postcosecha</Text>
-      <View style={{ width: '90%', alignSelf: 'center', marginBottom: 4, flexDirection: 'row', flexWrap: 'wrap' }}>
-        {['Limpieza', 'Clasificación', 'Secado', 'Otro'].map(option => (
-          <TouchableOpacity
-            key={option}
-            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 12, marginBottom: 8 }}
-            onPress={() => handleStepToggle(option)}
-            activeOpacity={0.7}
-          >
-            <View style={{
-              width: 24,
-              height: 24,
-              borderWidth: 2,
-              borderColor: '#2E7D32',
-              borderRadius: 4,
-              backgroundColor: formData.postharvestSteps.includes(option) ? '#2E7D32' : '#fff',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: 8,
-            }}>
-              {formData.postharvestSteps.includes(option) && (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-              )}
-            </View>
-            <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-          </TouchableOpacity>
-        ))}
-        {errors.postharvestSteps && <Text style={{ color: 'red', fontSize: 13, marginTop: 2, width: '100%' }}>{errors.postharvestSteps}</Text>}
-      </View>
-
+     <FormCheckBox
+       label="Pasos de postcosecha"
+       options={['Limpieza', 'Clasificación', 'Secado', 'Otro']}
+       selectedValues={formData.postharvestSteps}
+       onValueChange={values => handleInputChange('postharvestSteps', values)}
+       error={errors.postharvestSteps}
+       shakeAnim={shakeAnim.postharvestSteps}
+     />
       {/* Fecha de empaque/transporte */}
       <Text style={cropStyle.label}>Fecha de empaque/transporte</Text>
       <TouchableOpacity onPress={() => setShowDatePicker(true)} activeOpacity={0.8}>
@@ -161,116 +202,106 @@ const CropPostharvest = () => {
         />
       )}
       {errors.packingDate && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.packingDate}</Text>}
-
       {/* Cantidad procesada */}
-      <Text style={cropStyle.label}>Cantidad procesada</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.processedAmount}
-          onChangeText={text => handleInputChange('processedAmount', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>kg</Text>
-      </View>
-      {errors.processedAmount && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.processedAmount}</Text>}
-
+      <InputsFormFields
+        label="Cantidad procesada"
+        value={formData.processedAmount}
+        onChangeText={text => handleInputChange('processedAmount', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.processedAmount}
+        shakeAnim={shakeAnim.processedAmount}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Kg</Text>}
+      />
       {/* Destino del producto */}
-      <Text style={cropStyle.label}>Destino del producto</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Destino del producto"
         value={formData.productDestination}
         onChangeText={text => handleInputChange('productDestination', text)}
         placeholder="Ej: Mercado local, exportación, etc."
+        error={errors.productDestination}
+        shakeAnim={shakeAnim.productDestination}
       />
-      {errors.productDestination && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.productDestination}</Text>}
-
       {/* Precio de venta */}
-      <Text style={cropStyle.label}>Precio de venta</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Precio de venta"
         value={formData.salePrice}
         onChangeText={text => handleInputChange('salePrice', text.replace(/[^0-9]/g, ''))}
         placeholder="0"
         keyboardType="numeric"
+        error={errors.salePrice}
+        shakeAnim={shakeAnim.salePrice}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
       />
-      {errors.salePrice && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.salePrice}</Text>}
-
       {/* Cliente/empresa compradora */}
-      <Text style={cropStyle.label}>Cliente/empresa compradora</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Cliente/empresa compradora"
         value={formData.buyer}
         onChangeText={text => handleInputChange('buyer', text)}
         placeholder="Nombre del cliente o empresa"
+        error={errors.buyer}
+        shakeAnim={shakeAnim.buyer}
       />
-      {errors.buyer && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.buyer}</Text>}
-
       {/* Mano de obra postcosecha */}
-      <Text style={cropStyle.label}>Mano de obra postcosecha</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
-
+      <InputsFormFields
+        label="Mano de obra postcosecha"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Materiales y empaques */}
-      <Text style={cropStyle.label}>Materiales y empaques</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.materialsCost}
-          onChangeText={text => handleInputChange('materialsCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.materialsCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.materialsCost}</Text>}
-
+      <InputsFormFields
+        label="Materiales y empaques"
+        value={formData.materialsCost}
+        onChangeText={text => handleInputChange('materialsCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.materialsCost}
+        shakeAnim={shakeAnim.materialsCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Transporte/logística */}
-      <Text style={cropStyle.label}>Transporte / logística</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.transportCost}
-          onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.transportCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.transportCost}</Text>}
-
+      <InputsFormFields
+        label="Transporte / logística"
+        value={formData.transportCost}
+        onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.transportCost}
+        shakeAnim={shakeAnim.transportCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
+      {/* Cliente/empresa compradora */}
+      <InputsFormFields
+        label="Cliente/empresa compradora"
+        value={formData.buyer}
+        onChangeText={text => handleInputChange('buyer', text)}
+        placeholder="Nombre del cliente o empresa"
+        error={errors.buyer}
+        shakeAnim={shakeAnim.buyer} 
+      />
       {/* Costo total postcosecha */}
-      <Text style={cropStyle.label}>Costo total postcosecha</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
-
+      <InputsFormFields
+        label="Costo total postcosecha"
+        value={formData.totalCost}
+        onChangeText={() => {}}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        editable={false}
+      />
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
-        disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+        loading={loading}
+      />
     </ScrollView>
   );
 }

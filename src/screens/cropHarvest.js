@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton'
+import FormCheckBox from '../components/formCheckBox';
+
 
 const CropHarvest = () => {
   const route = useRoute();
@@ -21,11 +25,39 @@ const CropHarvest = () => {
     transportCost: '',
     totalCost: '',
   });
-
+ const shakeAnim = {
+  totalYield: useRef(new Animated.Value(0)).current,
+  laborPeople: useRef(new Animated.Value(0)).current,
+  harvestMethod: useRef(new Animated.Value(0)).current,
+  investedTime: useRef(new Animated.Value(0)).current,
+  observations: useRef(new Animated.Value(0)).current,
+  laborCost: useRef(new Animated.Value(0)).current,
+  machineCost: useRef(new Animated.Value(0)).current,
+  transportCost: useRef(new Animated.Value(0)).current,
+  totalCost: useRef(new Animated.Value(0)).current,
+};
+    // 2. Función para activar la animación shake
+    // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+    const triggerShake = (anim) => {
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+      ]).start();
+    };
   const [errors, setErrors] = useState({});
 
+  // Lógica de cálculo automático del total adaptada
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      const laborCost = parseInt(updated.laborCost) || 0;
+      const machineCost = parseInt(updated.machineCost) || 0;
+      const transportCost = parseInt(updated.transportCost) || 0;
+      const totalCost = laborCost + machineCost + transportCost;
+      return { ...updated, totalCost: String(totalCost) };
+    });
   };
 
   const initialForm = {
@@ -41,14 +73,38 @@ const CropHarvest = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.totalYield) newErrors.totalYield = 'Ingresa el rendimiento total.';
-    if (!formData.laborPeople) newErrors.laborPeople = 'Ingresa la cantidad de personas.';
-    if (!formData.harvestMethod) newErrors.harvestMethod = 'Selecciona el método de cosecha.';
-    if (!formData.investedTime) newErrors.investedTime = 'Ingresa el tiempo invertido.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.machineCost) newErrors.machineCost = 'Ingresa el costo de maquinaria.';
-    if (!formData.transportCost) newErrors.transportCost = 'Ingresa el costo de transporte.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total de cosecha.';
+    if (!formData.totalYield) {
+      newErrors.totalYield = 'Ingresa el rendimiento total.';
+      triggerShake(shakeAnim.totalYield);
+    }
+    if (!formData.laborPeople) {
+      newErrors.laborPeople = 'Ingresa la cantidad de personas.';
+      triggerShake(shakeAnim.laborPeople);
+    }
+    if (!formData.harvestMethod) {
+      newErrors.harvestMethod = 'Selecciona el método de cosecha.';
+      triggerShake(shakeAnim.harvestMethod);
+    }
+    if (!formData.investedTime) {
+      newErrors.investedTime = 'Ingresa el tiempo invertido.';
+      triggerShake(shakeAnim.investedTime);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }     
+    if (!formData.machineCost) {
+      newErrors.machineCost = 'Ingresa el costo de maquinaria.';
+      triggerShake(shakeAnim.machineCost);
+    }
+    if (!formData.transportCost) {
+      newErrors.transportCost = 'Ingresa el costo de transporte.';
+      triggerShake(shakeAnim.transportCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total de cosecha.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -83,151 +139,111 @@ const CropHarvest = () => {
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Cosecha</Text>
 
       {/* Rendimiento total */}
-      <Text style={cropStyle.label}>Rendimiento total</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalYield}
-          onChangeText={text => handleInputChange('totalYield', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>kg</Text>
-      </View>
-      {errors.totalYield && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalYield}</Text>}
+      <InputsFormFields
+        label="Rendimiento total"
+        value={formData.totalYield}
+        onChangeText={text => handleInputChange('totalYield', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalYield}
+        shakeAnim={shakeAnim.totalYield}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Kg</Text>}
+      />
 
       {/* Mano de obra (personas) */}
-      <Text style={cropStyle.label}>Mano de obra (personas)</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Mano de obra (personas)"
         value={formData.laborPeople}
         onChangeText={text => handleInputChange('laborPeople', text.replace(/[^0-9]/g, ''))}
         placeholder="0"
         keyboardType="numeric"
+        error={errors.laborPeople}
+        shakeAnim={shakeAnim.laborPeople}
       />
-      {errors.laborPeople && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborPeople}</Text>}
-
       {/* Método de cosecha */}
-      <Text style={cropStyle.label}>Método de cosecha</Text>
-      <View style={{ width: '90%', alignSelf: 'center', marginBottom: 4 }}>
-        <View style={{ flexDirection: 'row' }}>
-          {['Manual', 'Mecánico'].map(option => (
-            <TouchableOpacity
-              key={option}
-              style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 4 }}
-              onPress={() => handleInputChange('harvestMethod', option)}
-              activeOpacity={0.7}
-            >
-              <View style={{
-                width: 24,
-                height: 24,
-                borderWidth: 2,
-                borderColor: '#2E7D32',
-                borderRadius: 4,
-                backgroundColor: formData.harvestMethod === option ? '#2E7D32' : '#fff',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 8,
-              }}>
-                {formData.harvestMethod === option && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-                )}
-              </View>
-              <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {errors.harvestMethod && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.harvestMethod}</Text>}
-      </View>
+      <FormCheckBox
+        label="Método de cosecha"
+        options={['Manual', 'Mecánico']}
+        selectedValue={formData.harvestMethod}
+        onValueChange={value => handleInputChange('harvestMethod', value)}
+        error={errors.harvestMethod}
+        shakeAnim={shakeAnim.harvestMethod}
+      />
 
       {/* Tiempo invertido */}
-      <Text style={cropStyle.label}>Tiempo invertido</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.investedTime}
-          onChangeText={text => handleInputChange('investedTime', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>horas</Text>
-      </View>
-      {errors.investedTime && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.investedTime}</Text>}
-
+      <InputsFormFields
+        label="Tiempo invertido"
+        value={formData.investedTime}
+        onChangeText={text => handleInputChange('investedTime', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.investedTime}
+        shakeAnim={shakeAnim.investedTime}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Horas</Text>}
+      />
       {/* Observaciones */}
-      <Text style={cropStyle.label}>Observaciones</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 80 }]}
+      <InputsFormFields
+        label="Observaciones"
         value={formData.observations}
         onChangeText={text => handleInputChange('observations', text)}
         placeholder="Escriba aquí"
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
       />
 
       {/* Mano de obra cosecha */}
-      <Text style={cropStyle.label}>Mano de obra cosecha</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
+      <InputsFormFields
+        label="Costo de mano de obra"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
 
       {/* Costo de maquinaria */}
-      <Text style={cropStyle.label}>Costo de maquinaria</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.machineCost}
-          onChangeText={text => handleInputChange('machineCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.machineCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.machineCost}</Text>}
-
+      <InputsFormFields
+        label="Costo de maquinaria"
+        value={formData.machineCost}
+        onChangeText={text => handleInputChange('machineCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.machineCost}
+        shakeAnim={shakeAnim.machineCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Transporte/almacenamiento */}
-      <Text style={cropStyle.label}>Transporte / almacenamiento</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.transportCost}
-          onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.transportCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.transportCost}</Text>}
-
+      <InputsFormFields
+        label="Transporte / almacenamiento"
+        value={formData.transportCost}
+        onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.transportCost}
+        shakeAnim={shakeAnim.transportCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Costo total de cosecha */}
-      <Text style={cropStyle.label}>Costo total de cosecha</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
-
+      <InputsFormFields
+        label="Costo total de cosecha"
+        value={formData.totalCost}
+        onChangeText={() => {}}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        editable={false}
+      />
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+     <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
         disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+      />
     </ScrollView>
   );
 }

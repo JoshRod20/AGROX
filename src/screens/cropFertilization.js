@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import FormCheckBox from '../components/formCheckBox';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton';
 
 const CropFertilization = () => {
   const route = useRoute();
@@ -25,8 +28,40 @@ const CropFertilization = () => {
 
   const [errors, setErrors] = useState({});
 
+  const shakeAnim = {
+    fertilizerType: useRef(new Animated.Value(0)).current,
+    productName: useRef(new Animated.Value(0)).current,
+    dose: useRef(new Animated.Value(0)).current,
+    applicationMethod: useRef(new Animated.Value(0)).current,
+    soilCondition: useRef(new Animated.Value(0)).current,
+    fertilizerCost: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    transportCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+    };
+    
+      // 2. Función para activar la animación shake
+      // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+      const triggerShake = (anim) => {
+        Animated.sequence([
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+        ]).start();
+      };
+
+  // Lógica de cálculo automático del total adaptada de cropPreparation
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      // Parsear valores numéricos
+      const fertilizerCost = parseInt(updated.fertilizerCost) || 0;
+      const laborCost = parseInt(updated.laborCost) || 0;
+      const transportCost = parseInt(updated.transportCost) || 0;
+      const totalCost = fertilizerCost + laborCost + transportCost;
+      return { ...updated, totalCost: String(totalCost) };
+    });
   };
 
   const initialForm = {
@@ -43,15 +78,42 @@ const CropFertilization = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.fertilizerType) newErrors.fertilizerType = 'Selecciona el tipo de fertilizante.';
-    if (!formData.productName) newErrors.productName = 'Ingresa el nombre del producto.';
-    if (!formData.dose) newErrors.dose = 'Ingresa la dosis aplicada.';
-    if (!formData.applicationMethod) newErrors.applicationMethod = 'Ingresa el método de aplicación.';
-    if (!formData.soilCondition) newErrors.soilCondition = 'Ingresa la condición del suelo.';
-    if (!formData.fertilizerCost) newErrors.fertilizerCost = 'Ingresa el costo de fertilizante.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.transportCost) newErrors.transportCost = 'Ingresa el costo de transporte.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total de fertilización.';
+    if (!formData.fertilizerType){ 
+      newErrors.fertilizerType = 'Selecciona el tipo de fertilizante.';
+      triggerShake(shakeAnim.fertilizerType);
+    }
+    if (!formData.productName){ 
+      newErrors.productName = 'Ingresa el nombre del producto.';
+      triggerShake(shakeAnim.productName);
+    }
+    if (!formData.dose){ 
+      newErrors.dose = 'Ingresa la dosis aplicada.';
+      triggerShake(shakeAnim.dose);
+    }
+    if (!formData.applicationMethod){ 
+      newErrors.applicationMethod = 'Ingresa el método de aplicación.';
+      triggerShake(shakeAnim.applicationMethod);
+    }
+    if (!formData.soilCondition){ 
+      newErrors.soilCondition = 'Ingresa la condición del suelo.';
+      triggerShake(shakeAnim.soilCondition);
+    }
+    if (!formData.fertilizerCost){ 
+      newErrors.fertilizerCost = 'Ingresa el costo de fertilizante.';
+      triggerShake(shakeAnim.fertilizerCost);
+    }
+    if (!formData.laborCost){ 
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.transportCost){ 
+      newErrors.transportCost = 'Ingresa el costo de transporte.';
+      triggerShake(shakeAnim.transportCost);
+    }
+    if (!formData.totalCost){ 
+      newErrors.totalCost = 'Ingresa el costo total de fertilización.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -66,7 +128,7 @@ const CropFertilization = () => {
         createdAt: Timestamp.now(),
       });
       setFormData(initialForm);
-      navigation.navigate('CropScreen', { crop });
+       navigation.navigate('CropScreen', { crop });
     } catch (e) {
       Alert.alert('Error', 'No se pudo guardar la actividad.');
     } finally {
@@ -82,153 +144,127 @@ const CropFertilization = () => {
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Fertilización</Text>
 
       {/* Tipo de fertilizante */}
-      <Text style={cropStyle.label}>Tipo de fertilizante</Text>
-      <View style={{ width: '90%', alignSelf: 'center', marginBottom: 4 }}>
-        <View style={{ flexDirection: 'row' }}>
-          {['Orgánico', 'Químico'].map(option => (
-            <TouchableOpacity
-              key={option}
-              style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginHorizontal: 4 }}
-              onPress={() => handleInputChange('fertilizerType', option)}
-              activeOpacity={0.7}
-            >
-              <View style={{
-                width: 24,
-                height: 24,
-                borderWidth: 2,
-                borderColor: '#2E7D32',
-                borderRadius: 4,
-                backgroundColor: formData.fertilizerType === option ? '#2E7D32' : '#fff',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 8,
-              }}>
-                {formData.fertilizerType === option && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-                )}
-              </View>
-              <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {errors.fertilizerType && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.fertilizerType}</Text>}
-      </View>
+      <FormCheckBox
+        label="Tipo de fertilizante"
+        options={['Orgánico', 'Químico']}
+        value={formData.fertilizerType}
+        onChange={val => handleInputChange('fertilizerType', val)}
+        error={errors.fertilizerType}
+        shakeAnim={shakeAnim.fertilizerType}
+      />
 
       {/* Nombre del producto */}
-      <Text style={cropStyle.label}>Nombre del producto</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Nombre del producto"
         value={formData.productName}
         onChangeText={text => handleInputChange('productName', text)}
-        placeholder="Nombre comercial"
+        error={errors.productName}
+        shakeAnim={shakeAnim.productName}
+        placeholder="Escriba aquí"
       />
-      {errors.productName && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.productName}</Text>}
 
       {/* Dosis aplicada */}
-      <Text style={cropStyle.label}>Dosis aplicada</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Dosis aplicada"
         value={formData.dose}
         onChangeText={text => handleInputChange('dose', text)}
-        placeholder="Ej: 100 kg/ha"
+        placeholder="0"
         keyboardType="numeric"
+        error={errors.dose}
+        shakeAnim={shakeAnim.dose}
       />
-      {errors.dose && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.dose}</Text>}
+     
 
       {/* Método de aplicación */}
-      <Text style={cropStyle.label}>Método de aplicación</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Método de aplicación"
         value={formData.applicationMethod}
         onChangeText={text => handleInputChange('applicationMethod', text)}
         placeholder="Manual, mecánico, etc."
+        error={errors.applicationMethod}
+        shakeAnim={shakeAnim.applicationMethod}
       />
-      {errors.applicationMethod && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.applicationMethod}</Text>}
+      
 
       {/* Condición del suelo */}
-      <Text style={cropStyle.label}>Condición del suelo</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Condición del suelo"
         value={formData.soilCondition}
         onChangeText={text => handleInputChange('soilCondition', text)}
         placeholder="Ej: húmedo, seco"
+        error={errors.soilCondition}
+        shakeAnim={shakeAnim.soilCondition}
       />
-      {errors.soilCondition && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.soilCondition}</Text>}
 
       {/* Observaciones del cultivo */}
-      <Text style={cropStyle.label}>Observaciones del cultivo</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 80 }]}
+      <InputsFormFields
+        label="Observaciones del cultivo"
         value={formData.cropObservations}
         onChangeText={text => handleInputChange('cropObservations', text)}
         placeholder="Escriba aquí"
+        error={errors.cropObservations}
+        shakeAnim={shakeAnim.cropObservations}
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
       />
 
+
       {/* Costo de fertilizante */}
-      <Text style={cropStyle.label}>Costo de fertilizante</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.fertilizerCost}
-          onChangeText={text => handleInputChange('fertilizerCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.fertilizerCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.fertilizerCost}</Text>}
+      <InputsFormFields
+        label="Costo de fertilizante"
+        value={formData.fertilizerCost}
+        onChangeText={text => handleInputChange('fertilizerCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.fertilizerCost}
+        shakeAnim={shakeAnim.fertilizerCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
 
       {/* Costo de mano de obra */}
-      <Text style={cropStyle.label}>Costo de mano de obra</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
+      <InputsFormFields
+        label="Costo de mano de obra"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
 
       {/* Costo de transporte/logística */}
-      <Text style={cropStyle.label}>Transporte / logística</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.transportCost}
-          onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.transportCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.transportCost}</Text>}
+      < InputsFormFields
+        label="Costo de transporte/logística"
+        value={formData.transportCost}
+        onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.transportCost}
+        shakeAnim={shakeAnim.transportCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
 
       {/* Costo total de fertilización */}
-      <Text style={cropStyle.label}>Costo total de fertilización</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
+      <InputsFormFields
+        label="Costo total de fertilización"
+        value={formData.totalCost}
+        onChangeText={() => {}}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        editable={false}
+      />
 
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
-        disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+        loading={loading}
+      />
     </ScrollView>
   );
 }

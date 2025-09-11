@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Image,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+import FormButton from '../components/formButton';
+import InputsFormFields from '../components/inputsFormFields';
+import FormCheckBox from '../components/formCheckBox';
 
 const CropDocumentation = () => {
   const route = useRoute();
@@ -18,6 +21,22 @@ const CropDocumentation = () => {
     imageUri: '', // solo para vista previa
     imageBase64: '', // para guardar en Firestore
   });
+  const shakeAnim = {
+      hasCertification: useRef(new Animated.Value(0)).current,
+      certificationName: useRef(new Animated.Value(0)).current,
+      imageUri: useRef(new Animated.Value(0)).current,
+      imageBase64: useRef(new Animated.Value(0)).current,
+    };
+        // 2. Función para activar la animación shake
+        // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+        const triggerShake = (anim) => {
+          Animated.sequence([
+            Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+            Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+            Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+            Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+          ]).start();
+        };
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -68,8 +87,14 @@ const CropDocumentation = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (formData.hasCertification === null) newErrors.hasCertification = 'Indica si tiene certificación.';
-    if (formData.hasCertification && !formData.certificationName) newErrors.certificationName = 'Especifica el nombre de la certificación.';
+    if (formData.hasCertification === null) {
+      newErrors.hasCertification = 'Indica si tiene certificación.';
+      triggerShake(shakeAnim.hasCertification);
+    }
+    if (formData.hasCertification && !formData.certificationName) {
+      newErrors.certificationName = 'Especifica el nombre de la certificación.';
+      triggerShake(shakeAnim.certificationName);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -83,7 +108,12 @@ const CropDocumentation = () => {
       };
       await addDoc(collection(db, `Crops/${crop.id}/activities`), dataToSave);
       setFormData(initialForm);
-      navigation.navigate('CropScreen', { crop });
+        navigation.reset({
+          index: 0,
+          routes: [
+            { name: 'CropScreen', params: { crop } }
+          ],
+        });
     } catch (e) {
       Alert.alert('Error', 'No se pudo guardar la actividad.');
     }
@@ -98,48 +128,26 @@ const CropDocumentation = () => {
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
 
       {/* ¿Tiene certificación? */}
-      <Text style={cropStyle.label}>¿Tiene certificación?</Text>
-      <View style={{ flexDirection: 'row', width: '90%', alignSelf: 'center', marginBottom: 12 }}>
-        {['Sí', 'No'].map((option, idx) => (
-          <TouchableOpacity
-            key={option}
-            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 16 }}
-            onPress={() => handleInputChange('hasCertification', idx === 0)}
-            activeOpacity={0.7}
-          >
-            <View style={{
-              width: 24,
-              height: 24,
-              borderWidth: 2,
-              borderColor: '#2E7D32',
-              borderRadius: 4,
-              backgroundColor: formData.hasCertification === (idx === 0) ? '#2E7D32' : '#fff',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: 8,
-            }}>
-              {formData.hasCertification === (idx === 0) && (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-              )}
-            </View>
-            <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {errors.hasCertification && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.hasCertification}</Text>}
 
-      {/* Si tiene certificación, especificar */}
-      {formData.hasCertification && (
-        <View style={{ width: '90%', alignSelf: 'center', marginBottom: 12 }}>
-          <Text style={cropStyle.label}>Si tiene, especifique cuál:</Text>
-          <TextInput
-            style={cropStyle.input}
-            value={formData.certificationName}
-            onChangeText={text => handleInputChange('certificationName', text)}
-            placeholder="Nombre de la certificación"
-          />
-          {errors.certificationName && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.certificationName}</Text>}
-        </View>
+      <FormCheckBox
+        label="¿Tiene certificación?"
+        options={['Sí', 'No']}
+        value={formData.hasCertification}
+        onChange={value => handleInputChange('hasCertification', value)}
+        error={errors.hasCertification}
+        shakeAnim={shakeAnim.hasCertification}
+      />
+
+      {/* Mostrar el input solo si selecciona 'Sí' */}
+      {formData.hasCertification === 'Sí' && (
+        <InputsFormFields
+          label="Nombre de la certificación"
+          placeholder="Especifica el nombre"
+          value={formData.certificationName}
+          onChangeText={text => handleInputChange('certificationName', text)}
+          error={errors.certificationName}
+          shakeAnim={shakeAnim.certificationName}
+        />
       )}
 
       {/* Botones de cámara y galería */}
@@ -168,13 +176,11 @@ const CropDocumentation = () => {
         </View>
       ) : null}
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
-        disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+        loading={loading}
+      />
     </ScrollView>
   );
 }

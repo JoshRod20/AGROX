@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton';
+import FormCheckBox from '../components/formCheckBox';
+import FormSelectPicker from '../components/formSelectPicker';
 
 
 const CropIrrigation = () => {
@@ -22,10 +26,40 @@ const CropIrrigation = () => {
     totalCost: '',
   });
 
-  const [errors, setErrors] = useState({});
+   const shakeAnim = {
+    irrigationMethod: useRef(new Animated.Value(0)).current,
+    irrigationFrequency: useRef(new Animated.Value(0)).current,
+    irrigationDuration: useRef(new Animated.Value(0)).current,
+    irrigationVolume: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    energyCost: useRef(new Animated.Value(0)).current,
+    maintenanceCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+  };
+      // 2. Función para activar la animación shake
+      // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+      const triggerShake = (anim) => {
+        Animated.sequence([
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+        ]).start();
+      };
 
+  const [errors, setErrors] = useState({});
+  const [openIrrigationFrequency, setOpenIrrigationFrequency] = useState(false);
+
+  // Lógica de cálculo automático del total adaptada
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      const laborCost = parseInt(updated.laborCost) || 0;
+      const energyCost = parseInt(updated.energyCost) || 0;
+      const maintenanceCost = parseInt(updated.maintenanceCost) || 0;
+      const totalCost = laborCost + energyCost + maintenanceCost;
+      return { ...updated, totalCost: String(totalCost) };
+    });
   };
 
   const initialForm = {
@@ -40,14 +74,38 @@ const CropIrrigation = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.irrigationMethod) newErrors.irrigationMethod = 'Selecciona el método de riego.';
-    if (!formData.irrigationFrequency) newErrors.irrigationFrequency = 'Ingresa la frecuencia de riego.';
-    if (!formData.irrigationDuration) newErrors.irrigationDuration = 'Ingresa la duración de riego.';
-    if (!formData.irrigationVolume) newErrors.irrigationVolume = 'Ingresa el volumen de riego.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.energyCost) newErrors.energyCost = 'Ingresa el costo de energía o combustible.';
-    if (!formData.maintenanceCost) newErrors.maintenanceCost = 'Ingresa el costo de mantenimiento.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total de riego.';
+    if (!formData.irrigationMethod) {
+      newErrors.irrigationMethod = 'Selecciona el método de riego.';
+      triggerShake(shakeAnim.irrigationMethod);
+    }
+    if (!formData.irrigationFrequency) {
+      newErrors.irrigationFrequency = 'Ingresa la frecuencia de riego.';
+      triggerShake(shakeAnim.irrigationFrequency);
+    }
+    if (!formData.irrigationDuration) {
+      newErrors.irrigationDuration = 'Ingresa la duración de riego.';
+      triggerShake(shakeAnim.irrigationDuration);
+    }
+    if (!formData.irrigationVolume) {
+      newErrors.irrigationVolume = 'Ingresa el volumen de riego.';
+      triggerShake(shakeAnim.irrigationVolume);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.energyCost) {
+      newErrors.energyCost = 'Ingresa el costo de energía o combustible.';
+      triggerShake(shakeAnim.energyCost);
+    }
+    if (!formData.maintenanceCost) {
+      newErrors.maintenanceCost = 'Ingresa el costo de mantenimiento.';
+      triggerShake(shakeAnim.maintenanceCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total de riego.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -80,140 +138,112 @@ const CropIrrigation = () => {
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Riego</Text>
 
       {/* Método de riego */}
-      <Text style={cropStyle.label}>Método de riego</Text>
-      <View style={{ width: '90%', alignSelf: 'center', marginBottom: 4 }}>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-          {['Goteo', 'Aspersión', 'Gravedad', 'Otro'].map(option => (
-            <TouchableOpacity
-              key={option}
-              style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 4, marginBottom: 8 }}
-              onPress={() => handleInputChange('irrigationMethod', option)}
-              activeOpacity={0.7}
-            >
-              <View style={{
-                width: 24,
-                height: 24,
-                borderWidth: 2,
-                borderColor: '#2E7D32',
-                borderRadius: 4,
-                backgroundColor: formData.irrigationMethod === option ? '#2E7D32' : '#fff',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 8,
-              }}>
-                {formData.irrigationMethod === option && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}></Text>
-                )}
-              </View>
-              <Text style={{ color: '#222', fontSize: 16 }}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {errors.irrigationMethod && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.irrigationMethod}</Text>}
-      </View>
+      <FormCheckBox
+        label="Método de riego"
+        options={['Goteo', 'Aspersión', 'Superficial', 'Subterráneo']}
+        value={formData.irrigationMethod}
+        onChange={val => handleInputChange('irrigationMethod', val)}
+        error={errors.irrigationMethod}
+        shakeAnim={shakeAnim.irrigationMethod}
+      />
 
       {/* Frecuencia de riego */}
-      <Text style={cropStyle.label}>Frecuencia de riego</Text>
-      <TextInput
-        style={cropStyle.input}
+      <FormSelectPicker
+        label="Frecuencia de riego"
         value={formData.irrigationFrequency}
-        onChangeText={text => handleInputChange('irrigationFrequency', text)}
-        placeholder="Ej: cada 3 días"
+        error={errors.irrigationFrequency}
+        shakeAnim={shakeAnim.irrigationFrequency}
+        open={openIrrigationFrequency}
+        setOpen={setOpenIrrigationFrequency}
+        placeholder="Selecciona la frecuencia"
+        onValueChange={value => handleInputChange('irrigationFrequency', value)}
+        items={[
+          { label: 'Diario', value: 'Diario' },
+          { label: 'Cada 2–3 días', value: 'Cada 2–3 días' },
+          { label: 'Semanal', value: 'Semanal' },
+          { label: 'Quincenal', value: 'Quincenal' },
+          { label: 'Mensual', value: 'Mensual' },
+          { label: 'Según lluvia', value: 'Según lluvia' },
+        ]}
       />
-      {errors.irrigationFrequency && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.irrigationFrequency}</Text>}
 
       {/* Duración de riego */}
-      <Text style={cropStyle.label}>Duración de riego</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.irrigationDuration}
-          onChangeText={text => handleInputChange('irrigationDuration', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>horas</Text>
-      </View>
-      {errors.irrigationDuration && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.irrigationDuration}</Text>}
-
+      <InputsFormFields
+        label="Duración de riego"
+        value={formData.irrigationDuration}
+        onChangeText={text => handleInputChange('irrigationDuration', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.irrigationDuration}
+        shakeAnim={shakeAnim.irrigationDuration}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Horas</Text>}
+      />
       {/* Volumen de riego */}
-      <Text style={cropStyle.label}>Volumen de riego</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.irrigationVolume}
-          onChangeText={text => handleInputChange('irrigationVolume', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>Litros</Text>
-      </View>
-      {errors.irrigationVolume && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.irrigationVolume}</Text>}
+      <InputsFormFields
+        label="Volumen de riego (litros)"
+        value={formData.irrigationVolume}
+        onChangeText={text => handleInputChange('irrigationVolume', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.irrigationVolume}
+        shakeAnim={shakeAnim.irrigationVolume}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Litros</Text>}
+      />
+         
 
       {/* Mano de obra riego */}
-      <Text style={cropStyle.label}>Mano de obra riego</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
+<InputsFormFields
+        label="Costo de mano de obra riego"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
 
       {/* Costo de energía o combustible */}
-      <Text style={cropStyle.label}>Costo de energía o combustible</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.energyCost}
-          onChangeText={text => handleInputChange('energyCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.energyCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.energyCost}</Text>}
-
+      <InputsFormFields
+        label="Costo de energía o combustible"
+        value={formData.energyCost}
+        onChangeText={text => handleInputChange('energyCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.energyCost}
+        shakeAnim={shakeAnim.energyCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Mantenimiento de sistema de riego */}
-      <Text style={cropStyle.label}>Mantenimiento de sistema de riego</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.maintenanceCost}
-          onChangeText={text => handleInputChange('maintenanceCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.maintenanceCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.maintenanceCost}</Text>}
-
+      <InputsFormFields
+        label="Costo de mantenimiento de sistema de riego"
+        value={formData.maintenanceCost}
+        onChangeText={text => handleInputChange('maintenanceCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.maintenanceCost}
+        shakeAnim={shakeAnim.maintenanceCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Costo total de riego */}
-      <Text style={cropStyle.label}>Costo total de riego</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
+      <InputsFormFields
+        label="Costo total de riego"
+        value={formData.totalCost}
+        onChangeText={() => {}}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        editable={false}
+      />
 
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
         disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+      />
     </ScrollView>
   );
 }

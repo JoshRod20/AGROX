@@ -286,7 +286,7 @@ const CropPreparation = () => {
           label="Horas hombre invertidas"
           value={formData.manHours}
           onChangeText={val => handleInputChange('manHours', val.replace(/[^0-9]/g, ''))}
-          placeholder="Ingrese las horas hombre invertidas"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.manHours}
           shakeAnim={shakeAnim.manHours}
@@ -296,7 +296,7 @@ const CropPreparation = () => {
           label="Horas de maquinaria utilizadas"
           value={formData.machineHours}
           onChangeText={val => handleInputChange('machineHours', val.replace(/[^0-9]/g, ''))}
-          placeholder="Ingrese las horas de maquinaria utilizadas"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.machineHours}
           shakeAnim={shakeAnim.machineHours}
@@ -306,7 +306,7 @@ const CropPreparation = () => {
           label="Costo de mano de obra"
           value={formData.laborCost}
           onChangeText={val => handleInputChange('laborCost', val.replace(/[^0-9]/g, ''))}
-          placeholder="Ingrese el costo de mano de obra"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.laborCost}
           shakeAnim={shakeAnim.laborCost}
@@ -316,7 +316,7 @@ const CropPreparation = () => {
           label="Costo de maquinaria"
           value={formData.machineCost}
           onChangeText={val => handleInputChange('machineCost', val.replace(/[^0-9]/g, ''))}
-          placeholder="Ingrese el costo de maquinaria"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.machineCost}
           shakeAnim={shakeAnim.machineCost}
@@ -327,7 +327,7 @@ const CropPreparation = () => {
           label="Costo de insumos aplicados"
           value={formData.inputCost}
           onChangeText={val => handleInputChange('inputCost', val.replace(/[^0-9]/g, ''))}
-          placeholder="Ingrese el costo de insumos aplicados"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.inputCost}
           shakeAnim={shakeAnim.inputCost}
@@ -337,7 +337,7 @@ const CropPreparation = () => {
           label="Costo total"
           value={formData.totalCost.toString()}
           onChangeText={() => { }}
-          placeholder="Costo total calculado"
+          placeholder="0"
           keyboardType="numeric"
           error={errors.totalCost}
           shakeAnim={shakeAnim.totalCost}

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton';
 
 const CropMonitoring = () => {
   const route = useRoute();
@@ -17,13 +19,28 @@ const CropMonitoring = () => {
     laborCost: '',
     totalCost: '',
   });
-
+  const shakeAnim = {
+    growthObservations: useRef(new Animated.Value(0)).current,
+    pestObservations: useRef(new Animated.Value(0)).current,
+    actionsTaken: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    machineCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+  };
+  // 2. Función para activar la animación shake
+  // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+  const triggerShake = (anim) => {
+    Animated.sequence([
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
   const [errors, setErrors] = useState({});
-
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
-
   const initialForm = {
     growthObservations: '',
     pestObservations: '',
@@ -33,11 +50,26 @@ const CropMonitoring = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.growthObservations) newErrors.growthObservations = 'Ingresa las observaciones de crecimiento.';
-    if (!formData.pestObservations) newErrors.pestObservations = 'Ingresa las plagas o enfermedades detectadas.';
-    if (!formData.actionsTaken) newErrors.actionsTaken = 'Ingresa las acciones tomadas.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total de monitoreo.';
+    if (!formData.growthObservations) {
+      newErrors.growthObservations = 'Ingresa las observaciones de crecimiento.';
+      triggerShake(shakeAnim.growthObservations);
+    }
+    if (!formData.pestObservations) {
+      newErrors.pestObservations = 'Ingresa las plagas o enfermedades detectadas.';
+      triggerShake(shakeAnim.pestObservations);
+    }
+    if (!formData.actionsTaken) {
+      newErrors.actionsTaken = 'Ingresa las acciones tomadas.';
+      triggerShake(shakeAnim.actionsTaken);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total de monitoreo.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -57,85 +89,76 @@ const CropMonitoring = () => {
       setLoading(false);
     }
   };
-
   return (
     <ScrollView contentContainerStyle={[
       { flexGrow: 1, paddingBottom: 40 },
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Monitoreo del cultivo</Text>
-
       {/* Observaciones de crecimiento */}
-      <Text style={cropStyle.label}>Observaciones de crecimiento</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 70 }]}
+      <InputsFormFields
+        label="Observaciones de crecimiento"
         value={formData.growthObservations}
         onChangeText={text => handleInputChange('growthObservations', text)}
         placeholder="Ej: Crecimiento vigoroso, buen desarrollo de hojas, etc."
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
+        error={errors.growthObservations}
+        shakeAnim={shakeAnim.growthObservations}
       />
-      {errors.growthObservations && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.growthObservations}</Text>}
-
       {/* Plagas o enfermedades */}
-      <Text style={cropStyle.label}>Plagas o enfermedades detectadas</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 70 }]}
+      <InputsFormFields
+        label="Plagas o enfermedades detectadas"
         value={formData.pestObservations}
         onChangeText={text => handleInputChange('pestObservations', text)}
         placeholder="Ej: Presencia de pulgón, roya, etc."
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
+        error={errors.pestObservations}
+        shakeAnim={shakeAnim.pestObservations}
       />
-      {errors.pestObservations && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.pestObservations}</Text>}
-
       {/* Acciones tomadas */}
-      <Text style={cropStyle.label}>Acciones tomadas</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 70 }]}
+      <InputsFormFields
+        label="Acciones tomadas"
         value={formData.actionsTaken}
         onChangeText={text => handleInputChange('actionsTaken', text)}
         placeholder="Ej: Aplicación de insecticida, riego, etc."
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
+        error={errors.actionsTaken}
+        shakeAnim={shakeAnim.actionsTaken}
       />
-      {errors.actionsTaken && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.actionsTaken}</Text>}
-
       {/* Mano de obra de monitoreo */}
-      <Text style={cropStyle.label}>Mano de obra de monitoreo</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
-
+     <InputsFormFields
+        label="Costo de mano de obra de monitoreo"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Costo total de monitoreo */}
-      <Text style={cropStyle.label}>Costo total de monitoreo</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
-
-      {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <InputsFormFields
+        label="Costo total de monitoreo"
+        value={formData.totalCost}
+        onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
+       <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
         disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+      />
     </ScrollView>
   );
 }
-
 export default CropMonitoring;

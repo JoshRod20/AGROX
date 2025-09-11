@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import InputsFormFields from '../components/inputsFormFields';
+import FormButton from '../components/formButton';
+import FormSelectPicker from '../components/formSelectPicker';
+
 
 const CropPhytosanitary = () => {
   const route = useRoute();
@@ -22,10 +26,43 @@ const CropPhytosanitary = () => {
     totalCost: '',
   });
 
+  const shakeAnim = {
+    pestOrDisease: useRef(new Animated.Value(0)).current,
+    product: useRef(new Animated.Value(0)).current,
+    dose: useRef(new Animated.Value(0)).current,
+    applicationMethod: useRef(new Animated.Value(0)).current,
+    productCost: useRef(new Animated.Value(0)).current,
+    laborCost: useRef(new Animated.Value(0)).current,
+    machineCost: useRef(new Animated.Value(0)).current,
+    totalCost: useRef(new Animated.Value(0)).current,
+  };
+
+
+  // 2. Función para activar la animación shake
+    // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
+    const triggerShake = (anim) => {
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+      ]).start();
+    };
+
+  const [openPest, setOpenPest] = useState(false);
+
   const [errors, setErrors] = useState({});
 
+  // Lógica de cálculo automático del total adaptada
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      const productCost = parseInt(updated.productCost) || 0;
+      const laborCost = parseInt(updated.laborCost) || 0;
+      const machineCost = parseInt(updated.machineCost) || 0;
+      const totalCost = productCost + laborCost + machineCost;
+      return { ...updated, totalCost: String(totalCost) };
+    });
   };
 
   const initialForm = {
@@ -41,14 +78,38 @@ const CropPhytosanitary = () => {
   };
   const handleSave = async () => {
     let newErrors = {};
-    if (!formData.pestOrDisease) newErrors.pestOrDisease = 'Ingresa la plaga o enfermedad controlada.';
-    if (!formData.product) newErrors.product = 'Ingresa el producto aplicado.';
-    if (!formData.dose) newErrors.dose = 'Ingresa la dosis aplicada.';
-    if (!formData.applicationMethod) newErrors.applicationMethod = 'Ingresa el método de aplicación.';
-    if (!formData.productCost) newErrors.productCost = 'Ingresa el costo del producto fitosanitario.';
-    if (!formData.laborCost) newErrors.laborCost = 'Ingresa el costo de mano de obra.';
-    if (!formData.machineCost) newErrors.machineCost = 'Ingresa el costo de maquinaria.';
-    if (!formData.totalCost) newErrors.totalCost = 'Ingresa el costo total del manejo fitosanitario.';
+    if (!formData.pestOrDisease) {
+      newErrors.pestOrDisease = 'Ingresa la plaga o enfermedad controlada.';
+      triggerShake(shakeAnim.pestOrDisease);
+    }
+    if (!formData.product) {
+      newErrors.product = 'Ingresa el producto aplicado.';
+      triggerShake(shakeAnim.product);
+    }
+    if (!formData.dose) {
+      newErrors.dose = 'Ingresa la dosis aplicada.';
+      triggerShake(shakeAnim.dose);
+    }
+    if (!formData.applicationMethod) {
+      newErrors.applicationMethod = 'Ingresa el método de aplicación.';
+      triggerShake(shakeAnim.applicationMethod);
+    }
+    if (!formData.productCost) {
+      newErrors.productCost = 'Ingresa el costo del producto fitosanitario.';
+      triggerShake(shakeAnim.productCost);
+    }
+    if (!formData.laborCost) {
+      newErrors.laborCost = 'Ingresa el costo de mano de obra.';
+      triggerShake(shakeAnim.laborCost);
+    }
+    if (!formData.machineCost) {
+      newErrors.machineCost = 'Ingresa el costo de maquinaria.';
+      triggerShake(shakeAnim.machineCost);
+    }
+    if (!formData.totalCost) {
+      newErrors.totalCost = 'Ingresa el costo total del manejo fitosanitario.';
+      triggerShake(shakeAnim.totalCost);
+    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -78,122 +139,115 @@ const CropPhytosanitary = () => {
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Manejo Fitosanitario</Text>
-
       {/* Plaga o enfermedad controlada */}
-      <Text style={cropStyle.label}>Plaga o enfermedad controlada</Text>
-      <TextInput
-        style={cropStyle.input}
+      <FormSelectPicker
+        label="Plaga o enfermedad controlada"
         value={formData.pestOrDisease}
-        onChangeText={text => handleInputChange('pestOrDisease', text)}
-        placeholder="Ej: Gusano cogollero, Roya, etc."
+        setValue={callback => setFormData(prev => ({ ...prev, pestOrDisease: callback(prev.pestOrDisease) }))}
+        open={openPest}
+        setOpen={setOpenPest}
+        items={[
+          { label: 'Insectos (plagas en general)', value: 'Insectos (plagas en general)' },
+          { label: 'Hongos', value: 'Hongos' },
+          { label: 'Bacterias', value: 'Bacterias' },
+          { label: 'Virus', value: 'Virus' },
+          { label: 'Nematodos', value: 'Nematodos' },
+          { label: 'Malezas', value: 'Malezas' },
+        ]}
+        placeholder="Seleccione"
+        error={errors.pestOrDisease}
+        shakeAnim={shakeAnim.pestOrDisease}
       />
-      {errors.pestOrDisease && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.pestOrDisease}</Text>}
-
       {/* Producto aplicado */}
-      <Text style={cropStyle.label}>Producto aplicado</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Producto aplicado"
         value={formData.product}
         onChangeText={text => handleInputChange('product', text)}
-        placeholder="Nombre comercial"
+        placeholder="Escriba aquí"
+        error={errors.product}
+        shakeAnim={shakeAnim.product}
       />
-      {errors.product && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.product}</Text>}
-
       {/* Dosis aplicada */}
-      <Text style={cropStyle.label}>Dosis aplicada</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Dosis aplicada"
         value={formData.dose}
-        onChangeText={text => handleInputChange('dose', text.replace(/[^0-9]/g, ''))}
+        onChangeText={text => handleInputChange('dose', text)}
         placeholder="0"
         keyboardType="numeric"
+        error={errors.dose}
+        shakeAnim={shakeAnim.dose}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>Unidad</Text>}
       />
-      {errors.dose && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.dose}</Text>}
-
       {/* Método de aplicación */}
-      <Text style={cropStyle.label}>Método de aplicación</Text>
-      <TextInput
-        style={cropStyle.input}
+      <InputsFormFields
+        label="Método de aplicación"
         value={formData.applicationMethod}
         onChangeText={text => handleInputChange('applicationMethod', text)}
         placeholder="Manual, mecánico, etc."
+        error={errors.applicationMethod}
+        shakeAnim={shakeAnim.applicationMethod}
       />
-      {errors.applicationMethod && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.applicationMethod}</Text>}
-
       {/* Observaciones sobre eficacia */}
-      <Text style={cropStyle.label}>Observaciones sobre eficacia</Text>
-      <TextInput
-        style={[cropStyle.input, { height: 80 }]}
+      <InputsFormFields
+        label="Observaciones sobre eficacia"
         value={formData.efficacyObservations}
         onChangeText={text => handleInputChange('efficacyObservations', text)}
         placeholder="Escriba aquí"
         multiline
+        numberOfLines={4}
+        style={{ textAlignVertical: 'top' }}
       />
-
       {/* Costo de producto fitosanitario */}
-      <Text style={cropStyle.label}>Costo de producto fitosanitario</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.productCost}
-          onChangeText={text => handleInputChange('productCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.productCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.productCost}</Text>}
-
+      <InputsFormFields
+        label="Costo de producto fitosanitario"
+        value={formData.productCost}
+        onChangeText={text => handleInputChange('productCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.productCost}
+        shakeAnim={shakeAnim.productCost}
+         rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Mano de obra */}
-      <Text style={cropStyle.label}>Mano de obra</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.laborCost}
-          onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.laborCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.laborCost}</Text>}
-
+      <InputsFormFields
+        label="Mano de obra"
+        value={formData.laborCost}
+        onChangeText={text => handleInputChange('laborCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.laborCost}
+        shakeAnim={shakeAnim.laborCost}
+         rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Costo de maquinaria */}
-      <Text style={cropStyle.label}>Costo de maquinaria</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.machineCost}
-          onChangeText={text => handleInputChange('machineCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.machineCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.machineCost}</Text>}
-
+      <InputsFormFields
+        label="Costo de maquinaria"
+        value={formData.machineCost}
+        onChangeText={text => handleInputChange('machineCost', text.replace(/[^0-9]/g, ''))}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.machineCost}
+        shakeAnim={shakeAnim.machineCost}
+         rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+      />
       {/* Costo total manejo fitosanitario */}
-      <Text style={cropStyle.label}>Costo total manejo fitosanitario</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', alignSelf: 'center' }}>
-        <TextInput
-          style={[cropStyle.input, { flex: 1, marginRight: 8 }]}
-          value={formData.totalCost}
-          onChangeText={text => handleInputChange('totalCost', text.replace(/[^0-9]/g, ''))}
-          placeholder="0"
-          keyboardType="numeric"
-        />
-        <Text style={{ fontSize: 16, color: '#222' }}>C$</Text>
-      </View>
-      {errors.totalCost && <Text style={{ color: 'red', fontSize: 13, marginTop: 2 }}>{errors.totalCost}</Text>}
-
+      <InputsFormFields
+        label="Costo total manejo fitosanitario"
+        value={formData.totalCost}
+        onChangeText={() => {}}
+        placeholder="0"
+        keyboardType="numeric"
+        error={errors.totalCost}
+        shakeAnim={shakeAnim.totalCost}
+        rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
+        editable={false}
+      />
       {/* Botón Guardar */}
-      <TouchableOpacity
-        style={[cropStyle.buttonSR, { backgroundColor: loading ? '#A5D6A7' : '#2E7D32', alignSelf: 'center', marginTop: 30 }]}
+      <FormButton
+        title={loading ? 'Guardando...' : 'Guardar'}
         onPress={handleSave}
         disabled={loading}
-      >
-        <Text style={[cropStyle.buttonText, { color: '#fff', fontWeight: 'bold', fontSize: 16 }]}>{loading ? 'Guardando...' : 'Guardar'}</Text>
-      </TouchableOpacity>
+      />
     </ScrollView>
   );
 }
