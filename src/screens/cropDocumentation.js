@@ -9,6 +9,10 @@ import * as FileSystem from 'expo-file-system';
 import FormButton from '../components/formButton';
 import InputsFormFields from '../components/inputsFormFields';
 import FormCheckBox from '../components/formCheckBox';
+import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { Dimensions } from 'react-native';
+const { width } = Dimensions.get('window');
+const iconSize = width * 0.06; // 6% del ancho de la pantalla
 
 const CropDocumentation = () => {
   const route = useRoute();
@@ -125,7 +129,7 @@ const CropDocumentation = () => {
       { flexGrow: 1, paddingBottom: 40 },
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
-      <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
+      <Text style={[cropStyle.titleCropDocumentation, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
 
       {/* ¿Tiene certificación? */}
 
@@ -141,7 +145,7 @@ const CropDocumentation = () => {
       {/* Mostrar el input solo si selecciona 'Sí' */}
       {formData.hasCertification === 'Sí' && (
         <InputsFormFields
-          label="Nombre de la certificación"
+          label="Si tiene, especifíque cuál: "
           placeholder="Especifica el nombre"
           value={formData.certificationName}
           onChangeText={text => handleInputChange('certificationName', text)}
@@ -149,30 +153,27 @@ const CropDocumentation = () => {
           shakeAnim={shakeAnim.certificationName}
         />
       )}
-
+    <Text style={[cropStyle.titleCropIcons, { fontFamily: 'QuicksandBold'}]}>Archivos/fotos adjuntos</Text>
       {/* Botones de cámara y galería */}
-      <View style={{ flexDirection: 'row', width: '90%', alignSelf: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <TouchableOpacity
-          onPress={takePhoto}
-          style={{ flex: 1, alignItems: 'center', padding: 12, borderWidth: 1, borderColor: '#2E7D32', borderRadius: 8, marginRight: 8 }}
-        >
-          {/* ICONO DE CÁMARA AQUÍ */}
-          <Text>📷</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={pickImage}
-          style={{ flex: 1, alignItems: 'center', padding: 12, borderWidth: 1, borderColor: '#2E7D32', borderRadius: 8, marginLeft: 8 }}
-        >
-          {/* ICONO DE GALERÍA AQUÍ */}
-          <Text>🖼️</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%', marginBottom: 16 }}>
+          {/* Botón Cámara */}
+          <TouchableOpacity onPress={takePhoto} style={cropStyle.buttonIconContainer}>
+            <MaterialIcons name="photo-camera" size={iconSize} color="#fff" />
+          </TouchableOpacity>
+
+          {/* Botón Adjuntar Archivo */}
+          <TouchableOpacity onPress={pickImage} style={cropStyle.buttonIconContainer}>
+            <FontAwesome name="paperclip" size={iconSize} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+
 
       {/* Imagen seleccionada */}
       {formData.imageUri ? (
         <View style={{ width: '90%', alignSelf: 'center', marginBottom: 16 }}>
-          <Text style={cropStyle.label}>Imagen seleccionada</Text>
-          <Image source={{ uri: formData.imageUri }} style={{ width: '100%', height: 200, borderRadius: 8 }} resizeMode="cover" />
+          <Text style={cropStyle.titleCropImage}>Imagen seleccionada</Text>
+          <Image source={{ uri: formData.imageUri }} style={{ width: '100%', height: 170, borderRadius: 8 }} resizeMode="cover" />
         </View>
       ) : null}
       {/* Botón Guardar */}
