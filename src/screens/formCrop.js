@@ -94,6 +94,7 @@ const FormCrop = () => {
 
     setLoading(true);
     try {
+      const { auth } = require('../services/database');
       const docRef = await addDoc(collection(db, 'Crops'), {
         cropName: formData.cropName,
         cropType: formData.cropType,
@@ -101,6 +102,7 @@ const FormCrop = () => {
         technicalManager: formData.technicalManager || null,
         cultivatedArea: formData.cultivatedArea,
         createdAt: new Date().toISOString(),
+        userId: auth.currentUser?.uid,
       });
       await AsyncStorage.setItem('hasSeenWelcome', 'true');
       await AsyncStorage.setItem('hasSeenAboutUs', 'true');

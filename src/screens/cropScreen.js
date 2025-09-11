@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { cropScreenStyle } from '../styles/cropScreenStyle';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useRoute, useNavigation, useIsFocused } from '@react-navigation/native';
+import { useRoute, useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 import { getCropActivities } from '../services/activitiesService';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -52,7 +53,12 @@ const ActivityItem = ({ activity, done, isLast }) => {
       <View style={cropScreenStyle.activityContent}>
         <Text style={cropScreenStyle.activityTitle}>{activity.name}</Text>
         <Text style={cropScreenStyle.activityDate}>
-          {done && done.date ? done.date : 'Sin fecha'}
+          {done && done.createdAt
+            ? (typeof done.createdAt === 'string'
+                ? new Date(done.createdAt)
+                : done.createdAt.toDate ? done.createdAt.toDate() : new Date())
+                .toLocaleString('es-NI', { dateStyle: 'long'})
+            : 'Sin fecha'}
         </Text>
       </View>
     </View>
@@ -60,6 +66,29 @@ const ActivityItem = ({ activity, done, isLast }) => {
 };
 
 const CropScreen = () => {
+  // Interceptar retroceso físico y de header para ir al Drawer/Home
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Drawer' }],
+        });
+        return true;
+      };
+      const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity style={{ marginLeft: 16 }} onPress={onBackPress}>
+            <Image source={require('../assets/arrow-left.png')} style={{ width: 24, height: 24 }} />
+          </TouchableOpacity>
+        ),
+      });
+      return () => {
+        subscription.remove();
+      };
+    }, [navigation])
+  );
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
