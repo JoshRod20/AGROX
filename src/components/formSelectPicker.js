@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 
 // Puedes importar tu estilo global aquí o pasarlo por props
 import { signUpStyle } from '../styles/signUpStyle';
+import { cropStyle } from '../styles/cropStyle';
 
 const FormSelectPicker = forwardRef(({
   label,
@@ -26,7 +27,7 @@ const FormSelectPicker = forwardRef(({
   return (
     <View style={{ marginBottom: hp('2%') }}>
       {label && (
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInputTitle]}>{label}</Text>
+        <Text style={[{ fontFamily: 'QuicksandBold', marginRight: 40 }, cropStyle.label]}>{label}</Text>
       )}
       <Animated.View
         ref={ref}

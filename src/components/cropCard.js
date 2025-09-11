@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { db } from '../services/database';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+
 import styles from '../styles/cropCardStyle';
 import { getCropActivities } from '../services/activitiesService';
+import { getUserCrops } from '../services/cropsService';
 
 const { width } = Dimensions.get('window');
 
@@ -16,15 +17,13 @@ const CropCard = () => {
   useEffect(() => {
     const fetchCrops = async () => {
       try {
-        const q = query(collection(db, 'Crops'), orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
+        const userCrops = await getUserCrops();
         const cropsData = await Promise.all(
-          querySnapshot.docs.map(async doc => {
-            const acts = await getCropActivities(doc.id);
+          userCrops.map(async crop => {
+            const acts = await getCropActivities(crop.id);
             const progress = Math.round((acts.length / 9) * 100);
             return {
-              id: doc.id,
-              ...doc.data(),
+              ...crop,
               progress,
             };
           })

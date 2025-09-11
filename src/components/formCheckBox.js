@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
+import {signUpStyle} from '../styles/signUpStyle';
 
 
 // Componente reutilizable para selección tipo radio compacta (tipo de laboreo, etc.)
@@ -21,7 +22,7 @@ const FormCheckBox = ({
   return (
     <View style={[{ width: '90%', alignSelf: 'center', marginBottom: 4 }, style]}>
       {label ? (
-        <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold', color: '#BC6C25' }, labelStyle]}>{label}</Text>
+        <Text style={[cropStyle.label, { fontFamily: 'QuicksandBold', color: '#BC6C25', marginRight: 25 }, labelStyle]}>{label}</Text>
       ) : null}
       {/* Primera fila: dos primeras opciones */}
       <View style={{ flexDirection: 'row' }}>
