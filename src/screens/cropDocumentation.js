@@ -46,7 +46,12 @@ const CropDocumentation = () => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    // Si el usuario selecciona 'No' en certificación, limpiar el nombre
+    if (field === 'hasCertification' && value === 'No') {
+      setFormData(prev => ({ ...prev, hasCertification: value, certificationName: '' }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   const pickImage = async () => {
@@ -95,7 +100,7 @@ const CropDocumentation = () => {
       newErrors.hasCertification = 'Indica si tiene certificación.';
       triggerShake(shakeAnim.hasCertification);
     }
-    if (formData.hasCertification && !formData.certificationName) {
+    if (formData.hasCertification === 'Sí' && !formData.certificationName) {
       newErrors.certificationName = 'Especifica el nombre de la certificación.';
       triggerShake(shakeAnim.certificationName);
     }
@@ -129,7 +134,7 @@ const CropDocumentation = () => {
       { flexGrow: 1, paddingBottom: 40 },
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
-      <Text style={[cropStyle.titleCropDocumentation, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
+      <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
 
       {/* ¿Tiene certificación? */}
 
@@ -137,7 +142,7 @@ const CropDocumentation = () => {
         label="¿Tiene certificación?"
         options={['Sí', 'No']}
         value={formData.hasCertification}
-        onChange={value => handleInputChange('hasCertification', value)}
+        onChange={val => handleInputChange('hasCertification', val)}
         error={errors.hasCertification}
         shakeAnim={shakeAnim.hasCertification}
       />
@@ -172,8 +177,8 @@ const CropDocumentation = () => {
       {/* Imagen seleccionada */}
       {formData.imageUri ? (
         <View style={{ width: '90%', alignSelf: 'center', marginBottom: 16 }}>
-          <Text style={cropStyle.titleCropImage}>Imagen seleccionada</Text>
-          <Image source={{ uri: formData.imageUri }} style={{ width: '100%', height: 170, borderRadius: 8 }} resizeMode="cover" />
+          <Text style={cropStyle.label}>Imagen seleccionada</Text>
+          <Image source={{ uri: formData.imageUri }} style={{ width: '100%', height: 200, borderRadius: 8 }} resizeMode="cover" />
         </View>
       ) : null}
       {/* Botón Guardar */}

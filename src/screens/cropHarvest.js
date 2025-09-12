@@ -164,8 +164,8 @@ const CropHarvest = () => {
       <FormCheckBox
         label="Método de cosecha"
         options={['Manual', 'Mecánico']}
-        selectedValue={formData.harvestMethod}
-        onValueChange={value => handleInputChange('harvestMethod', value)}
+        value={formData.harvestMethod}
+        onChange={val => handleInputChange('harvestMethod', val)}
         error={errors.harvestMethod}
         shakeAnim={shakeAnim.harvestMethod}
       />

@@ -165,12 +165,12 @@ const CropPostharvest = () => {
       <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Postcosecha y comercialización</Text>
       {/* Pasos de postcosecha */}
      <FormCheckBox
-       label="Pasos de postcosecha"
-       options={['Limpieza', 'Clasificación', 'Secado', 'Otro']}
-       selectedValues={formData.postharvestSteps}
-       onValueChange={values => handleInputChange('postharvestSteps', values)}
-       error={errors.postharvestSteps}
-       shakeAnim={shakeAnim.postharvestSteps}
+      label="Pasos de postcosecha"
+      options={['Limpieza', 'Clasificación', 'Secado', 'Otro']}
+      value={formData.postharvestSteps}
+      onChange={val => handleInputChange('postharvestSteps', val)}
+      error={errors.postharvestSteps}
+      shakeAnim={shakeAnim.postharvestSteps}
      />
       {/* Fecha de empaque/transporte */}
       <Text style={cropStyle.labelDate}>Fecha de empaque/transporte</Text>
