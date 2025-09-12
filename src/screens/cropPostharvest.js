@@ -8,6 +8,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton'
 import FormCheckBox from '../components/formCheckBox';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 const CropPostharvest = () => {
@@ -172,21 +173,19 @@ const CropPostharvest = () => {
        shakeAnim={shakeAnim.postharvestSteps}
      />
       {/* Fecha de empaque/transporte */}
-      <Text style={cropStyle.label}>Fecha de empaque/transporte</Text>
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} activeOpacity={0.8}>
-        <View style={cropStyle.dateInputContainer} pointerEvents="none">
-          <TextInput
-            style={cropStyle.dateInputText}
-            value={formData.packingDate}
-            placeholder="Seleccione la fecha"
-            editable={false}
-          />
-          <Image
-            source={require('../assets/plus.png')} // Add your calendar icon image here
-            style={cropStyle.dateIcon}
-          />
-        </View>
-      </TouchableOpacity>
+      <Text style={cropStyle.labelDate}>Fecha de empaque/transporte</Text>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} activeOpacity={0.8}>
+          <View style={cropStyle.dateInputContainer}>
+            <TextInput
+              style={cropStyle.dateInputText}
+              value={formData.packingDate}
+              placeholder="Seleccione la fecha"
+              editable={false}
+            />
+            {/* ✅ Icono de calendario */}
+            <Icon name="calendar-today" style={cropStyle.dateIcon} />
+          </View>
+        </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
           value={formData.packingDate ? new Date(formData.packingDate) : new Date()}

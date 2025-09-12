@@ -28,6 +28,10 @@ export const cropStyle = StyleSheet.create({
     tintColor: '#2E7D32',
     resizeMode: 'contain',
   },
+    backButtonSowing: {
+    marginLeft: wp('8%'),
+    marginTop: hp('-5%'),
+  },
   scrollContainer: {
     flexGrow: 1,
     width: '100%',
@@ -201,36 +205,96 @@ export const cropStyle = StyleSheet.create({
   },
   title2: {
     fontSize: wp('7.5%'),
-    marginTop: hp('10%'),
+    marginTop: hp('8%'),
     marginBottom: 8,
     textAlign: 'left',
-    marginLeft: hp('2%'),
+    marginLeft: hp('1%'),
     alignSelf: 'flex-start',
   },
-  dateInputContainer: {
-    width: '90%',
-    height: hp('6%'),
-    borderColor: '#2E7D32',
-    borderWidth: 3,
-    borderRadius: 8,
-    marginBottom: hp('1%'),
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+titleCropDocumentation: {
+    fontSize: wp('6.8%'),
+    marginTop: hp('8%'),
+    marginBottom: 8,
+    textAlign: 'center',
+    marginLeft: hp('1%'),
+    alignSelf: 'flex-start',
   },
-  dateInputText: {
+labelCropDocumentation: {
+    width: '90%',
     fontSize: wp('4%'),
     color: '#BC6C25',
-    flex: 1,
-    paddingVertical: 0,
+    marginTop: hp('2.5%'),
+    marginBottom: hp('2%'),
+    marginLeft: wp('0.5%'),
+    alignSelf: 'flex-start',
+    fontFamily: 'QuicksandBold',
   },
-  dateIcon: {
-    width: 24,
-    height: 24,
-    tintColor: '#BC6C25',
+  titleCropIcons: {
+    width: '90%',
+    fontSize: wp('4%'),
+    color: '#BC6C25',
+    marginTop: hp('2.5%'),
+    marginBottom: hp('0%'),
+    marginLeft: wp('3%'),
+    alignSelf: 'flex-start',
+    fontFamily: 'QuicksandBold',
   },
+  titleCropImage: {
+    width: '90%',
+    fontSize: wp('4%'),
+    color: '#BC6C25',
+    marginTop: hp('0.5%'),
+    marginBottom: hp('2%'),
+    marginLeft: wp('-1%'),
+    alignSelf: 'flex-start',
+    fontFamily: 'QuicksandBold',
+  },
+buttonIconContainer: {
+  width: wp('12%'),
+  height: wp('12%'),
+  borderRadius: 8,
+  backgroundColor: '#2E7D32',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: hp('2%'),
+  marginRight: wp('0.1%'),
+  marginLeft: wp('3%'),
+},
+
+
+  labelDate: {
+    width: '90%',
+    fontSize: wp('4%'),
+    color: '#BC6C25',
+    marginTop: hp('2.5%'),
+    marginBottom: hp('0%'),
+    marginLeft: wp('3%'),
+    alignSelf: 'flex-start',
+    fontFamily: 'QuicksandBold',
+  },
+dateInputContainer: {
+  width: wp('85%'),
+  borderBottomWidth: 2,
+  borderColor: '#2E7D32',
+  marginTop: hp('1%'),
+  flexDirection: 'row',   // ✅ pone el texto y el icono en fila
+  alignItems: 'center',   // ✅ alinea verticalmente
+},
+
+dateInputText: {
+  fontSize: wp('4%'),
+  color: '#BC6C25',
+  flex: 1,                // ✅ ocupa todo el espacio disponible
+  paddingVertical: 0,
+  marginBottom: hp('1.5%'),
+},
+
+dateIcon: {
+  fontSize: wp('6%'),     // ✅ tamaño proporcional
+  color: '#BC6C25',
+  marginBottom: hp('1.5%'),
+},
+
 });
 
 

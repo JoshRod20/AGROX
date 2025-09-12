@@ -147,6 +147,28 @@ export default function App() {
               headerLeft: () => (
                 <TouchableOpacity
                   onPress={() => navigation.goBack()}
+                  style={cropStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
+           <Stack.Screen 
+            name="CropPreparation" 
+            component={CropPreparation} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
                   style={cropScreenStyle.backButton}
                 >
                   <Image
@@ -157,106 +179,174 @@ export default function App() {
               ),
             })}
           />
-
-           <Stack.Screen 
-            name="CropPreparation" 
-            component={CropPreparation} 
-            options={{
-              headerShown: true,
-              headerTitle: '',
-              headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
-          />
           <Stack.Screen 
             name="CropSowing" 
             component={CropSowing} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="CropFertilization" 
             component={CropFertilization} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="CropIrrigation" 
             component={CropIrrigation} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="CropPhytosanitary" 
             component={CropPhytosanitary} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
              <Stack.Screen 
             name="CropMonitoring" 
             component={CropMonitoring} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           
           <Stack.Screen 
             name="CropHarvest" 
             component={CropHarvest} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="CropPostharvest" 
             component={CropPostharvest} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="CropDocumentation" 
             component={CropDocumentation} 
-            options={{
+            options={({ navigation }) => ({
               headerShown: true,
               headerTitle: '',
               headerTransparent: true,
-              headerTintColor: '#2E7D32',
-              headerBackTitleVisible: false
-            }} 
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropScreenStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropScreenStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
           />
           <Stack.Screen 
             name="Onboarding" 
