@@ -4,8 +4,8 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 export const cropScreenStyle = StyleSheet.create({
   container2: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    marginTop: 35,
+    backgroundColor: '#ffffffff',
+    paddingTop: hp('5.5%'),
   },
   backButton: {
     marginLeft: wp('7%'),

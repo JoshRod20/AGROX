@@ -1,14 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
-import { View, Platform, Image, TouchableOpacity, styles } from 'react-native';
+import { View, Platform, Image, TouchableOpacity} from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Login from './src/screens/login';
 import { loginStyle as loginStyles } from './src/styles/loginStyle';
-import { signUpStyle } from './src/styles/signUpStyle';
-import { signUp1Style } from './src/styles/signUp1Style';
+import  signUpStyle  from './src/styles/signUpStyle';
+import  signUp1Style  from './src/styles/signUp1Style';
 import { cropStyle } from './src/styles/cropStyle';
 import { cropScreenStyle } from './src/styles/cropScreenStyle';
 import NavigationDrawer from './src/navigation/navigationDrawer';

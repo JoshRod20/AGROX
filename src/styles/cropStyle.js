@@ -249,6 +249,22 @@ labelCropDocumentation: {
     alignSelf: 'flex-start',
     fontFamily: 'QuicksandBold',
   },
+  poostHarvestTitle: {
+    fontSize: wp('7.5%'),
+    marginTop: hp('8%'),
+    marginBottom: 8,
+    textAlign: 'left',
+    marginLeft: hp('1%'),
+    alignSelf: 'flex-start',
+  },
+  documentationTitle: {
+    fontSize: wp('6.6%'),
+    marginTop: hp('8%'),
+    marginBottom: 8,
+    textAlign: 'left',
+    marginLeft: hp('1%'),
+    alignSelf: 'flex-start',
+  },
 buttonIconContainer: {
   width: wp('12%'),
   height: wp('12%'),

@@ -134,7 +134,7 @@ const CropDocumentation = () => {
       { flexGrow: 1, paddingBottom: 40 },
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
-      <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
+      <Text style={[cropStyle.documentationTitle, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Documentación adicional</Text>
 
       {/* ¿Tiene certificación? */}
 

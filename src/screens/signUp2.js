@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { signUpStyle } from '../styles/signUpStyle';
+import  signUpStyle  from '../styles/signUpStyle';
 import { db } from '../services/database';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { useFonts } from 'expo-font';

@@ -33,7 +33,7 @@ export const formCheckBoxStyle = StyleSheet.create({
     height: wp('6.7%'),
     borderWidth: 2,
     borderColor: '#2E7D32',
-    borderRadius: 5,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,

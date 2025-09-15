@@ -162,7 +162,7 @@ const CropPostharvest = () => {
       { flexGrow: 1, paddingBottom: 40 },
       { alignItems: 'center', paddingHorizontal: 20, backgroundColor: '#fff' }
     ]}>
-      <Text style={[cropStyle.title2, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Postcosecha y comercialización</Text>
+      <Text style={[cropStyle.poostHarvestTitle, { fontFamily: 'CarterOne', color: '#2E7D32' }]}>Postcosecha y comercialización</Text>
       {/* Pasos de postcosecha */}
      <FormCheckBox
       label="Pasos de postcosecha"

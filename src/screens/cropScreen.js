@@ -79,9 +79,9 @@ const CropScreen = () => {
       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
       navigation.setOptions({
         headerLeft: () => (
-          <TouchableOpacity style={{ marginLeft: 16 }} onPress={onBackPress}>
-            <Image source={require('../assets/arrow-left.png')} style={{ width: 24, height: 24 }} />
-          </TouchableOpacity>
+          <TouchableOpacity style={cropScreenStyle.backButton} onPress={onBackPress}>
+          <Image source={require('../assets/arrow-left.png')} style={cropScreenStyle.backIcon} />
+        </TouchableOpacity>
         ),
       });
       return () => {
@@ -89,6 +89,7 @@ const CropScreen = () => {
       };
     }, [navigation])
   );
+
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
