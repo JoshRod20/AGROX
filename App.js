@@ -7,8 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Login from './src/screens/login';
 import { loginStyle as loginStyles } from './src/styles/loginStyle';
-import  signUpStyle  from './src/styles/signUpStyle';
-import  signUp1Style  from './src/styles/signUp1Style';
+import signUpStyle from './src/styles/signUpStyle';
 import { cropStyle } from './src/styles/cropStyle';
 import { cropScreenStyle } from './src/styles/cropScreenStyle';
 import NavigationDrawer from './src/navigation/navigationDrawer';
@@ -58,11 +57,11 @@ export default function App() {
               headerLeft: () => (
                 <TouchableOpacity
                   onPress={() => navigation.goBack()}
-                  style={signUp1Style.backButton}
+                  style={signUpStyle.backButton}
                 >
                   <Image
                     source={require('./src/assets/arrow-left.png')}
-                    style={signUp1Style.backIcon}
+                    style={signUpStyle.backIcon}
                   />
                 </TouchableOpacity>
               ),

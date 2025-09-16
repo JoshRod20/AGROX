@@ -294,7 +294,7 @@ const SignUp = () => {
             colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={Style.button}
+            style={signUpStyle.button}
           >
             <Text
               style={[{ fontFamily: "CarterOne" }, signUpStyle.buttonText]}
