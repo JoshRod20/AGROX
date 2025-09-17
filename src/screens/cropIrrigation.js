@@ -151,13 +151,13 @@ const CropIrrigation = () => {
       <FormSelectPicker
         label="Frecuencia de riego"
         value={formData.irrigationFrequency}
-        error={errors.irrigationFrequency}
-        shakeAnim={shakeAnim.irrigationFrequency}
+        setValue={callback => setFormData(prev => ({ ...prev, irrigationFrequency: callback(prev.irrigationFrequency) }))}
         open={openIrrigationFrequency}
         setOpen={setOpenIrrigationFrequency}
         placeholder="Selecciona la frecuencia"
-        onValueChange={value => handleInputChange('irrigationFrequency', value)}
-        items={[
+        error={errors.irrigationFrequency}
+        shakeAnim={shakeAnim.irrigationFrequency}
+        items={[ 
           { label: 'Diario', value: 'Diario' },
           { label: 'Cada 2–3 días', value: 'Cada 2–3 días' },
           { label: 'Semanal', value: 'Semanal' },
