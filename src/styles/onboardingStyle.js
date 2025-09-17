@@ -40,9 +40,10 @@ export const onboardingStyle = StyleSheet.create({
     height: height * 0.1,
   },
   text: {
-    fontSize: width * 0.055,
+    fontSize: width * 0.054,
     color: "#fff",
     textAlign: "center",
+    alignContent: "row",
     marginBottom: height * 0.001,
   },
   indicatorContainer: {
