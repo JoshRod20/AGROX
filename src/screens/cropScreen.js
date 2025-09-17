@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { Text, View, Image, TouchableOpacity, ScrollView, Modal, FlatList, Pressable, Animated } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ScrollView, Modal, FlatList, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { cropScreenStyle } from '../styles/cropScreenStyle';
 import { useFonts } from 'expo-font';
@@ -236,58 +236,62 @@ const CropScreen = () => {
           animationType="slide"
           onRequestClose={() => setModalVisible(false)}
         >
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.3)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 20, width: '85%' }}>
-              <Text style={[cropScreenStyle.titleModal, { fontFamily: 'CarterOne' }]}>
-                Selecciona una actividad
-              </Text>
-              <FlatList
-                data={activities}
-                keyExtractor={item => item.id}
-                renderItem={({ item }) => {
-                  const isDone = activitiesDone.some(a => a.name === item.name);
-                  const prepDone = activitiesDone.some(a => a.name === 'Preparación del terreno');
-                  const canSelect = !isDone && (item.id === '1' || prepDone);
+          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(0,0,0,0.3)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <TouchableWithoutFeedback>
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 20, width: '85%' }}>
+                  <Text style={[cropScreenStyle.titleModal, { fontFamily: 'CarterOne' }]}> 
+                    Selecciona una actividad
+                  </Text>
+                  <FlatList
+                    data={activities}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }) => {
+                      const isDone = activitiesDone.some(a => a.name === item.name);
+                      const prepDone = activitiesDone.some(a => a.name === 'Preparación del terreno');
+                      const canSelect = !isDone && (item.id === '1' || prepDone);
 
-                  return (
-                    <Pressable
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingVertical: 12,
-                        borderBottomWidth: 0.5,
-                        borderColor: '#ccc',
-                        opacity: canSelect ? 1 : 0.4,
-                      }}
-                      onPress={() => {
-                        if (canSelect) {
-                          setModalVisible(false);
-                          navigation.navigate(item.screen, { crop });
-                        }
-                      }}
-                      disabled={!canSelect}
-                    >
-                      <Image source={item.icon} style={{ width: 28, height: 28, marginRight: 12 }} />
-                      <Text style={{ fontSize: 16 }}>{item.name}</Text>
-                      {isDone && (
-                        <Text style={{ color: '#2E7D32', marginLeft: 8, fontSize: 13 }}>(Registrada)</Text>
-                      )}
-                    </Pressable>
-                  );
-                }}
-              />
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={{ marginTop: 15, alignSelf: 'flex-end' }}>
-                <Text style={{ color: '#BC6C25', fontFamily: 'QuicksandBold' }}>Cancelar</Text>
-              </TouchableOpacity>
+                      return (
+                        <Pressable
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingVertical: 12,
+                            borderBottomWidth: 0.5,
+                            borderColor: '#ccc',
+                            opacity: canSelect ? 1 : 0.4,
+                          }}
+                          onPress={() => {
+                            if (canSelect) {
+                              setModalVisible(false);
+                              navigation.navigate(item.screen, { crop });
+                            }
+                          }}
+                          disabled={!canSelect}
+                        >
+                          <Image source={item.icon} style={{ width: 28, height: 28, marginRight: 12 }} />
+                          <Text style={{ fontSize: 16 }}>{item.name}</Text>
+                          {isDone && (
+                            <Text style={{ color: '#2E7D32', marginLeft: 8, fontSize: 13 }}>(Registrada)</Text>
+                          )}
+                        </Pressable>
+                      );
+                    }}
+                  />
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={{ marginTop: 15, alignSelf: 'flex-end' }}>
+                    <Text style={{ color: '#BC6C25', fontFamily: 'QuicksandBold' }}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </Modal>
       </ScrollView>
     </SafeAreaView>
