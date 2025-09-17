@@ -4,7 +4,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 // Puedes importar tu estilo global aquí o pasarlo por props
-import { signUpStyle } from '../styles/signUpStyle';
+import signUpStyle from '../styles/signUpStyle';
 import { cropStyle } from '../styles/cropStyle';
 
 const FormSelectPicker = forwardRef(({
