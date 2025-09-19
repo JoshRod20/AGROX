@@ -104,7 +104,20 @@ const CropScreen = () => {
       if (crop?.id) {
         const acts = await getCropActivities(crop.id);
         setActivitiesDone(acts);
-        setProgress(Math.round((acts.length / 9) * 100));
+        // Calcular progreso solo con las 9 actividades únicas
+        const uniqueActivities = [
+          'Preparación del terreno',
+          'Siembra',
+          'Fertilización',
+          'Riego',
+          'Manejo Fitosanitario',
+          'Monitoreo del cultivo',
+          'Cosecha',
+          'Postcosecha y comercialización',
+          'Documentación adicional',
+        ];
+        const doneUnique = uniqueActivities.filter(name => acts.some(a => a.name === name));
+        setProgress(Math.round((doneUnique.length / 9) * 100));
         const docAct = acts.find(a => a.name === 'Documentación adicional' && a.imageBase64);
         setDocImageBase64(docAct?.imageBase64 || null);
       }
@@ -180,19 +193,33 @@ const CropScreen = () => {
           {activitiesDone.length === 0 ? (
             <Text style={[cropScreenStyle.activitiesDone, { fontFamily: 'QuicksandRegular' }]}>Ninguna</Text>
           ) : (
-            activities
-              .filter(activity => activitiesDone.some(a => a.name === activity.name))
-              .map((activity, index, arr) => {
-                const done = activitiesDone.find(a => a.name === activity.name);
+            activities.map((activity, index) => {
+              // Filtrar todos los registros de la actividad
+              const doneList = activitiesDone.filter(a => a.name === activity.name);
+              // Si es una actividad repetible, mostrar todas sus repeticiones
+              const isRepeatable = ['Riego', 'Fertilización', 'Manejo Fitosanitario'].includes(activity.name);
+              if (isRepeatable && doneList.length > 0) {
+                return doneList.map((done, repIdx) => (
+                  <ActivityItem
+                    key={activity.id + '-' + repIdx}
+                    activity={activity}
+                    done={done}
+                    isLast={false}
+                  />
+                ));
+              } else if (!isRepeatable && doneList.length > 0) {
+                // Solo mostrar una vez las actividades no repetibles
                 return (
                   <ActivityItem
                     key={activity.id}
                     activity={activity}
-                    done={done}
-                    isLast={index === arr.length - 1}
+                    done={doneList[0]}
+                    isLast={false}
                   />
                 );
-              })
+              }
+              return null;
+            })
           )}
         </View>
 
@@ -210,14 +237,12 @@ const CropScreen = () => {
         {/* Agregar actividad Button */}
         <TouchableOpacity
           onPress={() => {
-            if (progress < 100) setModalVisible(true);
+            setModalVisible(true);
           }}
-          disabled={progress === 100}
+          // El botón nunca se bloquea, la lógica de bloqueo va en el modal
         >
           <LinearGradient
-            colors={progress === 100 
-              ? ['#ccc', '#ccc'] 
-              : ['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
+            colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={cropScreenStyle.buttonSR}
@@ -254,9 +279,26 @@ const CropScreen = () => {
                     data={activities}
                     keyExtractor={item => item.id}
                     renderItem={({ item }) => {
-                      const isDone = activitiesDone.some(a => a.name === item.name);
                       const prepDone = activitiesDone.some(a => a.name === 'Preparación del terreno');
-                      const canSelect = !isDone && (item.id === '1' || prepDone);
+                      const isRepeatable = ['Riego', 'Fertilización', 'Manejo Fitosanitario'].includes(item.name);
+                      // Si es repetible, siempre se puede registrar si ya está preparación
+                      // Si no es repetible, solo se puede registrar si no está registrada y el progreso < 100%
+                      const uniqueActivities = [
+                        'Preparación del terreno',
+                        'Siembra',
+                        'Fertilización',
+                        'Riego',
+                        'Manejo Fitosanitario',
+                        'Monitoreo del cultivo',
+                        'Cosecha',
+                        'Postcosecha y comercialización',
+                        'Documentación adicional',
+                      ];
+                      const doneUnique = uniqueActivities.filter(name => activitiesDone.some(a => a.name === name));
+                      const allUniqueDone = doneUnique.length === 9;
+                      const canSelect = isRepeatable
+                        ? prepDone
+                        : (!activitiesDone.some(a => a.name === item.name) && (item.id === '1' || prepDone) && !allUniqueDone);
 
                       return (
                         <Pressable
@@ -278,7 +320,8 @@ const CropScreen = () => {
                         >
                           <Image source={item.icon} style={{ width: 28, height: 28, marginRight: 12 }} />
                           <Text style={{ fontSize: 16 }}>{item.name}</Text>
-                          {isDone && (
+                          {/* Mostrar (Registrada) solo si no es repetible y ya está */}
+                          {!isRepeatable && activitiesDone.some(a => a.name === item.name) && (
                             <Text style={{ color: '#2E7D32', marginLeft: 8, fontSize: 13 }}>(Registrada)</Text>
                           )}
                         </Pressable>

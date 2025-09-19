@@ -21,7 +21,20 @@ const CropCard = () => {
         const cropsData = await Promise.all(
           userCrops.map(async crop => {
             const acts = await getCropActivities(crop.id);
-            const progress = Math.round((acts.length / 9) * 100);
+            // Calcular progreso solo con las 9 actividades únicas
+            const uniqueActivities = [
+              'Preparación del terreno',
+              'Siembra',
+              'Fertilización',
+              'Riego',
+              'Manejo Fitosanitario',
+              'Monitoreo del cultivo',
+              'Cosecha',
+              'Postcosecha y comercialización',
+              'Documentación adicional',
+            ];
+            const doneUnique = uniqueActivities.filter(name => acts.some(a => a.name === name));
+            const progress = Math.round((doneUnique.length / 9) * 100);
             return {
               ...crop,
               progress,
