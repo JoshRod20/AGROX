@@ -2,7 +2,7 @@ import React, { useState,useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton';
@@ -13,8 +13,19 @@ const CropPhytosanitary = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    pestOrDisease: activityData.pestOrDisease || '',
+    product: activityData.product || '',
+    dose: activityData.dose !== undefined ? String(activityData.dose) : '',
+    applicationMethod: activityData.applicationMethod || '',
+    efficacyObservations: activityData.efficacyObservations || '',
+    productCost: activityData.productCost !== undefined ? String(activityData.productCost) : '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    machineCost: activityData.machineCost !== undefined ? String(activityData.machineCost) : '',
+    totalCost: activityData.totalCost !== undefined ? String(activityData.totalCost) : '',
+  } : {
     pestOrDisease: '',
     product: '',
     dose: '',
@@ -114,21 +125,35 @@ const CropPhytosanitary = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        dose: parseInt(formData.dose) || 0,
-        productCost: parseInt(formData.productCost) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        machineCost: parseInt(formData.machineCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Manejo Fitosanitario',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          dose: parseInt(formData.dose) || 0,
+          productCost: parseInt(formData.productCost) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          dose: parseInt(formData.dose) || 0,
+          productCost: parseInt(formData.productCost) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Manejo Fitosanitario',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };

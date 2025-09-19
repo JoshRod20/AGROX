@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton';
@@ -11,8 +11,15 @@ const CropMonitoring = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    growthObservations: activityData.growthObservations || '',
+    pestObservations: activityData.pestObservations || '',
+    actionsTaken: activityData.actionsTaken || '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    totalCost: activityData.totalCost !== undefined ? String(activityData.totalCost) : '',
+  } : {
     growthObservations: '',
     pestObservations: '',
     actionsTaken: '',
@@ -39,7 +46,16 @@ const CropMonitoring = () => {
   };
   const [errors, setErrors] = useState({});
   const handleInputChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    if (field === 'laborCost') {
+      const laborCost = parseInt(value) || 0;
+      setFormData(prev => ({
+        ...prev,
+        laborCost: value,
+        totalCost: String(laborCost)
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
   };
   const initialForm = {
     growthObservations: '',
@@ -74,18 +90,29 @@ const CropMonitoring = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        laborCost: parseInt(formData.laborCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Monitoreo del cultivo',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          laborCost: parseInt(formData.laborCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          laborCost: parseInt(formData.laborCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Monitoreo del cultivo',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };

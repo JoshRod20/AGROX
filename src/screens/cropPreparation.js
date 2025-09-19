@@ -6,21 +6,36 @@ import FormCheckBox from '../components/formCheckBox';
 import FormSelectPicker from '../components/formSelectPicker';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 const CropPreparation = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   // Estado para los datos del formulario
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    laborType: activityData.laborType || '',
+    tillageType: activityData.tillageType || '',
+    soilCondition: activityData.soilCondition || '',
+    tools: activityData.tools || '',
+    amendments: activityData.amendments || '',
+    weedControl: activityData.weedControl || '',
+    manHours: activityData.manHours !== undefined ? String(activityData.manHours) : '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    machineHours: activityData.machineHours !== undefined ? String(activityData.machineHours) : '',
+    machineCost: activityData.machineCost !== undefined ? String(activityData.machineCost) : '',
+    inputCost: activityData.inputCost !== undefined ? String(activityData.inputCost) : '',
+    totalCost: activityData.totalCost !== undefined ? activityData.totalCost : 0,
+    observations: activityData.observations || '',
+  } : {
     laborType: '',
     tillageType: '',
     soilCondition: '',
     tools: '',
     amendments: '',
-    weedControl: '', // nada seleccionado al inicio
+    weedControl: '',
     manHours: '',
     laborCost: '',
     machineHours: '',
@@ -153,17 +168,32 @@ const CropPreparation = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        manHours: parseInt(formData.manHours) || 0,
-        machineHours: parseInt(formData.machineHours) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        machineCost: parseInt(formData.machineCost) || 0,
-        inputCost: parseInt(formData.inputCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Preparación del terreno',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición: actualizar documento existente
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          manHours: parseInt(formData.manHours) || 0,
+          machineHours: parseInt(formData.machineHours) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          inputCost: parseInt(formData.inputCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          observations: formData.observations,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          manHours: parseInt(formData.manHours) || 0,
+          machineHours: parseInt(formData.machineHours) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          inputCost: parseInt(formData.inputCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Preparación del terreno',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {

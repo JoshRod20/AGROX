@@ -2,28 +2,29 @@ import React, { useState,useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton'
 import FormCheckBox from '../components/formCheckBox';
 
-
+ 
 const CropHarvest = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    totalYield: '',
-    laborPeople: '',
-    harvestMethod: '',
-    investedTime: '',
-    observations: '',
-    laborCost: '',
-    machineCost: '',
-    transportCost: '',
-    totalCost: '',
+    totalYield: activityData ? (activityData.totalYield !== undefined ? String(activityData.totalYield) : '') : '',
+    laborPeople: activityData ? (activityData.laborPeople !== undefined ? String(activityData.laborPeople) : '') : '',
+    harvestMethod: activityData ? (activityData.harvestMethod || '') : '',
+    investedTime: activityData ? (activityData.investedTime !== undefined ? String(activityData.investedTime) : '') : '',
+    observations: activityData ? (activityData.observations || '') : '',
+    laborCost: activityData ? (activityData.laborCost !== undefined ? String(activityData.laborCost) : '') : '',
+    machineCost: activityData ? (activityData.machineCost !== undefined ? String(activityData.machineCost) : '') : '',
+    transportCost: activityData ? (activityData.transportCost !== undefined ? String(activityData.transportCost) : '') : '',
+    totalCost: activityData ? (activityData.totalCost !== undefined ? String(activityData.totalCost) : '') : '',
   });
  const shakeAnim = {
   totalYield: useRef(new Animated.Value(0)).current,
@@ -109,23 +110,39 @@ const CropHarvest = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        totalYield: parseInt(formData.totalYield) || 0,
-        laborPeople: parseInt(formData.laborPeople) || 0,
-        investedTime: parseInt(formData.investedTime) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        machineCost: parseInt(formData.machineCost) || 0,
-        transportCost: parseInt(formData.transportCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Cosecha',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          totalYield: parseInt(formData.totalYield) || 0,
+          laborPeople: parseInt(formData.laborPeople) || 0,
+          investedTime: parseInt(formData.investedTime) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          transportCost: parseInt(formData.transportCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          totalYield: parseInt(formData.totalYield) || 0,
+          laborPeople: parseInt(formData.laborPeople) || 0,
+          investedTime: parseInt(formData.investedTime) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          machineCost: parseInt(formData.machineCost) || 0,
+          transportCost: parseInt(formData.transportCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Cosecha',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
-    }finally {
+    } finally {
       setLoading(false);
     }
 

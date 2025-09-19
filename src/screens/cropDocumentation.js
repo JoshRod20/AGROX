@@ -2,7 +2,7 @@ import React, { useState,useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView, Image,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
@@ -18,12 +18,13 @@ const CropDocumentation = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   
   const [formData, setFormData] = useState({
-    hasCertification: null,
-    certificationName: '',
-    imageUri: '', // solo para vista previa
-    imageBase64: '', // para guardar en Firestore
+    hasCertification: activityData ? (activityData.hasCertification ?? null) : null,
+    certificationName: activityData ? (activityData.certificationName || '') : '',
+    imageUri: activityData ? (activityData.imageUri || '') : '',
+    imageBase64: activityData ? (activityData.imageBase64 || '') : '',
   });
   const shakeAnim = {
       hasCertification: useRef(new Animated.Value(0)).current,
@@ -108,22 +109,33 @@ const CropDocumentation = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      const dataToSave = {
-        hasCertification: formData.hasCertification,
-        certificationName: formData.certificationName,
-        imageBase64: formData.imageBase64 || '',
-        name: 'Documentación adicional',
-        createdAt: Timestamp.now(),
-      };
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), dataToSave);
-      setFormData(initialForm);
-        navigation.reset({
-          index: 0,
-          routes: [
-            { name: 'CropScreen', params: { crop } }
-          ],
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          hasCertification: formData.hasCertification,
+          certificationName: formData.certificationName,
+          imageBase64: formData.imageBase64 || '',
         });
+      } else {
+        const dataToSave = {
+          hasCertification: formData.hasCertification,
+          certificationName: formData.certificationName,
+          imageBase64: formData.imageBase64 || '',
+          name: 'Documentación adicional',
+          createdAt: Timestamp.now(),
+        };
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), dataToSave);
+      }
+      setFormData(initialForm);
+      navigation.reset({
+        index: 0,
+        routes: [
+          { name: 'CropScreen', params: { crop } }
+        ],
+      });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
     }
     setLoading(false);
@@ -175,10 +187,17 @@ const CropDocumentation = () => {
 
 
       {/* Imagen seleccionada */}
-      {formData.imageUri ? (
+      {(formData.imageUri || formData.imageBase64) ? (
         <View style={{ width: '90%', alignSelf: 'center', marginBottom: 16 }}>
           <Text style={cropStyle.label}>Imagen seleccionada</Text>
-          <Image source={{ uri: formData.imageUri }} style={{ width: '100%', height: 200, borderRadius: 8 }} resizeMode="cover" />
+          <Image
+            source={formData.imageUri
+              ? { uri: formData.imageUri }
+              : { uri: `data:image/jpeg;base64,${formData.imageBase64}` }
+            }
+            style={{ width: '100%', height: 200, borderRadius: 8 }}
+            resizeMode="cover"
+          />
         </View>
       ) : null}
       {/* Botón Guardar */}

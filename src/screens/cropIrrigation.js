@@ -2,7 +2,7 @@ import React, { useState,useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import InputsFormFields from '../components/inputsFormFields';
 import FormButton from '../components/formButton';
@@ -14,8 +14,18 @@ const CropIrrigation = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    irrigationMethod: activityData.irrigationMethod || '',
+    irrigationFrequency: activityData.irrigationFrequency || '',
+    irrigationDuration: activityData.irrigationDuration !== undefined ? String(activityData.irrigationDuration) : '',
+    irrigationVolume: activityData.irrigationVolume !== undefined ? String(activityData.irrigationVolume) : '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    energyCost: activityData.energyCost !== undefined ? String(activityData.energyCost) : '',
+    maintenanceCost: activityData.maintenanceCost !== undefined ? String(activityData.maintenanceCost) : '',
+    totalCost: activityData.totalCost !== undefined ? String(activityData.totalCost) : '',
+  } : {
     irrigationMethod: '',
     irrigationFrequency: '',
     irrigationDuration: '',
@@ -110,22 +120,37 @@ const CropIrrigation = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        irrigationDuration: parseInt(formData.irrigationDuration) || 0,
-        irrigationVolume: parseInt(formData.irrigationVolume) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        energyCost: parseInt(formData.energyCost) || 0,
-        maintenanceCost: parseInt(formData.maintenanceCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Riego',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          irrigationDuration: parseInt(formData.irrigationDuration) || 0,
+          irrigationVolume: parseInt(formData.irrigationVolume) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          energyCost: parseInt(formData.energyCost) || 0,
+          maintenanceCost: parseInt(formData.maintenanceCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          irrigationDuration: parseInt(formData.irrigationDuration) || 0,
+          irrigationVolume: parseInt(formData.irrigationVolume) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          energyCost: parseInt(formData.energyCost) || 0,
+          maintenanceCost: parseInt(formData.maintenanceCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Riego',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };

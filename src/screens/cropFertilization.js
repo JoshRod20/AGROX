@@ -2,7 +2,7 @@ import React, { useState,useRef } from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import FormCheckBox from '../components/formCheckBox';
 import InputsFormFields from '../components/inputsFormFields';
@@ -12,8 +12,20 @@ const CropFertilization = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    fertilizerType: activityData.fertilizerType || '',
+    productName: activityData.productName || '',
+    dose: activityData.dose !== undefined ? String(activityData.dose) : '',
+    applicationMethod: activityData.applicationMethod || '',
+    soilCondition: activityData.soilCondition || '',
+    cropObservations: activityData.cropObservations || '',
+    fertilizerCost: activityData.fertilizerCost !== undefined ? String(activityData.fertilizerCost) : '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    transportCost: activityData.transportCost !== undefined ? String(activityData.transportCost) : '',
+    totalCost: activityData.totalCost !== undefined ? String(activityData.totalCost) : '',
+  } : {
     fertilizerType: '',
     productName: '',
     dose: '',
@@ -76,6 +88,7 @@ const CropFertilization = () => {
     transportCost: '',
     totalCost: '',
   };
+
   const handleSave = async () => {
     let newErrors = {};
     if (!formData.fertilizerType){ 
@@ -118,23 +131,37 @@ const CropFertilization = () => {
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        fertilizerCost: parseInt(formData.fertilizerCost) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        transportCost: parseInt(formData.transportCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Fertilización',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          fertilizerCost: parseInt(formData.fertilizerCost) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          transportCost: parseInt(formData.transportCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          fertilizerCost: parseInt(formData.fertilizerCost) || 0,
+          laborCost: parseInt(formData.laborCost) || 0,
+          transportCost: parseInt(formData.transportCost) || 0,
+          totalCost: parseInt(formData.totalCost) || 0,
+          name: 'Fertilización',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
-       navigation.navigate('CropScreen', { crop });
+      navigation.navigate('CropScreen', { crop });
     } catch (e) {
+      console.log('Error al guardar:', e);
       Alert.alert('Error', 'No se pudo guardar la actividad.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <ScrollView contentContainerStyle={[
@@ -234,8 +261,8 @@ const CropFertilization = () => {
         rightAdornment={<Text style={{ color: '#888', fontSize: 16 }}>C$</Text>}
       />
 
-      {/* Costo de transporte/logística */}
-      < InputsFormFields
+  {/* Costo de transporte/logística */}
+  <InputsFormFields
         label="Costo de transporte/logística"
         value={formData.transportCost}
         onChangeText={text => handleInputChange('transportCost', text.replace(/[^0-9]/g, ''))}

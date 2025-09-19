@@ -2,7 +2,7 @@ import React, { useState, useRef} from 'react';
 import { Text, View, TextInput, TouchableOpacity, Alert, ScrollView,Animated } from 'react-native';
 import { cropStyle } from '../styles/cropStyle';
 import { db } from '../services/database';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp, doc, updateDoc } from 'firebase/firestore';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import FormCheckBox from '../components/formCheckBox';
 import InputsFormFields from '../components/inputsFormFields';
@@ -14,8 +14,21 @@ const CropSowing = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const crop = route.params?.crop;
+  const activityData = route.params?.activityData;
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(activityData ? {
+    sowingMethod: activityData.sowingMethod || '',
+    sowingMark: activityData.sowingMark || '',
+    seedType: activityData.seedType || '',
+    variety: activityData.variety || '',
+    sowingDensity: activityData.sowingDensity || '',
+    supplierName: activityData.supplierName || '',
+    seedCost: activityData.seedCost !== undefined ? String(activityData.seedCost) : '',
+    laborCost: activityData.laborCost !== undefined ? String(activityData.laborCost) : '',
+    machineCost: activityData.machineCost !== undefined ? String(activityData.machineCost) : '',
+    transportCost: activityData.transportCost !== undefined ? String(activityData.transportCost) : '',
+    totalCost: activityData.totalCost !== undefined ? activityData.totalCost : '',
+  } : {
     sowingMethod: '',
     sowingMark: '',
     seedType: '',
@@ -132,28 +145,41 @@ const CropSowing = () => {
       triggerShake(shakeAnim.transportCost);
     }
     if (!formData.totalCost) {
-      newErrors.totalCost = 'Ingresa el costo total de siembra.';
+      newErrors.totalCost = 'Ingresa el costo total.';
       triggerShake(shakeAnim.totalCost);
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-     setLoading(true);
+    setLoading(true);
     try {
-      await addDoc(collection(db, `Crops/${crop.id}/activities`), {
-        ...formData,
-        seedCost: parseInt(formData.seedCost) || 0,
-        laborCost: parseInt(formData.laborCost) || 0,
-        machineCost: parseInt(formData.machineCost) || 0,
-        transportCost: parseInt(formData.transportCost) || 0,
-        totalCost: parseInt(formData.totalCost) || 0,
-        name: 'Siembra',
-        createdAt: Timestamp.now(),
-      });
+      if (activityData && activityData.id) {
+        // Modo edición
+        const docRef = doc(db, `Crops/${crop.id}/activities/${activityData.id}`);
+        await updateDoc(docRef, {
+          ...formData,
+          seedCost: parseFloat(formData.seedCost) || 0,
+          laborCost: parseFloat(formData.laborCost) || 0,
+          machineCost: parseFloat(formData.machineCost) || 0,
+          transportCost: parseFloat(formData.transportCost) || 0,
+          totalCost: parseFloat(formData.totalCost) || 0,
+        });
+      } else {
+        await addDoc(collection(db, `Crops/${crop.id}/activities`), {
+          ...formData,
+          seedCost: parseFloat(formData.seedCost) || 0,
+          laborCost: parseFloat(formData.laborCost) || 0,
+          machineCost: parseFloat(formData.machineCost) || 0,
+          transportCost: parseFloat(formData.transportCost) || 0,
+          totalCost: parseFloat(formData.totalCost) || 0,
+          name: 'Siembra',
+          createdAt: Timestamp.now(),
+        });
+      }
       setFormData(initialForm);
       navigation.navigate('CropScreen', { crop });
     } catch (e) {
       Alert.alert('Error', 'No se pudo guardar la actividad.');
-    }finally {
+    } finally {
       setLoading(false);
     }
   };

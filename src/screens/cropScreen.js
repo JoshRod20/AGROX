@@ -24,7 +24,8 @@ const activities = [
 ];
 
 // 🔹 Subcomponente para renderizar una actividad con animación
-const ActivityItem = ({ activity, done, isLast }) => {
+
+const ActivityItem = ({ activity, done, isLast, onOptions }) => {
   const lineHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -50,16 +51,22 @@ const ActivityItem = ({ activity, done, isLast }) => {
       </View>
 
       {/* Texto y fecha */}
-      <View style={cropScreenStyle.activityContent}>
-        <Text style={cropScreenStyle.activityTitle}>{activity.name}</Text>
-        <Text style={cropScreenStyle.activityDate}>
-          {done && done.createdAt
-            ? (typeof done.createdAt === 'string'
-                ? new Date(done.createdAt)
-                : done.createdAt.toDate ? done.createdAt.toDate() : new Date())
-                .toLocaleString('es-NI', { dateStyle: 'long'})
-            : 'Sin fecha'}
-        </Text>
+      <View style={[cropScreenStyle.activityContent, { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}> 
+        <View>
+          <Text style={cropScreenStyle.activityTitle}>{activity.name}</Text>
+          <Text style={cropScreenStyle.activityDate}>
+            {done && done.createdAt
+              ? (typeof done.createdAt === 'string'
+                  ? new Date(done.createdAt)
+                  : done.createdAt.toDate ? done.createdAt.toDate() : new Date())
+                  .toLocaleString('es-NI', { dateStyle: 'long'})
+              : 'Sin fecha'}
+          </Text>
+        </View>
+        {/* Botón de opciones (tres puntos) */}
+        <TouchableOpacity onPress={() => onOptions(done, activity)} style={{ padding: 8 }}>
+          <Image source={require('../assets/menu-burger.png')} style={{ width: 22, height: 22, tintColor: '#767E86' }} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -94,6 +101,9 @@ const CropScreen = () => {
   const navigation = useNavigation();
   const crop = route.params?.crop;
   const [modalVisible, setModalVisible] = useState(false);
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  const [selectedActivityType, setSelectedActivityType] = useState(null);
   const [activitiesDone, setActivitiesDone] = useState([]);
   const [progress, setProgress] = useState(0);
   const [docImageBase64, setDocImageBase64] = useState(null);
@@ -205,6 +215,11 @@ const CropScreen = () => {
                     activity={activity}
                     done={done}
                     isLast={false}
+                    onOptions={(act, actType) => {
+                      setSelectedActivity(act);
+                      setSelectedActivityType(actType);
+                      setOptionsModalVisible(true);
+                    }}
                   />
                 ));
               } else if (!isRepeatable && doneList.length > 0) {
@@ -215,13 +230,58 @@ const CropScreen = () => {
                     activity={activity}
                     done={doneList[0]}
                     isLast={false}
+                    onOptions={(act, actType) => {
+                      setSelectedActivity(act);
+                      setSelectedActivityType(actType);
+                      setOptionsModalVisible(true);
+                    }}
                   />
                 );
               }
               return null;
             })
           )}
-        </View>
+    {/* Modal de opciones para editar/eliminar actividad */}
+    <Modal
+          visible={optionsModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOptionsModalVisible(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
+            <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)', justifyContent: 'center', alignItems: 'center' }}>
+              <TouchableWithoutFeedback>
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 24, width: '80%' }}>
+                  <Text style={{ fontFamily: 'CarterOne', fontSize: 18, marginBottom: 18, color: '#2E7D32' }}>Opciones de actividad</Text>
+                  <Text style={{ fontFamily: 'QuicksandBold', fontSize: 16, marginBottom: 10 }}>{selectedActivityType?.name}</Text>
+                  <TouchableOpacity
+                    style={{ paddingVertical: 12 }}
+                    onPress={() => {
+                      setOptionsModalVisible(false);
+                      // Navegar a pantalla de edición, pasando datos de la actividad
+                      navigation.navigate(selectedActivityType.screen, { crop, activityData: selectedActivity });
+                    }}
+                  >
+                    <Text style={{ color: '#1976D2', fontFamily: 'QuicksandBold', fontSize: 15 }}>Editar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ paddingVertical: 12 }}
+                    onPress={() => {
+                      setOptionsModalVisible(false);
+                      // Aquí irá la lógica de eliminación (pendiente)
+                    }}
+                  >
+                    <Text style={{ color: '#D32F2F', fontFamily: 'QuicksandBold', fontSize: 15 }}>Eliminar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setOptionsModalVisible(false)} style={{ marginTop: 10, alignSelf: 'flex-end' }}>
+                    <Text style={{ color: '#BC6C25', fontFamily: 'QuicksandBold' }}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </View>
 
         {/* Progreso del cultivo */}
         <View style={cropScreenStyle.progressContainer}>
