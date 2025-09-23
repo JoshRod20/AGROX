@@ -1,9 +1,12 @@
 import * as React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { View, Image, TouchableOpacity } from "react-native";
-import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import {
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import menuBurger2 from '../assets/menu-burger-2.png';
+import menuBurger2 from "../assets/menu-burger-2.png";
 import Home from "../screens/home";
 import Crop from "../screens/crop";
 import LogoutButton from "../components/LogoutButton";
@@ -30,11 +33,11 @@ export default function NavigationDrawer() {
           {/* Botón menú para cerrar el drawer */}
           <TouchableOpacity
             style={drawerStyle.menuButton}
-            onPress={() => props.navigation.closeDrawer()} 
+            onPress={() => props.navigation.closeDrawer()}
           >
-            <Image 
-              source={menuBurger2} 
-              style={{ width: 30, height: 30, resizeMode: 'contain' }}
+            <Image
+              source={menuBurger2}
+              style={{ width: 30, height: 30, resizeMode: "contain" }}
             />
           </TouchableOpacity>
 
@@ -73,9 +76,9 @@ export default function NavigationDrawer() {
           ),
         }}
       />
-      <Drawer.Screen 
-        name="Nuevo cultivo" 
-        component={Crop} 
+      <Drawer.Screen
+        name="Nuevo cultivo"
+        component={Crop}
         options={{
           drawerIcon: () => (
             <Image

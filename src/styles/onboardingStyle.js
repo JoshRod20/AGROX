@@ -17,12 +17,12 @@ export const onboardingStyle = StyleSheet.create({
     padding: width * 0.05,
   },
   image: {
-  width: width * 0.8,      // mismo ancho fijo
-  height: height * 0.4,    // mismo alto fijo
-  resizeMode: "cover",     // mantiene proporción, recorta si es necesario
-  marginBottom: height * 0.05,
-  borderRadius: 30,
-},
+    width: width * 0.8, // mismo ancho fijo
+    height: height * 0.4, // mismo alto fijo
+    resizeMode: "cover", // mantiene proporción, recorta si es necesario
+    marginBottom: height * 0.05,
+    borderRadius: 30,
+  },
 
   overlay: {
     position: "absolute",

@@ -19,10 +19,26 @@ SplashScreen.preventAutoHideAsync();
 const { width } = Dimensions.get("window");
 
 const slides = [
-  { id: "1", image: require("../assets/imagen_1.jpg"), text: "Registra tus parcelas y lleva el control de cada cultivo." },
-  { id: "2", image: require("../assets/imagen_2.jpg"), text: "Lleva un historial completo de tu producción, sin papeles." },
-  { id: "3", image: require("../assets/imagen_3.webp"), text: "Ten a mano la trazabilidad de tus cultivos para vender mejor." },
-  { id: "4", image: require("../assets/agricultor2.png"), text: "Gestiona todo desde tu celular, de forma fácil y rápida." },
+  {
+    id: "1",
+    image: require("../assets/imagen_1.jpg"),
+    text: "Registra tus parcelas y lleva el control de cada cultivo.",
+  },
+  {
+    id: "2",
+    image: require("../assets/imagen_2.jpg"),
+    text: "Lleva un historial completo de tu producción, sin papeles.",
+  },
+  {
+    id: "3",
+    image: require("../assets/imagen_3.webp"),
+    text: "Ten a mano la trazabilidad de tus cultivos para vender mejor.",
+  },
+  {
+    id: "4",
+    image: require("../assets/agricultor2.png"),
+    text: "Gestiona todo desde tu celular, de forma fácil y rápida.",
+  },
 ];
 
 const Onboarding = () => {
@@ -41,12 +57,11 @@ const Onboarding = () => {
   if (!fontsLoaded) return null;
 
   const finishOnboarding = async () => {
-  await AsyncStorage.setItem("hasOnboarded", "true");
-  await AsyncStorage.setItem("hasSeenWelcome", "false"); // aseguramos que se muestre en Home
-  await AsyncStorage.setItem("hasSeenAboutUs", "false"); // 👈 nuevo flag
-  navigation.replace("Drawer"); // o como entres al Home
-};
-
+    await AsyncStorage.setItem("hasOnboarded", "true");
+    await AsyncStorage.setItem("hasSeenWelcome", "false"); // aseguramos que se muestre en Home
+    await AsyncStorage.setItem("hasSeenAboutUs", "false"); // 👈 nuevo flag
+    navigation.replace("Drawer"); // o como entres al Home
+  };
 
   // Escuchar scrollX para actualizar índice
   scrollX.addListener(({ value }) => {
@@ -86,7 +101,11 @@ const Onboarding = () => {
             { useNativeDriver: false }
           )}
           renderItem={({ item, index }) => {
-            const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+            const inputRange = [
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width,
+            ];
             const translateY = scrollX.interpolate({
               inputRange,
               outputRange: [50, 0, 50],
@@ -100,7 +119,9 @@ const Onboarding = () => {
 
             return (
               <View style={onboardingStyle.slide}>
-                <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <View
+                  style={{ alignItems: "center", justifyContent: "center" }}
+                >
                   {/* Imagen */}
                   <Animated.Image
                     source={item.image}
@@ -125,7 +146,9 @@ const Onboarding = () => {
                   </Animated.View>
                 </View>
 
-                <Text style={[onboardingStyle.text, { fontFamily: "CarterOne" }]}>
+                <Text
+                  style={[onboardingStyle.text, { fontFamily: "CarterOne" }]}
+                >
                   {item.text}
                 </Text>
               </View>
@@ -140,7 +163,9 @@ const Onboarding = () => {
               key={index}
               style={[
                 onboardingStyle.indicator,
-                { backgroundColor: index === currentIndex ? "#FF5722" : "#ccc" },
+                {
+                  backgroundColor: index === currentIndex ? "#FF5722" : "#ccc",
+                },
               ]}
             />
           ))}
@@ -151,15 +176,24 @@ const Onboarding = () => {
           {currentIndex > 0 && (
             <TouchableOpacity
               style={onboardingStyle.button}
-              onPress={() => slidesRef.current.scrollToIndex({ index: currentIndex - 1 })}
+              onPress={() =>
+                slidesRef.current.scrollToIndex({ index: currentIndex - 1 })
+              }
             >
-              <Text style={[onboardingStyle.buttonText, { fontFamily: "CarterOne" }]}>
+              <Text
+                style={[
+                  onboardingStyle.buttonText,
+                  { fontFamily: "CarterOne" },
+                ]}
+              >
                 Anterior
               </Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity style={onboardingStyle.button} onPress={scrollTo}>
-            <Text style={[onboardingStyle.buttonText, { fontFamily: "CarterOne" }]}>
+            <Text
+              style={[onboardingStyle.buttonText, { fontFamily: "CarterOne" }]}
+            >
               {currentIndex === slides.length - 1 ? "Empezar" : "Siguiente"}
             </Text>
           </TouchableOpacity>

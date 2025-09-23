@@ -72,10 +72,14 @@ const WeatherCard = () => {
 
   const getIconSource = (icon) => {
     switch (icon) {
-      case "clear": return require("../assets/clear.png");
-      case "clouds": return require("../assets/nublado.png");
-      case "rain": return require("../assets/rain.png");
-      default: return require("../assets/clear.png");
+      case "clear":
+        return require("../assets/clear.png");
+      case "clouds":
+        return require("../assets/nublado.png");
+      case "rain":
+        return require("../assets/rain.png");
+      default:
+        return require("../assets/clear.png");
     }
   };
 
@@ -84,16 +88,24 @@ const WeatherCard = () => {
   return (
     <View onLayout={onLayoutRootView}>
       <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { fontFamily: "CarterOne" }]}>Clima</Text>
+        <Text style={[styles.sectionTitle, { fontFamily: "CarterOne" }]}>
+          Clima
+        </Text>
         <View style={styles.sectionLine} />
       </View>
 
       <View style={[styles.cardWrapper, styles[weather?.icon] || styles.clear]}>
         <Image source={getIconSource(weather?.icon)} style={styles.icon} />
-        <Text style={[styles.status, { fontFamily: "QuicksandBold" }]}>{weather?.status}</Text>
+        <Text style={[styles.status, { fontFamily: "QuicksandBold" }]}>
+          {weather?.status}
+        </Text>
         <View style={styles.tempBlock}>
-          <Text style={[styles.temperature, { fontFamily: "CarterOne" }]}>{weather?.temp}°</Text>
-          <Text style={[styles.range, { fontFamily: "QuicksandBold" }]}>{weather?.min}° / {weather?.max}°</Text>
+          <Text style={[styles.temperature, { fontFamily: "CarterOne" }]}>
+            {weather?.temp}°
+          </Text>
+          <Text style={[styles.range, { fontFamily: "QuicksandBold" }]}>
+            {weather?.min}° / {weather?.max}°
+          </Text>
         </View>
       </View>
     </View>

@@ -27,7 +27,10 @@ const AboutUsCard = ({ isVisible }) => {
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.cardText}>
-            <Text style={styles.highlight}>AGROX</Text> es una herramienta digital pensada para el pequeño y mediano productor, que ayuda a registrar y dar seguimiento a la trazabilidad de sus cultivos de forma sencilla.
+            <Text style={styles.highlight}>AGROX</Text> es una herramienta
+            digital pensada para el pequeño y mediano productor, que ayuda a
+            registrar y dar seguimiento a la trazabilidad de sus cultivos de
+            forma sencilla.
           </Text>
         </View>
       </View>

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { db } from '../services/database';
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { db } from "../services/database";
 
-import styles from '../styles/cropCardStyle';
-import { getCropActivities } from '../services/activitiesService';
-import { getUserCrops } from '../services/cropsService';
+import styles from "../styles/cropCardStyle";
+import { getCropActivities } from "../services/activitiesService";
+import { getUserCrops } from "../services/cropsService";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const CropCard = () => {
   const navigation = useNavigation();
@@ -19,21 +19,23 @@ const CropCard = () => {
       try {
         const userCrops = await getUserCrops();
         const cropsData = await Promise.all(
-          userCrops.map(async crop => {
+          userCrops.map(async (crop) => {
             const acts = await getCropActivities(crop.id);
             // Calcular progreso solo con las 9 actividades únicas
             const uniqueActivities = [
-              'Preparación del terreno',
-              'Siembra',
-              'Fertilización',
-              'Riego',
-              'Manejo Fitosanitario',
-              'Monitoreo del cultivo',
-              'Cosecha',
-              'Postcosecha y comercialización',
-              'Documentación adicional',
+              "Preparación del terreno",
+              "Siembra",
+              "Fertilización",
+              "Riego",
+              "Manejo Fitosanitario",
+              "Monitoreo del cultivo",
+              "Cosecha",
+              "Postcosecha y comercialización",
+              "Documentación adicional",
             ];
-            const doneUnique = uniqueActivities.filter(name => acts.some(a => a.name === name));
+            const doneUnique = uniqueActivities.filter((name) =>
+              acts.some((a) => a.name === name)
+            );
             const progress = Math.round((doneUnique.length / 9) * 100);
             return {
               ...crop,
@@ -43,7 +45,7 @@ const CropCard = () => {
         );
         setCrops(cropsData);
       } catch (error) {
-        console.log('Error fetching crops:', error);
+        console.log("Error fetching crops:", error);
       } finally {
         setLoading(false);
       }
@@ -63,46 +65,57 @@ const CropCard = () => {
 
       {crops.length > 0 ? (
         crops.map((crop) => (
-          <TouchableOpacity 
-            key={crop.id} 
-            style={[styles.wrapper, { width: width * 0.9 }]} 
-            onPress={() => navigation.navigate('CropScreen', { crop: crop })}
-            >
+          <TouchableOpacity
+            key={crop.id}
+            style={[styles.wrapper, { width: width * 0.9 }]}
+            onPress={() => navigation.navigate("CropScreen", { crop: crop })}
+          >
             {/* Etiqueta arriba, flotando */}
             <View style={styles.cropNameTag}>
-                <Text style={styles.cropNameText}>{crop.cropName}</Text>
+              <Text style={styles.cropNameText}>{crop.cropName}</Text>
             </View>
 
             {/* Tarjeta */}
             <View style={styles.cardContainer}>
-                <View style={styles.card}>
+              <View style={styles.card}>
                 <Text style={styles.label}>
-                    Tipo de cultivo: <Text style={styles.value}>{crop.cropType}</Text>
+                  Tipo de cultivo:{" "}
+                  <Text style={styles.value}>{crop.cropType}</Text>
                 </Text>
 
                 <View style={styles.row}>
-                    <Text style={styles.label}>Registrado el:</Text>
-                    <View style={styles.dateBox}>
+                  <Text style={styles.label}>Registrado el:</Text>
+                  <View style={styles.dateBox}>
                     <Text style={styles.dateText}>
-                        {new Date(crop.createdAt).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' })}
+                      {new Date(crop.createdAt).toLocaleDateString("es-ES", {
+                        day: "2-digit",
+                        month: "2-digit",
+                      })}
                     </Text>
-                    </View>
+                  </View>
                 </View>
 
                 <View style={styles.progressContainer}>
-                    <Text style={styles.label}>Progreso:</Text>
-                    <View style={styles.progressBar}>
-                    <View style={[styles.progressFill, { width: `${crop.progress}%` }]} />
-                    </View>
-                    <Text style={styles.progressText}>{crop.progress}%</Text>
+                  <Text style={styles.label}>Progreso:</Text>
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        { width: `${crop.progress}%` },
+                      ]}
+                    />
+                  </View>
+                  <Text style={styles.progressText}>{crop.progress}%</Text>
                 </View>
-                </View>
+              </View>
             </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         ))
       ) : (
         <View style={styles.noData}>
-          <Text style={styles.noDataText}>No hay cultivos registrados aún.</Text>
+          <Text style={styles.noDataText}>
+            No hay cultivos registrados aún.
+          </Text>
         </View>
       )}
     </>

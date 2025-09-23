@@ -6,7 +6,7 @@ export const drawerStyle = StyleSheet.create({
   drawerContainer: {
     flex: 1,
     backgroundColor: "#2E7D32", // verde principal
-    marginTop: Platform.OS === 'android' ? 0 : 0,
+    marginTop: Platform.OS === "android" ? 0 : 0,
     borderTopRightRadius: width * 0.05, // proporcional al ancho
     borderBottomRightRadius: width * 0.05,
     overflow: "hidden",
@@ -15,10 +15,10 @@ export const drawerStyle = StyleSheet.create({
   menuButton: {
     marginTop: height * 0.01,
     padding: width * 0.03,
-    position: 'absolute',
+    position: "absolute",
     top: height * 0.01,
     left: width * 0.02,
-    zIndex: 1, 
+    zIndex: 1,
   },
   drawerScroll: {
     flex: 1,
@@ -44,7 +44,7 @@ export const drawerStyle = StyleSheet.create({
     marginBottom: height * 0.015,
   },
   logo: {
-    width: width * 0.35,  // proporcional al ancho de la pantalla
+    width: width * 0.35, // proporcional al ancho de la pantalla
     height: height * 0.05, // proporcional al alto de la pantalla
     resizeMode: "contain",
     marginTop: height * 0.005,

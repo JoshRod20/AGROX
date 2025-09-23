@@ -1,7 +1,8 @@
 import { StyleSheet, Dimensions, PixelRatio } from "react-native";
 
 const { width, height } = Dimensions.get("window");
-const scaleFont = (size) => Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
+const scaleFont = (size) =>
+  Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
 const isSmallDevice = width < 360; // Adjust threshold as needed for small devices
 const isLargeDevice = width > 400; // Adjust threshold as needed for large devices
 

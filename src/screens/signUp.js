@@ -1,9 +1,17 @@
 import React, { useCallback, useState, useRef } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, Animated, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Animated,
+  ScrollView,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { signUp1Style as signUpStyle } from "../styles/signUp1Style";
 import { db, auth } from "../services/database";
 import { collection, addDoc } from "firebase/firestore";
@@ -11,8 +19,11 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DropDownPicker from 'react-native-dropdown-picker';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import DropDownPicker from "react-native-dropdown-picker";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -55,10 +66,26 @@ const SignUp = () => {
   // Shake animation function
   const triggerShake = (anim) => {
     Animated.sequence([
-      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: -10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -73,7 +100,8 @@ const SignUp = () => {
       triggerShake(shakeAnimGender);
     }
     if (!productionType) {
-      newErrors.productionType = "El tipo de cultivos o producción es obligatorio.";
+      newErrors.productionType =
+        "El tipo de cultivos o producción es obligatorio.";
       triggerShake(shakeAnimProductionType);
     }
     if (!farmSize) {
@@ -85,10 +113,14 @@ const SignUp = () => {
       triggerShake(shakeAnimPlotsNumber);
     }
     if (!prevData.name) newErrors.name = "El nombre es obligatorio.";
-    if (!prevData.password) newErrors.password = "La contraseña es obligatoria.";
-    if (!prevData.department) newErrors.department = "El departamento es obligatorio.";
-    if (!prevData.municipality) newErrors.municipality = "El municipio es obligatorio.";
-    if (!prevData.community) newErrors.community = "La comunidad es obligatoria.";
+    if (!prevData.password)
+      newErrors.password = "La contraseña es obligatoria.";
+    if (!prevData.department)
+      newErrors.department = "El departamento es obligatorio.";
+    if (!prevData.municipality)
+      newErrors.municipality = "El municipio es obligatorio.";
+    if (!prevData.community)
+      newErrors.community = "La comunidad es obligatoria.";
     if (!prevData.userId) newErrors.userId = "Error interno de ID de usuario.";
 
     setErrors(newErrors);
@@ -110,7 +142,7 @@ const SignUp = () => {
           (x, y) => {
             scrollViewRef.current.scrollTo({ y, animated: true });
           },
-          () => console.log('Error measuring layout')
+          () => console.log("Error measuring layout")
         );
       }
       return;
@@ -178,10 +210,16 @@ const SignUp = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Correo electrónico */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInput]}>Correo electrónico</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInput]}>
+          Correo electrónico
+        </Text>
         <Animated.View
           ref={emailRef}
-          style={[signUpStyle.inputContainer, errors.email && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimEmail }] }]}
+          style={[
+            signUpStyle.inputContainer,
+            errors.email && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimEmail }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.input}
@@ -197,13 +235,24 @@ const SignUp = () => {
             secureTextEntry={!showEmail}
           />
         </Animated.View>
-        {errors.email && <Text style={signUpStyle.errorText}>{errors.email}</Text>}
+        {errors.email && (
+          <Text style={signUpStyle.errorText}>{errors.email}</Text>
+        )}
 
         {/* Sexo */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInput]}>Sexo</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInput]}>
+          Sexo
+        </Text>
         <Animated.View
           ref={genderRef}
-          style={[signUpStyle.inputContainer, errors.gender && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimGender }], zIndex: openGender ? 3000 : 1000 }]}
+          style={[
+            signUpStyle.inputContainer,
+            errors.gender && signUpStyle.errorInput,
+            {
+              transform: [{ translateX: shakeAnimGender }],
+              zIndex: openGender ? 3000 : 1000,
+            },
+          ]}
         >
           <DropDownPicker
             open={openGender}
@@ -212,29 +261,52 @@ const SignUp = () => {
             setOpen={setOpenGender}
             setValue={setGender}
             placeholder="Seleccione su sexo"
-            placeholderStyle={[{ fontFamily: 'QuicksandRegular' }, signUpStyle.placeholder]}
-            style={[signUpStyle.input, { borderWidth: 0, backgroundColor: '#fff' }]}
-            textStyle={{ fontFamily: 'QuicksandRegular', fontSize: wp('3.5%') }}
-            dropDownContainerStyle={[signUpStyle.dropDownContainer, errors.gender && signUpStyle.errorInput]}
+            placeholderStyle={[
+              { fontFamily: "QuicksandRegular" },
+              signUpStyle.placeholder,
+            ]}
+            style={[
+              signUpStyle.input,
+              { borderWidth: 0, backgroundColor: "#fff" },
+            ]}
+            textStyle={{ fontFamily: "QuicksandRegular", fontSize: wp("3.5%") }}
+            dropDownContainerStyle={[
+              signUpStyle.dropDownContainer,
+              errors.gender && signUpStyle.errorInput,
+            ]}
             listMode="SCROLLVIEW"
-            scrollViewProps={{ nestedScrollEnabled: true, maxHeight: hp('30%') }}
+            scrollViewProps={{
+              nestedScrollEnabled: true,
+              maxHeight: hp("30%"),
+            }}
             zIndex={openGender ? 4000 : 1000}
             zIndexInverse={openGender ? 1000 : 4000}
           />
         </Animated.View>
-        {errors.gender && <Text style={signUpStyle.errorText}>{errors.gender}</Text>}
+        {errors.gender && (
+          <Text style={signUpStyle.errorText}>{errors.gender}</Text>
+        )}
 
         {/* Tipo de cultivos o producción */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInput]}>Tipo de cultivos o producción</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInput]}>
+          Tipo de cultivos o producción
+        </Text>
         <Animated.View
           ref={productionTypeRef}
-          style={[signUpStyle.inputContainer, errors.productionType && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimProductionType }] }]}
+          style={[
+            signUpStyle.inputContainer,
+            errors.productionType && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimProductionType }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.input}
             placeholder="Ej: maíz, café, ganado, etc."
             placeholderTextColor="#888"
-            placeholderStyle={[{ fontFamily: 'QuicksandRegular' }, signUpStyle.placeholder]}
+            placeholderStyle={[
+              { fontFamily: "QuicksandRegular" },
+              signUpStyle.placeholder,
+            ]}
             value={productionType}
             onChangeText={(text) => {
               setProductionType(text);
@@ -242,13 +314,21 @@ const SignUp = () => {
             }}
           />
         </Animated.View>
-        {errors.productionType && <Text style={signUpStyle.errorText}>{errors.productionType}</Text>}
+        {errors.productionType && (
+          <Text style={signUpStyle.errorText}>{errors.productionType}</Text>
+        )}
 
         {/* Tamaño de la finca */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInput]}>Tamaño de la finca (mz/ha)</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInput]}>
+          Tamaño de la finca (mz/ha)
+        </Text>
         <Animated.View
           ref={farmSizeRef}
-          style={[signUpStyle.inputContainer, errors.farmSize && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimFarmSize }] }]}
+          style={[
+            signUpStyle.inputContainer,
+            errors.farmSize && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimFarmSize }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.input}
@@ -262,13 +342,21 @@ const SignUp = () => {
             keyboardType="numeric"
           />
         </Animated.View>
-        {errors.farmSize && <Text style={signUpStyle.errorText}>{errors.farmSize}</Text>}
+        {errors.farmSize && (
+          <Text style={signUpStyle.errorText}>{errors.farmSize}</Text>
+        )}
 
         {/* Número de parcelas */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInput]}>Número de parcelas</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInput]}>
+          Número de parcelas
+        </Text>
         <Animated.View
           ref={plotsNumberRef}
-          style={[signUpStyle.inputContainer, errors.plotsNumber && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimPlotsNumber }] }]}
+          style={[
+            signUpStyle.inputContainer,
+            errors.plotsNumber && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimPlotsNumber }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.input}
@@ -282,7 +370,9 @@ const SignUp = () => {
             keyboardType="numeric"
           />
         </Animated.View>
-        {errors.plotsNumber && <Text style={signUpStyle.errorText}>{errors.plotsNumber}</Text>}
+        {errors.plotsNumber && (
+          <Text style={signUpStyle.errorText}>{errors.plotsNumber}</Text>
+        )}
 
         {/* Botón */}
         <TouchableOpacity
@@ -291,14 +381,12 @@ const SignUp = () => {
           disabled={loading}
         >
           <LinearGradient
-            colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
+            colors={["rgba(46, 125, 50, 1)", "rgba(76, 175, 80, 0.7)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={signUpStyle.button}
           >
-            <Text
-              style={[{ fontFamily: "CarterOne" }, signUpStyle.buttonText]}
-            >
+            <Text style={[{ fontFamily: "CarterOne" }, signUpStyle.buttonText]}>
               {loading ? "Registrando..." : "Registrarse"}
             </Text>
           </LinearGradient>
@@ -312,7 +400,11 @@ const SignUp = () => {
             style={[{ fontFamily: "QuicksandRegular" }, signUpStyle.signUpText]}
           >
             ¿Ya tienes cuenta?{" "}
-            <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.signUpLink]}>Inicia sesión</Text>
+            <Text
+              style={[{ fontFamily: "QuicksandBold" }, signUpStyle.signUpLink]}
+            >
+              Inicia sesión
+            </Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>

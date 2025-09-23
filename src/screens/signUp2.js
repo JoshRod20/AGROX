@@ -1,29 +1,40 @@
-import React, { useCallback, useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Animated, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import  signUpStyle  from '../styles/signUpStyle';
-import { db } from '../services/database';
-import { collection, getDocs, query } from 'firebase/firestore';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import React, { useCallback, useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Animated,
+  ScrollView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import signUpStyle from "../styles/signUpStyle";
+import { db } from "../services/database";
+import { collection, getDocs, query } from "firebase/firestore";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import DropDownPicker from "react-native-dropdown-picker";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 // Evita que se oculte el SplashScreen automáticamente
 SplashScreen.preventAutoHideAsync();
 
 function generateUserId(usersLength) {
   const num = usersLength + 1;
-  return `U${num.toString().padStart(4, '0')}`;
+  return `U${num.toString().padStart(4, "0")}`;
 }
 
 const SignUp2 = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [department, setDepartment] = useState(null);
   const [municipality, setMunicipality] = useState(null);
@@ -53,18 +64,32 @@ const SignUp2 = () => {
 
   // Datos
   const departments = [
-    'Boaco', 'Carazo', 'Chinandega', 'Chontales', 'Estelí', 'Granada',
-    'Jinotega', 'León', 'Madriz', 'Managua', 'Masaya', 'Matagalpa',
-    'Nueva Segovia', 'Río San Juan', 'Rivas', 'RAAN', 'RAAS'
+    "Boaco",
+    "Carazo",
+    "Chinandega",
+    "Chontales",
+    "Estelí",
+    "Granada",
+    "Jinotega",
+    "León",
+    "Madriz",
+    "Managua",
+    "Masaya",
+    "Matagalpa",
+    "Nueva Segovia",
+    "Río San Juan",
+    "Rivas",
+    "RAAN",
+    "RAAS",
   ];
-  const municipalities = ['Municipio 1', 'Municipio 2', 'Municipio 3'];
-  const communities = ['Comunidad 1', 'Comunidad 2', 'Comunidad 3'];
+  const municipalities = ["Municipio 1", "Municipio 2", "Municipio 3"];
+  const communities = ["Comunidad 1", "Comunidad 2", "Comunidad 3"];
 
   // Carga la fuente
   const [fontsLoaded] = useFonts({
-    CarterOne: require('../utils/fonts/CarterOne-Regular.ttf'),
-    QuicksandBold: require('../utils/fonts/Quicksand-Bold.ttf'),
-    QuicksandRegular: require('../utils/fonts/Quicksand-Regular.ttf'),
+    CarterOne: require("../utils/fonts/CarterOne-Regular.ttf"),
+    QuicksandBold: require("../utils/fonts/Quicksand-Bold.ttf"),
+    QuicksandRegular: require("../utils/fonts/Quicksand-Regular.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -76,10 +101,26 @@ const SignUp2 = () => {
   // Shake animation function
   const triggerShake = (anim) => {
     Animated.sequence([
-      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
-      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: -10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 10,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
@@ -87,29 +128,31 @@ const SignUp2 = () => {
   const handleValidation = () => {
     let newErrors = {};
     if (!name) {
-      newErrors.name = 'El nombre es obligatorio.';
+      newErrors.name = "El nombre es obligatorio.";
       triggerShake(shakeAnimName);
     }
     if (!password) {
-      newErrors.password = 'La contraseña es obligatoria.';
+      newErrors.password = "La contraseña es obligatoria.";
       triggerShake(shakeAnimPassword);
     } else {
-      const passwordRegex = /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+      const passwordRegex =
+        /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
       if (!passwordRegex.test(password)) {
-        newErrors.password = 'Debe tener al menos 8 caracteres, una letra mayúscula, letras y un carácter especial.';
+        newErrors.password =
+          "Debe tener al menos 8 caracteres, una letra mayúscula, letras y un carácter especial.";
         triggerShake(shakeAnimPassword);
       }
     }
     if (!department) {
-      newErrors.department = 'El departamento es obligatorio.';
+      newErrors.department = "El departamento es obligatorio.";
       triggerShake(shakeAnimDep);
     }
     if (!municipality) {
-      newErrors.municipality = 'El municipio es obligatorio.';
+      newErrors.municipality = "El municipio es obligatorio.";
       triggerShake(shakeAnimMun);
     }
     if (!community) {
-      newErrors.community = 'La comunidad es obligatoria.';
+      newErrors.community = "La comunidad es obligatoria.";
       triggerShake(shakeAnimCom);
     }
     setErrors(newErrors);
@@ -131,7 +174,7 @@ const SignUp2 = () => {
           (x, y) => {
             scrollViewRef.current.scrollTo({ y, animated: true });
           },
-          () => console.log('Error measuring layout')
+          () => console.log("Error measuring layout")
         );
       }
     }
@@ -152,35 +195,58 @@ const SignUp2 = () => {
         scrollEnabled={Object.keys(errors).length > 0}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[{ fontFamily: 'CarterOne' }, signUpStyle.logtext]}>Registro</Text>
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.sesionText]}>
-          Crea una cuenta de <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.agroxText]}>AGROX</Text>
+        <Text style={[{ fontFamily: "CarterOne" }, signUpStyle.logtext]}>
+          Registro
+        </Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.sesionText]}>
+          Crea una cuenta de{" "}
+          <Text
+            style={[{ fontFamily: "QuicksandBold" }, signUpStyle.agroxText]}
+          >
+            AGROX
+          </Text>
         </Text>
 
         {/* Nombre */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textEmail]}>Nombre</Text>
+        <Text style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textEmail]}>
+          Nombre
+        </Text>
         <Animated.View
           ref={nameRef}
-          style={[signUpStyle.inputEmailContainer, errors.name && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimName }] }]}
+          style={[
+            signUpStyle.inputEmailContainer,
+            errors.name && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimName }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.inputEmail}
             placeholder="Ingrese su nombre"
             placeholderTextColor="#888"
             value={name}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setName(text);
-              setErrors(prev => ({ ...prev, name: undefined }));
+              setErrors((prev) => ({ ...prev, name: undefined }));
             }}
           />
         </Animated.View>
-        {errors.name && <Text style={signUpStyle.errorText}>{errors.name}</Text>}
+        {errors.name && (
+          <Text style={signUpStyle.errorText}>{errors.name}</Text>
+        )}
 
         {/* Contraseña */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textPassword]}>Contraseña</Text>
+        <Text
+          style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textPassword]}
+        >
+          Contraseña
+        </Text>
         <Animated.View
           ref={passwordRef}
-          style={[signUpStyle.inputPasswordContainer, errors.password && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimPassword }] }]}
+          style={[
+            signUpStyle.inputPasswordContainer,
+            errors.password && signUpStyle.errorInput,
+            { transform: [{ translateX: shakeAnimPassword }] },
+          ]}
         >
           <TextInput
             style={signUpStyle.inputPassword}
@@ -188,22 +254,39 @@ const SignUp2 = () => {
             placeholderTextColor="#888"
             secureTextEntry={!showPassword}
             value={password}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setPassword(text);
-              setErrors(prev => ({ ...prev, password: undefined }));
+              setErrors((prev) => ({ ...prev, password: undefined }));
             }}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Icon name={showPassword ? 'visibility' : 'visibility-off'} size={24} color="#888" />
+            <Icon
+              name={showPassword ? "visibility" : "visibility-off"}
+              size={24}
+              color="#888"
+            />
           </TouchableOpacity>
         </Animated.View>
-        {errors.password && <Text style={signUpStyle.errorText}>{errors.password}</Text>}
+        {errors.password && (
+          <Text style={signUpStyle.errorText}>{errors.password}</Text>
+        )}
 
         {/* Departamento */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInputTitle]}>Departamento</Text>
+        <Text
+          style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInputTitle]}
+        >
+          Departamento
+        </Text>
         <Animated.View
           ref={departmentRef}
-          style={[signUpStyle.inputEmailContainer, errors.department && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimDep }], zIndex: openDep ? 5000 : 1000 }]}
+          style={[
+            signUpStyle.inputEmailContainer,
+            errors.department && signUpStyle.errorInput,
+            {
+              transform: [{ translateX: shakeAnimDep }],
+              zIndex: openDep ? 5000 : 1000,
+            },
+          ]}
         >
           <DropDownPicker
             open={openDep}
@@ -212,23 +295,48 @@ const SignUp2 = () => {
             setOpen={setOpenDep}
             setValue={setDepartment}
             placeholder="Seleccione un departamento"
-            placeholderStyle={[{ fontFamily: 'QuicksandRegular' }, signUpStyle.placeholder]}
-            style={[signUpStyle.inputEmail, { borderWidth: 0, backgroundColor: '#fff' }]}
-            textStyle={{ fontFamily: 'QuicksandRegular', fontSize: wp('3.5%') }}
-            dropDownContainerStyle={[signUpStyle.dropDownContainer, errors.department && signUpStyle.errorInput]}
+            placeholderStyle={[
+              { fontFamily: "QuicksandRegular" },
+              signUpStyle.placeholder,
+            ]}
+            style={[
+              signUpStyle.inputEmail,
+              { borderWidth: 0, backgroundColor: "#fff" },
+            ]}
+            textStyle={{ fontFamily: "QuicksandRegular", fontSize: wp("3.5%") }}
+            dropDownContainerStyle={[
+              signUpStyle.dropDownContainer,
+              errors.department && signUpStyle.errorInput,
+            ]}
             listMode="SCROLLVIEW"
-            scrollViewProps={{ nestedScrollEnabled: true, maxHeight: hp('30%') }}
+            scrollViewProps={{
+              nestedScrollEnabled: true,
+              maxHeight: hp("30%"),
+            }}
             zIndex={openDep ? 6000 : 1000}
             zIndexInverse={openDep ? 1000 : 6000}
           />
         </Animated.View>
-        {errors.department && <Text style={signUpStyle.errorText}>{errors.department}</Text>}
+        {errors.department && (
+          <Text style={signUpStyle.errorText}>{errors.department}</Text>
+        )}
 
         {/* Municipio */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInputTitle]}>Municipio</Text>
+        <Text
+          style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInputTitle]}
+        >
+          Municipio
+        </Text>
         <Animated.View
           ref={municipalityRef}
-          style={[signUpStyle.inputEmailContainer, errors.municipality && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimMun }], zIndex: openMun ? 4000 : 800 }]}
+          style={[
+            signUpStyle.inputEmailContainer,
+            errors.municipality && signUpStyle.errorInput,
+            {
+              transform: [{ translateX: shakeAnimMun }],
+              zIndex: openMun ? 4000 : 800,
+            },
+          ]}
         >
           <DropDownPicker
             open={openMun}
@@ -237,23 +345,48 @@ const SignUp2 = () => {
             setOpen={setOpenMun}
             setValue={setMunicipality}
             placeholder="Seleccione un municipio"
-            placeholderStyle={[{ fontFamily: 'QuicksandRegular' }, signUpStyle.placeholder]}
-            style={[signUpStyle.inputEmail, { borderWidth: 0, backgroundColor: '#fff' }]}
-            textStyle={{ fontFamily: 'QuicksandRegular', fontSize: wp('3.5%') }}
-            dropDownContainerStyle={[signUpStyle.dropDownContainer, errors.municipality && signUpStyle.errorInput]}
+            placeholderStyle={[
+              { fontFamily: "QuicksandRegular" },
+              signUpStyle.placeholder,
+            ]}
+            style={[
+              signUpStyle.inputEmail,
+              { borderWidth: 0, backgroundColor: "#fff" },
+            ]}
+            textStyle={{ fontFamily: "QuicksandRegular", fontSize: wp("3.5%") }}
+            dropDownContainerStyle={[
+              signUpStyle.dropDownContainer,
+              errors.municipality && signUpStyle.errorInput,
+            ]}
             listMode="SCROLLVIEW"
-            scrollViewProps={{ nestedScrollEnabled: true, maxHeight: hp('30%') }}
+            scrollViewProps={{
+              nestedScrollEnabled: true,
+              maxHeight: hp("30%"),
+            }}
             zIndex={openMun ? 5000 : 800}
             zIndexInverse={openMun ? 800 : 5000}
           />
         </Animated.View>
-        {errors.municipality && <Text style={signUpStyle.errorText}>{errors.municipality}</Text>}
+        {errors.municipality && (
+          <Text style={signUpStyle.errorText}>{errors.municipality}</Text>
+        )}
 
         {/* Comunidad */}
-        <Text style={[{ fontFamily: 'QuicksandBold' }, signUpStyle.textInputTitle]}>Comunidad o comarca</Text>
+        <Text
+          style={[{ fontFamily: "QuicksandBold" }, signUpStyle.textInputTitle]}
+        >
+          Comunidad o comarca
+        </Text>
         <Animated.View
           ref={communityRef}
-          style={[signUpStyle.inputEmailContainer, errors.community && signUpStyle.errorInput, { transform: [{ translateX: shakeAnimCom }], zIndex: openCom ? 3000 : 600 }]}
+          style={[
+            signUpStyle.inputEmailContainer,
+            errors.community && signUpStyle.errorInput,
+            {
+              transform: [{ translateX: shakeAnimCom }],
+              zIndex: openCom ? 3000 : 600,
+            },
+          ]}
         >
           <DropDownPicker
             open={openCom}
@@ -262,17 +395,31 @@ const SignUp2 = () => {
             setOpen={setOpenCom}
             setValue={setCommunity}
             placeholder="Seleccione una comunidad"
-            placeholderStyle={[{ fontFamily: 'QuicksandRegular' }, signUpStyle.placeholder]}
-            style={[signUpStyle.inputEmail, { borderWidth: 0, backgroundColor: '#fff' }]}
-            textStyle={{ fontFamily: 'QuicksandRegular', fontSize: wp('3.5%') }}
-            dropDownContainerStyle={[signUpStyle.dropDownContainer, errors.community && signUpStyle.errorInput]}
+            placeholderStyle={[
+              { fontFamily: "QuicksandRegular" },
+              signUpStyle.placeholder,
+            ]}
+            style={[
+              signUpStyle.inputEmail,
+              { borderWidth: 0, backgroundColor: "#fff" },
+            ]}
+            textStyle={{ fontFamily: "QuicksandRegular", fontSize: wp("3.5%") }}
+            dropDownContainerStyle={[
+              signUpStyle.dropDownContainer,
+              errors.community && signUpStyle.errorInput,
+            ]}
             listMode="SCROLLVIEW"
-            scrollViewProps={{ nestedScrollEnabled: true, maxHeight: hp('30%') }}
+            scrollViewProps={{
+              nestedScrollEnabled: true,
+              maxHeight: hp("30%"),
+            }}
             zIndex={openCom ? 4000 : 600}
             zIndexInverse={openCom ? 600 : 4000}
           />
         </Animated.View>
-        {errors.community && <Text style={signUpStyle.errorText}>{errors.community}</Text>}
+        {errors.community && (
+          <Text style={signUpStyle.errorText}>{errors.community}</Text>
+        )}
 
         {/* Botón */}
         <TouchableOpacity
@@ -281,9 +428,9 @@ const SignUp2 = () => {
             if (!handleValidation()) return;
             setLoading(true);
             try {
-              const usersSnap = await getDocs(query(collection(db, 'Users')));
+              const usersSnap = await getDocs(query(collection(db, "Users")));
               const userId = generateUserId(usersSnap.size);
-              navigation.navigate('SignUp', {
+              navigation.navigate("SignUp", {
                 userId,
                 name,
                 password,
@@ -292,7 +439,10 @@ const SignUp2 = () => {
                 community,
               });
             } catch (e) {
-              Alert.alert('Error', e.message || 'Error al generar ID de usuario');
+              Alert.alert(
+                "Error",
+                e.message || "Error al generar ID de usuario"
+              );
             } finally {
               setLoading(false);
             }
@@ -300,13 +450,15 @@ const SignUp2 = () => {
           disabled={loading}
         >
           <LinearGradient
-            colors={['rgba(46, 125, 50, 1)', 'rgba(76, 175, 80, 0.7)']}
+            colors={["rgba(46, 125, 50, 1)", "rgba(76, 175, 80, 0.7)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={signUpStyle.buttonSignIn}
           >
-            <Text style={[{ fontFamily: 'CarterOne' }, signUpStyle.buttonTextSR]}>
-              {loading ? 'Cargando...' : 'Siguiente'}
+            <Text
+              style={[{ fontFamily: "CarterOne" }, signUpStyle.buttonTextSR]}
+            >
+              {loading ? "Cargando..." : "Siguiente"}
             </Text>
           </LinearGradient>
         </TouchableOpacity>

@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { formCheckBoxStyle } from '../styles/formCheckBoxStyle';
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { formCheckBoxStyle } from "../styles/formCheckBoxStyle";
 
 // Componente reutilizable para selección tipo radio (método de riego, etc.)
 const FormCheckBox = ({
-  label = '',
+  label = "",
   options = [],
-  value = '',
+  value = "",
   onChange,
-  error = '',
+  error = "",
   style,
   labelStyle,
   optionStyle,
@@ -16,14 +16,12 @@ const FormCheckBox = ({
   return (
     <View style={[formCheckBoxStyle.container, style]}>
       {label ? (
-        <Text style={[formCheckBoxStyle.label, labelStyle]}>
-          {label}
-        </Text>
+        <Text style={[formCheckBoxStyle.label, labelStyle]}>{label}</Text>
       ) : null}
 
       {/* Grid de opciones en 2 columnas */}
       <View style={formCheckBoxStyle.row}>
-        {options.map(option => (
+        {options.map((option) => (
           <TouchableOpacity
             key={option}
             style={[formCheckBoxStyle.optionContainer, optionStyle]}
@@ -33,7 +31,7 @@ const FormCheckBox = ({
             <View
               style={[
                 formCheckBoxStyle.checkBox,
-                { backgroundColor: value === option ? '#2E7D32' : '#fff' },
+                { backgroundColor: value === option ? "#2E7D32" : "#fff" },
               ]}
             >
               {value === option && (
