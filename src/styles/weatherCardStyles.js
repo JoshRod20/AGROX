@@ -41,16 +41,6 @@ export default StyleSheet.create({
     elevation: 3,
   },
 
-  // COLORES POR CLIMA
-  clear: { backgroundColor: "#4A90E2" },
-  clouds: { backgroundColor: "#7F8C8D" },
-  rain: { backgroundColor: "#2C3E50" },
-  snow: { backgroundColor: "#BDC3C7" },
-  thunderstorm: { backgroundColor: "#34495E" },
-  drizzle: { backgroundColor: "#3498DB" },
-  mist: { backgroundColor: "#95A5A6" },
-  fog: { backgroundColor: "#7F8C8D" },
-
   icon: {
     width: wp("20%"),
     height: wp("19%"),
