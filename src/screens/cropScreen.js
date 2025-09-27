@@ -269,6 +269,7 @@ const CropScreen = () => {
     CarterOne: require("../utils/fonts/CarterOne-Regular.ttf"),
     QuicksandBold: require("../utils/fonts/Quicksand-Bold.ttf"),
     QuicksandRegular: require("../utils/fonts/Quicksand-Regular.ttf"),
+    QuicksandSemiBold: require("../utils/fonts/Quicksand-SemiBold.ttf"),
   });
 
   const onLayoutRootView = useCallback(async () => {
@@ -596,91 +597,74 @@ const CropScreen = () => {
                     Selecciona una actividad
                   </Text>
                   <FlatList
-                    data={activities}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => {
-                      const prepDone = activitiesDone.some(
-                        (a) => a.name === "Preparación del terreno"
-                      );
-                      const isRepeatable = [
-                        "Riego",
-                        "Fertilización",
-                        "Manejo Fitosanitario",
-                      ].includes(item.name);
-                      // Si es repetible, siempre se puede registrar si ya está preparación
-                      // Si no es repetible, solo se puede registrar si no está registrada y el progreso < 100%
-                      const uniqueActivities = [
-                        "Preparación del terreno",
-                        "Siembra",
-                        "Fertilización",
-                        "Riego",
-                        "Manejo Fitosanitario",
-                        "Monitoreo del cultivo",
-                        "Cosecha",
-                        "Postcosecha y comercialización",
-                        "Documentación adicional",
-                      ];
-                      const doneUnique = uniqueActivities.filter((name) =>
-                        activitiesDone.some((a) => a.name === name)
-                      );
-                      const allUniqueDone = doneUnique.length === 9;
-                      const canSelect = isRepeatable
-                        ? prepDone
-                        : !activitiesDone.some((a) => a.name === item.name) &&
-                          (item.id === "1" || prepDone) &&
-                          !allUniqueDone;
+  data={activities}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => {
+    const prepDone = activitiesDone.some(
+      (a) => a.name === "Preparación del terreno"
+    );
+    const isRepeatable = [
+      "Riego",
+      "Fertilización",
+      "Manejo Fitosanitario",
+    ].includes(item.name);
+    const uniqueActivities = [
+      "Preparación del terreno",
+      "Siembra",
+      "Fertilización",
+      "Riego",
+      "Manejo Fitosanitario",
+      "Monitoreo del cultivo",
+      "Cosecha",
+      "Postcosecha y comercialización",
+      "Documentación adicional",
+    ];
+    const doneUnique = uniqueActivities.filter((name) =>
+      activitiesDone.some((a) => a.name === name)
+    );
+    const allUniqueDone = doneUnique.length === 9;
+    const canSelect = isRepeatable
+      ? prepDone
+      : !activitiesDone.some((a) => a.name === item.name) &&
+        (item.id === "1" || prepDone) &&
+        !allUniqueDone;
 
-                      return (
-                        <Pressable
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingVertical: 12,
-                            borderBottomWidth: 0.5,
-                            borderColor: "#ccc",
-                            opacity: canSelect ? 1 : 0.4,
-                          }}
-                          onPress={() => {
-                            if (canSelect) {
-                              setModalVisible(false);
-                              navigation.navigate(item.screen, { crop });
-                            }
-                          }}
-                          disabled={!canSelect}
-                        >
-                          <Image
-                            source={item.icon}
-                            style={{ width: 28, height: 28, marginRight: 12 }}
-                          />
-                          <Text style={{ fontSize: 16 }}>{item.name}</Text>
-                          {/* Mostrar (Registrada) solo si no es repetible y ya está */}
-                          {!isRepeatable &&
-                            activitiesDone.some(
-                              (a) => a.name === item.name
-                            ) && (
-                              <Text
-                                style={{
-                                  color: "#2E7D32",
-                                  marginLeft: 8,
-                                  fontSize: 13,
-                                }}
-                              >
-                                (Registrada)
-                              </Text>
-                            )}
-                        </Pressable>
-                      );
-                    }}
-                  />
+    return (
+      <Pressable
+        style={[
+          cropScreenStyle.activityModalItem,
+          { opacity: canSelect ? 1 : 0.5 },
+        ]}
+        onPress={() => {
+          if (canSelect) {
+            setModalVisible(false);
+            navigation.navigate(item.screen, { crop });
+          }
+        }}
+        disabled={!canSelect}
+      >
+        <Image
+          source={item.icon}
+          style={cropScreenStyle.activityModalIcon}
+        />
+        <Text style={cropScreenStyle.activityModalText}>
+          {item.name}
+        </Text>
+        {!isRepeatable &&
+          activitiesDone.some((a) => a.name === item.name) && (
+            <Text style={cropScreenStyle.activityModalRegistered}>
+              (Registrada)
+            </Text>
+          )}
+      </Pressable>
+    );
+  }}
+/>
                   <TouchableOpacity
                     onPress={() => setModalVisible(false)}
-                    style={{ marginTop: 15, alignSelf: "flex-end" }}
+                    style={cropScreenStyle.cancelButton}
                   >
-                    <Text
-                      style={{ color: "#BC6C25", fontFamily: "QuicksandBold" }}
-                    >
-                      Cancelar
-                    </Text>
+                    <Text style={cropScreenStyle.cancelText}>Cancelar</Text>
                   </TouchableOpacity>
                 </View>
               </TouchableWithoutFeedback>

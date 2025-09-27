@@ -137,6 +137,33 @@ export const cropScreenStyle = StyleSheet.create({
     marginBottom: hp("2%"),
     color: "#2E7D32",
   },
+      // Estilos para los ítems del FlatList en el modal de selección
+  activityModalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: hp('1.3%'),
+    paddingHorizontal: wp('1%'),
+    marginVertical: hp('0.5%'),
+    backgroundColor: '#FFFFFF',
+  },
+  activityModalIcon: {
+    width: wp('6%'),
+    height: wp('6%'),
+    marginRight: wp('3.5%'),
+    tintColor: '#2E7D32',
+  },
+  activityModalText: {
+    flex: 1,
+    color: '#2E7D32',
+    fontFamily: 'QuicksandSemiBold',
+    fontSize: wp('4.2%'),
+  },
+  activityModalRegistered: {
+    color: '#2E7D32',
+    fontFamily: 'QuicksandBold',
+    fontSize: wp('3.2%'),
+    marginLeft: wp('2%'),
+  },
   buttonSR: {
     width: wp("90%"),
     height: hp("6.5%"),
@@ -152,5 +179,27 @@ export const cropScreenStyle = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     marginTop: hp("0.2%"),
+  },
+  cancelButton: {
+    backgroundColor: '#9F9898',
+    width: wp("35%"),
+    paddingHorizontal: wp('5%'),     
+    paddingVertical: hp('1.1%'),  
+    borderRadius: wp('3.5%'),        
+    marginTop: hp('4%'),
+    alignSelf: 'flex-end',
+    // Sombras
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  cancelText: {
+    color: '#FFFFFF',
+    fontFamily: 'QuicksandBold',
+    fontSize: wp('4.7%'),    
+    textAlign: 'center',
+    marginBottom: hp('0.2%'),
   },
 });

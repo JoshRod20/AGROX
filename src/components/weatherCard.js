@@ -73,13 +73,13 @@ const WeatherCard = () => {
   const getIconSource = (icon) => {
     switch (icon) {
       case "clear":
-        return require("../assets/clear.png");
+        return require("../assets/sun.png");
       case "clouds":
-        return require("../assets/nublado.png");
+        return require("../assets/cloudy.png");
       case "rain":
         return require("../assets/rain.png");
       default:
-        return require("../assets/clear.png");
+        return require("../assets/sun.png");
     }
   };
 
