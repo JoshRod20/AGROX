@@ -21,6 +21,7 @@ import {
 } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
 import FormButton from "../components/formButton";
 import FormCheckBox from "../components/formCheckBox";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -298,7 +299,7 @@ const CropPostharvest = () => {
         </Text>
       )}
       {/* Cantidad procesada */}
-      <InputsFormFields
+      <CostInput
         label="Cantidad procesada"
         value={formData.processedAmount}
         onChangeText={(text) =>
@@ -308,6 +309,7 @@ const CropPostharvest = () => {
         keyboardType="numeric"
         error={errors.processedAmount}
         shakeAnim={shakeAnim.processedAmount}
+        unit="kilograms"
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>Kg</Text>}
       />
       {/* Destino del producto */}
@@ -320,7 +322,7 @@ const CropPostharvest = () => {
         shakeAnim={shakeAnim.productDestination}
       />
       {/* Precio de venta */}
-      <InputsFormFields
+      <CostInput
         label="Precio de venta"
         value={formData.salePrice}
         onChangeText={(text) =>
@@ -342,7 +344,7 @@ const CropPostharvest = () => {
         shakeAnim={shakeAnim.buyer}
       />
       {/* Mano de obra postcosecha */}
-      <InputsFormFields
+      <CostInput
         label="Mano de obra postcosecha"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -355,7 +357,7 @@ const CropPostharvest = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Materiales y empaques */}
-      <InputsFormFields
+      <CostInput
         label="Materiales y empaques"
         value={formData.materialsCost}
         onChangeText={(text) =>
@@ -368,7 +370,7 @@ const CropPostharvest = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Transporte/logística */}
-      <InputsFormFields
+      <CostInput
         label="Transporte / logística"
         value={formData.transportCost}
         onChangeText={(text) =>
@@ -390,7 +392,7 @@ const CropPostharvest = () => {
         shakeAnim={shakeAnim.buyer}
       />
       {/* Costo total postcosecha */}
-      <InputsFormFields
+      <CostInput
         label="Costo total postcosecha"
         value={formData.totalCost}
         onChangeText={() => {}}

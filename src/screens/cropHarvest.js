@@ -21,6 +21,8 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import InputsFormFields from "../components/inputsFormFields";
 import FormButton from "../components/formButton";
 import FormCheckBox from "../components/formCheckBox";
+import CostInput from "../components/costInputs";
+import HoursInput from "../components/hoursInput";
 
 const CropHarvest = () => {
   const route = useRoute();
@@ -228,7 +230,7 @@ const CropHarvest = () => {
       </Text>
 
       {/* Rendimiento total */}
-      <InputsFormFields
+      <CostInput
         label="Rendimiento total"
         value={formData.totalYield}
         onChangeText={(text) =>
@@ -238,6 +240,7 @@ const CropHarvest = () => {
         keyboardType="numeric"
         error={errors.totalYield}
         shakeAnim={shakeAnim.totalYield}
+        unit="kilograms"
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>Kg</Text>}
       />
 
@@ -264,7 +267,7 @@ const CropHarvest = () => {
       />
 
       {/* Tiempo invertido */}
-      <InputsFormFields
+      <HoursInput
         label="Tiempo invertido"
         value={formData.investedTime}
         onChangeText={(text) =>
@@ -290,7 +293,7 @@ const CropHarvest = () => {
       />
 
       {/* Mano de obra cosecha */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mano de obra"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -304,7 +307,7 @@ const CropHarvest = () => {
       />
 
       {/* Costo de maquinaria */}
-      <InputsFormFields
+      <CostInput
         label="Costo de maquinaria"
         value={formData.machineCost}
         onChangeText={(text) =>
@@ -317,7 +320,7 @@ const CropHarvest = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Transporte/almacenamiento */}
-      <InputsFormFields
+      <CostInput
         label="Transporte / almacenamiento"
         value={formData.transportCost}
         onChangeText={(text) =>
@@ -330,7 +333,7 @@ const CropHarvest = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Costo total de cosecha */}
-      <InputsFormFields
+      <CostInput
         label="Costo total de cosecha"
         value={formData.totalCost}
         onChangeText={() => {}}

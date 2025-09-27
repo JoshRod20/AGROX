@@ -19,6 +19,8 @@ import {
 } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
+import HoursInput from "../components/hoursInput";
 import FormButton from "../components/formButton";
 import FormCheckBox from "../components/formCheckBox";
 import FormSelectPicker from "../components/formSelectPicker";
@@ -265,7 +267,7 @@ const CropIrrigation = () => {
       />
 
       {/* Duración de riego */}
-      <InputsFormFields
+      <HoursInput
         label="Duración de riego"
         value={formData.irrigationDuration}
         onChangeText={(text) =>
@@ -280,7 +282,7 @@ const CropIrrigation = () => {
         }
       />
       {/* Volumen de riego */}
-      <InputsFormFields
+      <HoursInput
         label="Volumen de riego (litros)"
         value={formData.irrigationVolume}
         onChangeText={(text) =>
@@ -290,13 +292,14 @@ const CropIrrigation = () => {
         keyboardType="numeric"
         error={errors.irrigationVolume}
         shakeAnim={shakeAnim.irrigationVolume}
+        unit="liters"
         rightAdornment={
           <Text style={{ color: "#888", fontSize: 16 }}>Litros</Text>
         }
       />
 
       {/* Mano de obra riego */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mano de obra riego"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -310,7 +313,7 @@ const CropIrrigation = () => {
       />
 
       {/* Costo de energía o combustible */}
-      <InputsFormFields
+      <CostInput
         label="Costo de energía o combustible"
         value={formData.energyCost}
         onChangeText={(text) =>
@@ -323,7 +326,7 @@ const CropIrrigation = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Mantenimiento de sistema de riego */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mantenimiento de sistema de riego"
         value={formData.maintenanceCost}
         onChangeText={(text) =>
@@ -333,10 +336,11 @@ const CropIrrigation = () => {
         keyboardType="numeric"
         error={errors.maintenanceCost}
         shakeAnim={shakeAnim.maintenanceCost}
+        unit="currency"
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Costo total de riego */}
-      <InputsFormFields
+      <CostInput
         label="Costo total de riego"
         value={formData.totalCost}
         onChangeText={() => {}}
@@ -344,6 +348,7 @@ const CropIrrigation = () => {
         keyboardType="numeric"
         error={errors.totalCost}
         shakeAnim={shakeAnim.totalCost}
+        unit="currency" 
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
         editable={false}
       />

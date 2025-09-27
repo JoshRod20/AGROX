@@ -20,6 +20,7 @@ import {
 import { useRoute, useNavigation } from "@react-navigation/native";
 import FormCheckBox from "../components/formCheckBox";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
 import FormButton from "../components/formButton";
 
 const CropFertilization = () => {
@@ -297,7 +298,7 @@ const CropFertilization = () => {
       />
 
       {/* Costo de fertilizante */}
-      <InputsFormFields
+      <CostInput
         label="Costo de fertilizante"
         value={formData.fertilizerCost}
         onChangeText={(text) =>
@@ -311,7 +312,7 @@ const CropFertilization = () => {
       />
 
       {/* Costo de mano de obra */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mano de obra"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -325,7 +326,7 @@ const CropFertilization = () => {
       />
 
       {/* Costo de transporte/logística */}
-      <InputsFormFields
+      <CostInput
         label="Costo de transporte/logística"
         value={formData.transportCost}
         onChangeText={(text) =>
@@ -339,7 +340,7 @@ const CropFertilization = () => {
       />
 
       {/* Costo total de fertilización */}
-      <InputsFormFields
+      <CostInput
         label="Costo total de fertilización"
         value={formData.totalCost}
         onChangeText={() => {}}

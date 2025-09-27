@@ -107,7 +107,7 @@ export const cropStyle = StyleSheet.create({
     color: "#BC6C25",
     marginTop: hp("2.5%"),
     marginBottom: hp("0%"),
-    marginLeft: wp("0.5%"),
+    marginLeft: wp("2%"),
     alignSelf: "flex-start",
     fontFamily: "QuicksandBold",
   },
@@ -207,7 +207,7 @@ export const cropStyle = StyleSheet.create({
     marginVertical: 20,
   },
   title2: {
-    fontSize: wp("7.5%"),
+    fontSize: wp("7.3%"),
     marginTop: hp("8%"),
     marginBottom: 8,
     textAlign: "left",

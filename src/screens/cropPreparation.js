@@ -13,6 +13,8 @@ import { db } from "../services/database";
 import FormCheckBox from "../components/formCheckBox";
 import FormSelectPicker from "../components/formSelectPicker";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
+import HoursInput from "../components/hoursInput";
 import FormButton from "../components/formButton";
 import {
   collection,
@@ -271,7 +273,7 @@ const CropPreparation = () => {
             { fontFamily: "CarterOne", color: "#2E7D32" },
           ]}
         >
-          Preparación del terreno
+          Preparación del suelo
         </Text>
         <FormCheckBox
           label="Tipo de laboreo"
@@ -398,88 +400,64 @@ const CropPreparation = () => {
           error={errors.weedControl}
           shakeAnim={shakeAnim.weedControl}
         />
-        <InputsFormFields
+        {/* Inputs de HORAS */}
+        <HoursInput
           label="Horas hombre invertidas"
           value={formData.manHours}
           onChangeText={(val) =>
             handleInputChange("manHours", val.replace(/[^0-9]/g, ""))
           }
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.manHours}
           shakeAnim={shakeAnim.manHours}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>horas</Text>
-          }
         />
-        <InputsFormFields
+
+        <HoursInput
           label="Horas de maquinaria utilizadas"
           value={formData.machineHours}
           onChangeText={(val) =>
             handleInputChange("machineHours", val.replace(/[^0-9]/g, ""))
           }
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.machineHours}
           shakeAnim={shakeAnim.machineHours}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>horas</Text>
-          }
         />
-        <InputsFormFields
+
+        {/* Inputs de COSTO */}
+        <CostInput
           label="Costo de mano de obra"
           value={formData.laborCost}
           onChangeText={(val) =>
             handleInputChange("laborCost", val.replace(/[^0-9]/g, ""))
           }
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.laborCost}
           shakeAnim={shakeAnim.laborCost}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>C$</Text>
-          }
         />
-        <InputsFormFields
+
+        <CostInput
           label="Costo de maquinaria"
           value={formData.machineCost}
           onChangeText={(val) =>
             handleInputChange("machineCost", val.replace(/[^0-9]/g, ""))
           }
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.machineCost}
           shakeAnim={shakeAnim.machineCost}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>C$</Text>
-          }
         />
-        {/* Los campos de costo de mano de obra y maquinaria ahora se calculan automáticamente */}
-        <InputsFormFields
+
+        <CostInput
           label="Costo de insumos aplicados"
           value={formData.inputCost}
           onChangeText={(val) =>
             handleInputChange("inputCost", val.replace(/[^0-9]/g, ""))
           }
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.inputCost}
           shakeAnim={shakeAnim.inputCost}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>C$</Text>
-          }
         />
-        <InputsFormFields
+
+        <CostInput
           label="Costo total"
           value={formData.totalCost.toString()}
           onChangeText={() => {}}
-          placeholder="0"
-          keyboardType="numeric"
           error={errors.totalCost}
           shakeAnim={shakeAnim.totalCost}
-          rightAdornment={
-            <Text style={{ color: "#888", fontSize: 16 }}>C$</Text>
-          }
           editable={false}
         />
         <InputsFormFields

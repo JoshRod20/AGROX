@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
 import FormButton from "../components/formButton";
 import FormSelectPicker from "../components/formSelectPicker";
 
@@ -270,9 +271,6 @@ const CropPhytosanitary = () => {
         keyboardType="numeric"
         error={errors.dose}
         shakeAnim={shakeAnim.dose}
-        rightAdornment={
-          <Text style={{ color: "#888", fontSize: 16 }}>Unidad</Text>
-        }
       />
       {/* Método de aplicación */}
       <InputsFormFields
@@ -294,7 +292,7 @@ const CropPhytosanitary = () => {
         style={{ textAlignVertical: "top" }}
       />
       {/* Costo de producto fitosanitario */}
-      <InputsFormFields
+      <CostInput
         label="Costo de producto fitosanitario"
         value={formData.productCost}
         onChangeText={(text) =>
@@ -307,7 +305,7 @@ const CropPhytosanitary = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Mano de obra */}
-      <InputsFormFields
+      <CostInput
         label="Mano de obra"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -320,7 +318,7 @@ const CropPhytosanitary = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Costo de maquinaria */}
-      <InputsFormFields
+      <CostInput
         label="Costo de maquinaria"
         value={formData.machineCost}
         onChangeText={(text) =>
@@ -333,7 +331,7 @@ const CropPhytosanitary = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Costo total manejo fitosanitario */}
-      <InputsFormFields
+      <CostInput
         label="Costo total manejo fitosanitario"
         value={formData.totalCost}
         onChangeText={() => {}}

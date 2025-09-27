@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import InputsFormFields from "../components/inputsFormFields";
+import CostInput from "../components/costInputs";
 import FormButton from "../components/formButton";
 
 const CropMonitoring = () => {
@@ -217,7 +218,7 @@ const CropMonitoring = () => {
         shakeAnim={shakeAnim.actionsTaken}
       />
       {/* Mano de obra de monitoreo */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mano de obra de monitoreo"
         value={formData.laborCost}
         onChangeText={(text) =>
@@ -230,7 +231,7 @@ const CropMonitoring = () => {
         rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       {/* Costo total de monitoreo */}
-      <InputsFormFields
+      <CostInput
         label="Costo total de monitoreo"
         value={formData.totalCost}
         onChangeText={(text) =>

@@ -21,6 +21,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import FormCheckBox from "../components/formCheckBox";
 import InputsFormFields from "../components/inputsFormFields";
 import FormButton from "../components/formButton";
+import CostInput from "../components/costInputs";
 
 const CropSowing = () => {
   const route = useRoute();
@@ -312,7 +313,7 @@ const CropSowing = () => {
       />
 
       {/* Costo de semilla */}
-      <InputsFormFields
+      <CostInput
         label="Costo de semilla"
         placeholder="0"
         value={formData.seedCost}
@@ -326,7 +327,7 @@ const CropSowing = () => {
       />
 
       {/* Costo de mano de obra para siembra */}
-      <InputsFormFields
+      <CostInput
         label="Costo de mano de obra para siembra"
         placeholder="0"
         value={formData.laborCost}
@@ -340,7 +341,7 @@ const CropSowing = () => {
       />
 
       {/* Costo de maquinaria */}
-      <InputsFormFields
+      <CostInput
         label="Costo de maquinaria"
         placeholder="0"
         value={formData.machineCost}
@@ -354,7 +355,7 @@ const CropSowing = () => {
       />
 
       {/* Transporte de semillas/insumos */}
-      <InputsFormFields
+      <CostInput
         label="Transporte de semillas/insumos"
         placeholder="0"
         value={formData.transportCost}
@@ -368,7 +369,7 @@ const CropSowing = () => {
       />
 
       {/* Costo total de siembra */}
-      <InputsFormFields
+      <CostInput
         label="Costo total de siembra"
         placeholder="Costo total calculado"
         value={formData.totalCost.toString()}
