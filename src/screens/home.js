@@ -91,6 +91,7 @@ export default function Home() {
   return (
     <SafeAreaView style={homeStyle.container}>
       <View style={homeStyle.header}>
+        {/* Menú hamburguesa (izquierda) */}
         <TouchableOpacity
           style={homeStyle.menuButton}
           onPress={() => navigation.openDrawer()}
@@ -100,11 +101,23 @@ export default function Home() {
             style={{ width: 30, height: 30, resizeMode: "contain" }}
           />
         </TouchableOpacity>
+
+        {/* Logo centrado */}
         <View style={homeStyle.logoContainer}>
           <Image source={agroxLogo} style={homeStyle.logo} />
         </View>
-      </View>
 
+        {/* Botón de notificaciones (derecha) */}
+        <TouchableOpacity
+          style={homeStyle.notificationButton}
+          onPress={() => navigation.navigate("Notifications")}
+        >
+          <Image
+            source={require("../assets/bell.png")}
+            style={homeStyle.notificationIcon}
+          />
+        </TouchableOpacity>
+      </View>
       <ScrollView
         contentContainerStyle={homeStyle.content}
         refreshControl={

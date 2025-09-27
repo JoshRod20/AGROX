@@ -147,8 +147,8 @@ const ActivityItem = ({ activity, done, isLast, onOptions }) => {
           style={{ padding: 8 }}
         >
           <Image
-            source={require("../assets/three_points.png")}
-            style={{ width: 40, height: 30, tintColor: "#767E86" }}
+            source={require("../assets/menu-dots.png")}
+            style={{ width: 25, height: 25,marginRight: 20, tintColor: "#767E86" }}
           />
         </TouchableOpacity>
       </View>
@@ -325,26 +325,45 @@ const CropScreen = () => {
           )}
         </View>
 
-        {/* Ver ficha del cultivo Button */}
-        <TouchableOpacity style={cropScreenStyle.buttonFile}>
-          <Image
-            source={require("../assets/document-signed.png")}
-            style={{
-              width: 18,
-              height: 18,
-              marginRight: 8,
-              tintColor: "#767E86",
-            }}
-          />
-          <Text
-            style={[
-              cropScreenStyle.buttonTextFile,
-              { fontFamily: "QuicksandRegular" },
-            ]}
+        {/* Botones: Ver ficha + Gráficos */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          {/* Ver ficha del cultivo Button */}
+          <TouchableOpacity style={cropScreenStyle.buttonFile}>
+            <Image
+              source={require("../assets/document-signed.png")}
+              style={{
+                width: 18,
+                height: 18,
+                marginRight: 8,
+                tintColor: "#767E86",
+              }}
+            />
+            <Text
+              style={[
+                cropScreenStyle.buttonTextFile,
+                { fontFamily: "QuicksandRegular" },
+              ]}
+            >
+              Ver ficha del cultivo
+            </Text>
+          </TouchableOpacity>
+
+          {/* Botón de gráficos */}
+          <TouchableOpacity
+            style={cropScreenStyle.buttonGraph}
+            onPress={() => navigation.navigate("CropGraphs", { crop })}
           >
-            Ver ficha del cultivo
-          </Text>
-        </TouchableOpacity>
+            <Image
+              source={require("../assets/stats 1.png")} // Asegúrate de tener este ícono
+              style={cropScreenStyle.graphIcon}
+            />
+          </TouchableOpacity>
+        </View>
 
         {/* Actividades Section */}
         <View>
@@ -449,11 +468,11 @@ const CropScreen = () => {
                       }}
                     >
                       <Image
-                        source={require("../assets/edit2.png")}
+                        source={require("../assets/edit.png")}
                         style={{
                           width: 20,
                           height: 20,
-                          marginRight: 10,
+                          marginRight: 24,
                           tintColor: "#f67009ff",
                         }}
                       />
@@ -486,11 +505,11 @@ const CropScreen = () => {
                       }}
                     >
                       <Image
-                        source={require("../assets/trash2.png")}
+                        source={require("../assets/trash.png")}
                         style={{
-                          width: 20,
-                          height: 20,
-                          marginRight: 10,
+                          width: 23,
+                          height: 23,
+                          marginRight: 22,
                           tintColor: "#4e4e4eff",
                         }}
                       />
@@ -528,7 +547,7 @@ const CropScreen = () => {
             >
               Progreso del cultivo
             </Text>
-            <Text style={[cropScreenStyle.progressText, { color: "#BC6C25" }]}>
+            <Text style={[cropScreenStyle.progressText, { color: "#2E7D32" }]}>
               {progress}%
             </Text>
           </View>
@@ -597,69 +616,73 @@ const CropScreen = () => {
                     Selecciona una actividad
                   </Text>
                   <FlatList
-  data={activities}
-  keyExtractor={(item) => item.id}
-  renderItem={({ item }) => {
-    const prepDone = activitiesDone.some(
-      (a) => a.name === "Preparación del terreno"
-    );
-    const isRepeatable = [
-      "Riego",
-      "Fertilización",
-      "Manejo Fitosanitario",
-    ].includes(item.name);
-    const uniqueActivities = [
-      "Preparación del terreno",
-      "Siembra",
-      "Fertilización",
-      "Riego",
-      "Manejo Fitosanitario",
-      "Monitoreo del cultivo",
-      "Cosecha",
-      "Postcosecha y comercialización",
-      "Documentación adicional",
-    ];
-    const doneUnique = uniqueActivities.filter((name) =>
-      activitiesDone.some((a) => a.name === name)
-    );
-    const allUniqueDone = doneUnique.length === 9;
-    const canSelect = isRepeatable
-      ? prepDone
-      : !activitiesDone.some((a) => a.name === item.name) &&
-        (item.id === "1" || prepDone) &&
-        !allUniqueDone;
+                    data={activities}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      const prepDone = activitiesDone.some(
+                        (a) => a.name === "Preparación del terreno"
+                      );
+                      const isRepeatable = [
+                        "Riego",
+                        "Fertilización",
+                        "Manejo Fitosanitario",
+                      ].includes(item.name);
+                      const uniqueActivities = [
+                        "Preparación del terreno",
+                        "Siembra",
+                        "Fertilización",
+                        "Riego",
+                        "Manejo Fitosanitario",
+                        "Monitoreo del cultivo",
+                        "Cosecha",
+                        "Postcosecha y comercialización",
+                        "Documentación adicional",
+                      ];
+                      const doneUnique = uniqueActivities.filter((name) =>
+                        activitiesDone.some((a) => a.name === name)
+                      );
+                      const allUniqueDone = doneUnique.length === 9;
+                      const canSelect = isRepeatable
+                        ? prepDone
+                        : !activitiesDone.some((a) => a.name === item.name) &&
+                          (item.id === "1" || prepDone) &&
+                          !allUniqueDone;
 
-    return (
-      <Pressable
-        style={[
-          cropScreenStyle.activityModalItem,
-          { opacity: canSelect ? 1 : 0.5 },
-        ]}
-        onPress={() => {
-          if (canSelect) {
-            setModalVisible(false);
-            navigation.navigate(item.screen, { crop });
-          }
-        }}
-        disabled={!canSelect}
-      >
-        <Image
-          source={item.icon}
-          style={cropScreenStyle.activityModalIcon}
-        />
-        <Text style={cropScreenStyle.activityModalText}>
-          {item.name}
-        </Text>
-        {!isRepeatable &&
-          activitiesDone.some((a) => a.name === item.name) && (
-            <Text style={cropScreenStyle.activityModalRegistered}>
-              (Registrada)
-            </Text>
-          )}
-      </Pressable>
-    );
-  }}
-/>
+                      return (
+                        <Pressable
+                          style={[
+                            cropScreenStyle.activityModalItem,
+                            { opacity: canSelect ? 1 : 0.5 },
+                          ]}
+                          onPress={() => {
+                            if (canSelect) {
+                              setModalVisible(false);
+                              navigation.navigate(item.screen, { crop });
+                            }
+                          }}
+                          disabled={!canSelect}
+                        >
+                          <Image
+                            source={item.icon}
+                            style={cropScreenStyle.activityModalIcon}
+                          />
+                          <Text style={cropScreenStyle.activityModalText}>
+                            {item.name}
+                          </Text>
+                          {!isRepeatable &&
+                            activitiesDone.some(
+                              (a) => a.name === item.name
+                            ) && (
+                              <Text
+                                style={cropScreenStyle.activityModalRegistered}
+                              >
+                                (Registrada)
+                              </Text>
+                            )}
+                        </Pressable>
+                      );
+                    }}
+                  />
                   <TouchableOpacity
                     onPress={() => setModalVisible(false)}
                     style={cropScreenStyle.cancelButton}

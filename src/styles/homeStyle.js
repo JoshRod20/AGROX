@@ -25,7 +25,16 @@ const styles = StyleSheet.create({
     width: width * 0.3, // 30% del ancho de la pantalla
     height: 40, // Altura fija, ajustable si es necesario
     resizeMode: "contain",
-    marginRight: width * 0.12,
+    //marginRight: width * 0.12,
+  },
+  notificationButton: {
+    padding: 10,
+    // Opcional: si quieres un badge (círculo rojo con número), lo puedes agregar después
+  },
+  notificationIcon: {
+    width: 26,
+    height: 28,
+    //tintColor: "#96826bff",
   },
   content: {
     flexGrow: 1,
