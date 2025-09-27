@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import homeStyle from "../styles/homeStyle";
 import menuBurger from "../assets/menu-burger.png";
-import agroxLogo from "../assets/Logo_AGROX-sin-fondo.png";
+import agroxLogo from "../assets/AGROX.png";
 import WelcomeMessage from "../components/welcomeMessage";
 import AboutUsCard from "../components/aboutUsCard";
 import WeatherCard from "../components/weatherCard";

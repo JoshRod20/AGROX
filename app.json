@@ -4,26 +4,26 @@
     "slug": "Agrox",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "./src/assets/Logo_AGROX-Blanco.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./src/assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2E7D32"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./src/assets/Isotipo_AGROX-sinFondo.png",
+        "backgroundColor": "#2E7D32"
       },
-      "edgeToEdgeEnabled": false,
+      "edgeToEdgeEnabled": false
     },
     "web": {
-      "favicon": "./src/assets/favicon.png"
+      "favicon": "./src/assets/Isotipo_AGROX-sinFondo.png"
     },
     "plugins": [
       "expo-font"

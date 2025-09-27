@@ -34,7 +34,7 @@ export default function Login() {
   return (
     <SafeAreaView style={loginStyle.container} onLayout={onLayoutRootView}>
       <Image
-        source={require("../assets/AgroxLogo.jpg")}
+        source={require("../assets/Logo_AGROX-sinFondo.png")}
         style={loginStyle.logo}
         resizeMode="contain"
       />

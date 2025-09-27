@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     width: width * 0.3, // 30% del ancho de la pantalla
     height: 40, // Altura fija, ajustable si es necesario
     resizeMode: "contain",
-    marginRight: width * 0.16,
+    marginRight: width * 0.12,
   },
   content: {
     flexGrow: 1,
