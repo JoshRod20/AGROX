@@ -276,327 +276,336 @@ const CropScreen = () => {
   }
 
   return (
-    <SafeAreaView
-      style={cropScreenStyle.container2}
-      onLayout={onLayoutRootView}
-    >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ alignItems: "center" }}>
-          <Text
-            style={[
-              cropScreenStyle.title,
-              { fontFamily: "CarterOne", color: "#2E7D32" },
-            ]}
-          >
-            {crop?.cropName || "Maíz"}
-          </Text>
-        </View>
+    <SafeAreaView style={cropScreenStyle.container2} onLayout={onLayoutRootView}>
+      {/* Contenedor principal con layout vertical */}
+      <View style={{ flex: 1, justifyContent: 'space-between' }}>
 
-        <View style={cropScreenStyle.imageContainer}>
-          {docImageBase64 ? (
-            <Image
-              source={{ uri: "data:image/jpeg;base64," + docImageBase64 }}
-              style={cropScreenStyle.cropImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <View
-              style={{
-                width: 220,
-                height: 180,
-                borderRadius: 8,
-                backgroundColor: "#eee",
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 1,
-                borderColor: "#bbb",
-              }}
-            >
-              <Text style={{ color: "#888", fontSize: 16 }}>Sin imagen</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TouchableOpacity style={cropScreenStyle.buttonFile}>
-            <Image
-              source={require("../assets/document-signed.png")}
-              style={{
-                width: 18,
-                height: 18,
-                marginRight: 8,
-                tintColor: "#767E86",
-              }}
-            />
+        {/* Parte superior fija */}
+        <View>
+          <View style={{ alignItems: "center" }}>
             <Text
               style={[
-                cropScreenStyle.buttonTextFile,
-                { fontFamily: "QuicksandRegular" },
+                cropScreenStyle.title,
+                { fontFamily: "CarterOne", color: "#2E7D32" },
               ]}
             >
-              Ver ficha del cultivo
+              {crop?.cropName || "Maíz"}
             </Text>
-          </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            style={cropScreenStyle.buttonGraph}
-            onPress={() => navigation.navigate("CropGraphs", { crop })}
-          >
-            <Image
-              source={require("../assets/stats.png")}
-              style={cropScreenStyle.graphIcon}
-            />
-          </TouchableOpacity>
+          <View style={cropScreenStyle.imageContainer}>
+            {docImageBase64 ? (
+              <Image
+                source={{ uri: "data:image/jpeg;base64," + docImageBase64 }}
+                style={cropScreenStyle.cropImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <View
+                style={{
+                  width: 220,
+                  height: 180,
+                  borderRadius: 8,
+                  backgroundColor: "#eee",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 1,
+                  borderColor: "#bbb",
+                }}
+              >
+                <Text style={{ color: "#888", fontSize: 16 }}>Sin imagen</Text>
+              </View>
+            )}
+          </View>
+
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity style={cropScreenStyle.buttonFile}>
+              <Image
+                source={require("../assets/document-signed.png")}
+                style={{
+                  width: 18,
+                  height: 18,
+                  marginRight: 8,
+                  tintColor: "#767E86",
+                }}
+              />
+              <Text
+                style={[
+                  cropScreenStyle.buttonTextFile,
+                  { fontFamily: "QuicksandRegular" },
+                ]}
+              >
+                Ver ficha del cultivo
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={cropScreenStyle.buttonGraph}
+              onPress={() => navigation.navigate("CropGraphs", { crop })}
+            >
+              <Image
+                source={require("../assets/stats.png")}
+                style={cropScreenStyle.graphIcon}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View>
+        {/* Contenedor scrollable de actividades */}
+        <View style={cropScreenStyle.activitiesContainer}>
           <Text style={[cropScreenStyle.label2, { fontFamily: "QuicksandBold" }]}>
             Actividades
           </Text>
-          {activitiesDone.length === 0 ? (
-            <Text
-              style={[
-                cropScreenStyle.activitiesDone,
-                { fontFamily: "QuicksandRegular" },
-              ]}
-            >
-              Ninguna
-            </Text>
-          ) : (
-            activities.map((activity, index) => {
-              const doneList = activitiesDone.filter((a) => a.name === activity.name);
-              const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(activity.name);
-              if (isRepeatable && doneList.length > 0) {
-                return doneList.map((done, repIdx) => (
-                  <ActivityItem
-                    key={activity.id + "-" + repIdx}
-                    activity={activity}
-                    done={done}
-                    isLast={false}
-                    onOptions={(act, actType) => {
-                      setSelectedActivity(act);
-                      setSelectedActivityType(actType);
-                      setOptionsModalVisible(true);
-                    }}
-                  />
-                ));
-              } else if (!isRepeatable && doneList.length > 0) {
-                return (
-                  <ActivityItem
-                    key={activity.id}
-                    activity={activity}
-                    done={doneList[0]}
-                    isLast={false}
-                    onOptions={(act, actType) => {
-                      setSelectedActivity(act);
-                      setSelectedActivityType(actType);
-                      setOptionsModalVisible(true);
-                    }}
-                  />
-                );
-              }
-              return null;
-            })
-          )}
-
-          {/* Modal de opciones */}
-          <Modal
-            visible={optionsModalVisible}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setOptionsModalVisible(false)}
-          >
-            <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
-              <View style={cropScreenStyle.modalOverlay}>
-                <TouchableWithoutFeedback>
-                  <View style={cropScreenStyle.optionsModal}>
-                    <TouchableOpacity
-                      style={cropScreenStyle.optionItem}
-                      onPress={() => {
-                        setOptionsModalVisible(false);
-                        navigation.navigate(selectedActivityType.screen, {
-                          crop,
-                          activityData: selectedActivity,
-                        });
-                      }}
-                    >
-                      <Image
-                        source={require("../assets/edit.png")}
-                        style={cropScreenStyle.optionIcon}
-                      />
-                      <Text style={cropScreenStyle.optionText}>Actualizar actividad</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={cropScreenStyle.optionItem}
-                      onPress={() => {
-                        setOptionsModalVisible(false);
-                        if (selectedActivity && selectedActivity.id) {
-                          setDeleteAlertVisible(true); // ✅ Abre alerta personalizada
-                        } else {
-                          Alert.alert("Error", "No se pudo identificar la actividad.");
-                        }
-                      }}
-                    >
-                      <Image
-                        source={require("../assets/trash.png")}
-                        style={[cropScreenStyle.optionIcon, { tintColor: "#4e4e4e" }]}
-                      />
-                      <Text style={cropScreenStyle.optionText}>Eliminar actividad</Text>
-                    </TouchableOpacity>
-                  </View>
-                </TouchableWithoutFeedback>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-        </View>
-
-        <View style={cropScreenStyle.progressContainer}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={[cropScreenStyle.progressText, { fontFamily: "QuicksandBold" }]}>
-              Progreso del cultivo
-            </Text>
-            <Text style={[cropScreenStyle.progressText, { color: "#2E7D32" }]}>
-              {progress}%
-            </Text>
-          </View>
-          <View style={cropScreenStyle.progressBar}>
-            <View style={[cropScreenStyle.progressFill, { width: `${progress}%` }]} />
-          </View>
-        </View>
-
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <LinearGradient
-            colors={["rgba(46, 125, 50, 1)", "rgba(76, 175, 80, 0.7)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={cropScreenStyle.buttonSR}
-          >
-            <Text style={[cropScreenStyle.buttonText, { color: "#fff", fontFamily: "CarterOne" }]}>
-              Agregar actividad
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
-
-        {/* Modal de selección de actividad */}
-        <Modal
-          visible={modalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-            <View style={cropScreenStyle.modalOverlay}>
-              <TouchableWithoutFeedback>
-                <View style={cropScreenStyle.activitySelectionModal}>
-                  <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                    <Text style={[cropScreenStyle.titleModal, { fontFamily: "CarterOne" }]}>
-                      Selecciona una actividad
-                    </Text>
-                    <FlatList
-                      data={activities}
-                      keyExtractor={(item) => item.id}
-                      renderItem={({ item }) => {
-                        const prepDone = activitiesDone.some((a) => a.name === "Preparación del terreno");
-                        const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(item.name);
-                        const uniqueActivities = [
-                          "Preparación del terreno",
-                          "Siembra",
-                          "Fertilización",
-                          "Riego",
-                          "Manejo Fitosanitario",
-                          "Monitoreo del cultivo",
-                          "Cosecha",
-                          "Postcosecha y comercialización",
-                          "Documentación adicional",
-                        ];
-                        const doneUnique = uniqueActivities.filter((name) =>
-                          activitiesDone.some((a) => a.name === name)
-                        );
-                        const allUniqueDone = doneUnique.length === 9;
-                        const canSelect = isRepeatable
-                          ? prepDone
-                          : !activitiesDone.some((a) => a.name === item.name) &&
-                            (item.id === "1" || prepDone) &&
-                            !allUniqueDone;
-
-                        return (
-                          <Pressable
-                            style={[
-                              cropScreenStyle.activityModalItem,
-                              { opacity: canSelect ? 1 : 0.5 },
-                            ]}
-                            onPress={() => {
-                              if (canSelect) {
-                                setModalVisible(false);
-                                navigation.navigate(item.screen, { crop });
-                              }
-                            }}
-                            disabled={!canSelect}
-                          >
-                            <Image source={item.icon} style={cropScreenStyle.activityModalIcon} />
-                            <Text style={cropScreenStyle.activityModalText}>{item.name}</Text>
-                            {!isRepeatable && activitiesDone.some((a) => a.name === item.name) && (
-                              <Text style={cropScreenStyle.activityModalRegistered}>(Registrada)</Text>
-                            )}
-                          </Pressable>
-                        );
-                      }}
-                      scrollEnabled={false} // Ya está dentro de ScrollView
-                    />
-                    <TouchableOpacity onPress={() => setModalVisible(false)} style={cropScreenStyle.cancelButton}>
-                      <Text style={cropScreenStyle.cancelText}>Cancelar</Text>
-                    </TouchableOpacity>
-                  </ScrollView>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-
-        {/* ✅ Modal de alerta personalizada de eliminación */}
-        <Modal
-          visible={deleteAlertVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setDeleteAlertVisible(false)}
-        >
-          <View style={cropScreenStyle.overlay}>
-            <View style={cropScreenStyle.alertContainer}>
-              <View style={cropScreenStyle.alertIconContainer}>
-                <Image
-                  source={require("../assets/warning.png")}
-                  style={cropScreenStyle.alertIcon}
-                />
-              </View>
-              <Text style={cropScreenStyle.alertTitle}>¿Eliminar actividad?</Text>
-              <Text style={cropScreenStyle.alertMessage}>
-                ¿Estás seguro de que deseas eliminar la actividad "
-                <Text style={{ fontFamily: "QuicksandSemiBold" }}>
-                  {selectedActivityType?.name}
-                </Text>
-                "? Esta acción no se puede deshacer.
+          <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+            {activitiesDone.length === 0 ? (
+              <Text
+                style={[
+                  cropScreenStyle.activitiesDone,
+                  { fontFamily: "QuicksandRegular" },
+                ]}
+              >
+                Ninguna
               </Text>
-              <View style={cropScreenStyle.alertButtons}>
+            ) : (
+              activities.map((activity, index) => {
+                const doneList = activitiesDone.filter((a) => a.name === activity.name);
+                const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(activity.name);
+                if (isRepeatable && doneList.length > 0) {
+                  return doneList.map((done, repIdx) => (
+                    <ActivityItem
+                      key={activity.id + "-" + repIdx}
+                      activity={activity}
+                      done={done}
+                      isLast={false}
+                      onOptions={(act, actType) => {
+                        setSelectedActivity(act);
+                        setSelectedActivityType(actType);
+                        setOptionsModalVisible(true);
+                      }}
+                    />
+                  ));
+                } else if (!isRepeatable && doneList.length > 0) {
+                  return (
+                    <ActivityItem
+                      key={activity.id}
+                      activity={activity}
+                      done={doneList[0]}
+                      isLast={false}
+                      onOptions={(act, actType) => {
+                        setSelectedActivity(act);
+                        setSelectedActivityType(actType);
+                        setOptionsModalVisible(true);
+                      }}
+                    />
+                  );
+                }
+                return null;
+              })
+            )}
+          </ScrollView>
+        </View>
+
+        {/* Parte inferior fija: progreso + botón */}
+        <View style={cropScreenStyle.footerContainer}>
+          <View style={cropScreenStyle.progressContainer}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={[cropScreenStyle.progressText, { fontFamily: "QuicksandBold" }]}>
+                Progreso del cultivo
+              </Text>
+              <Text style={[cropScreenStyle.progressText, { color: "#2E7D32" }]}>
+                {progress}%
+              </Text>
+            </View>
+            <View style={cropScreenStyle.progressBar}>
+              <View style={[cropScreenStyle.progressFill, { width: `${progress}%` }]} />
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <LinearGradient
+              colors={["rgba(46, 125, 50, 1)", "rgba(76, 175, 80, 0.7)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={cropScreenStyle.buttonSR}
+            >
+              <Text style={[cropScreenStyle.buttonText, { color: "#fff", fontFamily: "CarterOne" }]}>
+                Agregar actividad
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+      </View>
+
+      {/* Modal de opciones */}
+      <Modal
+        visible={optionsModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOptionsModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
+          <View style={cropScreenStyle.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={cropScreenStyle.optionsModal}>
                 <TouchableOpacity
-                  style={[cropScreenStyle.alertButton, cropScreenStyle.cancelButtonAlert]}
-                  onPress={() => setDeleteAlertVisible(false)}
-                >
-                  <Text style={cropScreenStyle.alertButtonTextCancel}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[cropScreenStyle.alertButton, cropScreenStyle.deleteButtonAlert]}
-                  onPress={async () => {
-                    setDeleteAlertVisible(false);
-                    await handleDeleteActivity();
+                  style={cropScreenStyle.optionItem}
+                  onPress={() => {
+                    setOptionsModalVisible(false);
+                    navigation.navigate(selectedActivityType.screen, {
+                      crop,
+                      activityData: selectedActivity,
+                    });
                   }}
                 >
-                  <Text style={cropScreenStyle.alertButtonTextDelete}>Eliminar</Text>
+                  <Image
+                    source={require("../assets/edit.png")}
+                    style={cropScreenStyle.optionIcon}
+                  />
+                  <Text style={cropScreenStyle.optionText}>Actualizar actividad</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={cropScreenStyle.optionItem}
+                  onPress={() => {
+                    setOptionsModalVisible(false);
+                    if (selectedActivity && selectedActivity.id) {
+                      setDeleteAlertVisible(true); // ✅ Abre alerta personalizada
+                    } else {
+                      Alert.alert("Error", "No se pudo identificar la actividad.");
+                    }
+                  }}
+                >
+                  <Image
+                    source={require("../assets/trash.png")}
+                    style={[cropScreenStyle.optionIcon, { tintColor: "#4e4e4e" }]}
+                  />
+                  <Text style={cropScreenStyle.optionText}>Eliminar actividad</Text>
                 </TouchableOpacity>
               </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal de selección de actividad */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View style={cropScreenStyle.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={cropScreenStyle.activitySelectionModal}>
+                <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                  <Text style={[cropScreenStyle.titleModal, { fontFamily: "CarterOne" }]}>
+                    Selecciona una actividad
+                  </Text>
+                  <FlatList
+                    data={activities}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      const prepDone = activitiesDone.some((a) => a.name === "Preparación del terreno");
+                      const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(item.name);
+                      const uniqueActivities = [
+                        "Preparación del terreno",
+                        "Siembra",
+                        "Fertilización",
+                        "Riego",
+                        "Manejo Fitosanitario",
+                        "Monitoreo del cultivo",
+                        "Cosecha",
+                        "Postcosecha y comercialización",
+                        "Documentación adicional",
+                      ];
+                      const doneUnique = uniqueActivities.filter((name) =>
+                        activitiesDone.some((a) => a.name === name)
+                      );
+                      const allUniqueDone = doneUnique.length === 9;
+                      const canSelect = isRepeatable
+                        ? prepDone
+                        : !activitiesDone.some((a) => a.name === item.name) &&
+                          (item.id === "1" || prepDone) &&
+                          !allUniqueDone;
+
+                      return (
+                        <Pressable
+                          style={[
+                            cropScreenStyle.activityModalItem,
+                            { opacity: canSelect ? 1 : 0.5 },
+                          ]}
+                          onPress={() => {
+                            if (canSelect) {
+                              setModalVisible(false);
+                              navigation.navigate(item.screen, { crop });
+                            }
+                          }}
+                          disabled={!canSelect}
+                        >
+                          <Image source={item.icon} style={cropScreenStyle.activityModalIcon} />
+                          <Text style={cropScreenStyle.activityModalText}>{item.name}</Text>
+                          {!isRepeatable && activitiesDone.some((a) => a.name === item.name) && (
+                            <Text style={cropScreenStyle.activityModalRegistered}>(Registrada)</Text>
+                          )}
+                        </Pressable>
+                      );
+                    }}
+                    scrollEnabled={false} // Ya está dentro de ScrollView
+                  />
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={cropScreenStyle.cancelButton}>
+                    <Text style={cropScreenStyle.cancelText}>Cancelar</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* ✅ Modal de alerta personalizada de eliminación */}
+      <Modal
+        visible={deleteAlertVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDeleteAlertVisible(false)}
+      >
+        <View style={cropScreenStyle.overlay}>
+          <View style={cropScreenStyle.alertContainer}>
+            <View style={cropScreenStyle.alertIconContainer}>
+              <Image
+                source={require("../assets/warning.png")}
+                style={cropScreenStyle.alertIcon}
+              />
+            </View>
+            <Text style={cropScreenStyle.alertTitle}>¿Eliminar actividad?</Text>
+            <Text style={cropScreenStyle.alertMessage}>
+              ¿Estás seguro de que deseas eliminar la actividad "
+              <Text style={{ fontFamily: "QuicksandSemiBold" }}>
+                {selectedActivityType?.name}
+              </Text>
+              "? Esta acción no se puede deshacer.
+            </Text>
+            <View style={cropScreenStyle.alertButtons}>
+              <TouchableOpacity
+                style={[cropScreenStyle.alertButton, cropScreenStyle.cancelButtonAlert]}
+                onPress={() => setDeleteAlertVisible(false)}
+              >
+                <Text style={cropScreenStyle.alertButtonTextCancel}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[cropScreenStyle.alertButton, cropScreenStyle.deleteButtonAlert]}
+                onPress={async () => {
+                  setDeleteAlertVisible(false);
+                  await handleDeleteActivity();
+                }}
+              >
+                <Text style={cropScreenStyle.alertButtonTextDelete}>Eliminar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-      </ScrollView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

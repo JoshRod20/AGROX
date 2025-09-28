@@ -22,7 +22,7 @@ export const cropScreenStyle = StyleSheet.create({
   },
   title: {
     fontSize: wp("7%"),
-    marginTop: hp("-1%"),
+    marginTop: hp("-2.2%"),
     marginBottom: hp("0.5%"),
     textAlign: "center",
     alignSelf: "center",
@@ -77,7 +77,7 @@ export const cropScreenStyle = StyleSheet.create({
     fontSize: hp("2.2%"),
     marginLeft: hp("2.5%"),
     marginTop: hp("0.2%"),
-    marginBottom: hp("2%"),
+    marginBottom: hp("-0%"),
     color: "#BC6C25",
   },
   activitiesDone: {
@@ -87,7 +87,8 @@ export const cropScreenStyle = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     marginLeft: hp("3%"),
-    marginBottom: hp("3%"),
+    marginBottom: hp("1.5%"),
+    marginTop: hp("1%"),
     position: "relative",
   },
   activityIconWrapper: {
@@ -111,7 +112,7 @@ export const cropScreenStyle = StyleSheet.create({
     fontSize: 16,
     fontFamily: "QuicksandBold",
     color: "#2E7D32",
-    marginBottom: hp("1%"),
+    marginBottom: hp("1.5%"),
     marginTop: hp("-0.4%"),
   },
   activityDate: {
@@ -132,6 +133,7 @@ export const cropScreenStyle = StyleSheet.create({
     color: "#BC6C25",
     marginLeft: hp("0.3%"),
     marginBottom: 4,
+    marginTop: hp("-2.5%"),
   },
   progressBar: {
     backgroundColor: "#E0E0E0",
@@ -340,4 +342,16 @@ export const cropScreenStyle = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  // --- CONTENEDOR SCROLLABLE DE ACTIVIDADES ---
+activitiesContainer: {
+  flex: 1, 
+  marginHorizontal: hp("0%"),
+  marginTop: hp("1%"),
+  paddingBottom: hp("-5%"),
+},
+// --- FOOTER: PROGRESO + BOTÓN AGREGAR ---
+footerContainer: {
+  paddingBottom: hp("1.5%"),
+  backgroundColor: "#FFFFFF",
+},
 });
