@@ -58,7 +58,6 @@ export const cropScreenStyle = StyleSheet.create({
     textAlign: "center",
     marginBottom: hp("0.2%"),
   },
-  // En cropScreenStyle.js, dentro de StyleSheet.create({ ... })
   buttonGraph: {
     width: hp("4.5%"), // cuadrado
     height: hp("4.5%"),
@@ -146,13 +145,24 @@ export const cropScreenStyle = StyleSheet.create({
     borderRadius: 4,
   },
   titleModal: {
-    fontSize: hp("2.3%"),
+    fontSize: hp("2.5%"),
     textAlign: "center",
-    marginTop: hp("0.2%"),
-    marginBottom: hp("2%"),
+    marginTop: hp("2%"),
+    marginBottom: hp("3%"),
     color: "#2E7D32",
+    fontFamily: "CarterOne",
   },
-  // Estilos para los ítems del FlatList en el modal de selección
+  activitySelectionModal: {
+    width: wp("90%"),
+    maxHeight: hp("90%"), // Alto máximo, pero permite scroll si se llena
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#fcfcfcff", // Borde azul como en la imagen
+    shadowColor: "transparent", // Sin sombra
+    elevation: 0,
+    padding: 20,
+  },
   activityModalItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -160,23 +170,24 @@ export const cropScreenStyle = StyleSheet.create({
     paddingHorizontal: wp("1%"),
     marginVertical: hp("0.5%"),
     backgroundColor: "#FFFFFF",
+    borderBottomWidth: 0,
   },
   activityModalIcon: {
     width: wp("6%"),
     height: wp("6%"),
     marginRight: wp("3.5%"),
-    tintColor: "#2E7D32",
+    tintColor: "#2E7D32", // Verde oscuro
   },
   activityModalText: {
     flex: 1,
-    color: "#2E7D32",
+    color: "#2E7D32", // Verde oscuro
     fontFamily: "QuicksandSemiBold",
     fontSize: wp("4.2%"),
   },
   activityModalRegistered: {
     color: "#2E7D32",
     fontFamily: "QuicksandBold",
-    fontSize: wp("3.2%"),
+    fontSize: wp("3.5%"),
     marginLeft: wp("2%"),
   },
   buttonSR: {
@@ -202,13 +213,10 @@ export const cropScreenStyle = StyleSheet.create({
     paddingVertical: hp("1.1%"),
     borderRadius: wp("3.5%"),
     marginTop: hp("4%"),
+    marginBottom: hp("-2%"),
     alignSelf: "flex-end",
-    // Sombras
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    elevation: 0, // Quitar sombra
+    shadowColor: "transparent", // Quitar sombra
   },
   cancelText: {
     color: "#FFFFFF",
@@ -218,113 +226,118 @@ export const cropScreenStyle = StyleSheet.create({
     marginBottom: hp("0.2%"),
   },
 
+  // --- MODAL DE OPCIONES ---
+  optionsModal: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 24,
+    width: "75%",
+    elevation: 0,
+    shadowColor: "transparent",
+  },
+  optionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 0,
+  },
+  optionIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 24,
+    tintColor: "#f67009",
+  },
+  optionText: {
+    color: "#000",
+    fontFamily: "QuicksandBold",
+    fontSize: 15,
+  },
 
+  // --- MODAL DE ALERTA ---
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: wp("5%"),
+  },
+  alertContainer: {
+    width: "100%",
+    maxWidth: wp("85%"),
+    backgroundColor: "#FFFFFF",
+    borderRadius: wp("6%"),
+    padding: wp("6%"),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  alertIconContainer: {
+    width: wp("16%"),
+    height: wp("16%"),
+    borderRadius: wp("8%"),
+    backgroundColor: "#FFF2E8",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: hp("2%"),
+  },
+  alertIcon: {
+    width: wp("15%"),
+    height: wp("15%"),
+    marginBottom: hp("1%"),
+  },
+  alertTitle: {
+    fontSize: wp("5.5%"),
+    fontFamily: "QuicksandBold",
+    color: "#333333",
+    textAlign: "center",
+    marginBottom: hp("1.5%"),
+  },
+  alertMessage: {
+    fontSize: wp("4.2%"),
+    fontFamily: "QuicksandRegular",
+    color: "#666666",
+    textAlign: "center",
+    lineHeight: wp("6%"),
+    marginBottom: hp("3%"),
+  },
+  alertButtons: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+  alertButton: {
+    flex: 1,
+    paddingVertical: hp("1.6%"),
+    borderRadius: wp("4%"),
+    alignItems: "center",
+  },
+  cancelButtonAlert: {
+    backgroundColor: "#EEEEEE",
+    marginRight: wp("2%"),
+  },
+  deleteButtonAlert: {
+    backgroundColor: "#ff4848ff",
+    marginLeft: wp("2%"),
+  },
+  alertButtonTextCancel: {
+    fontSize: wp("4.3%"),
+    fontFamily: "QuicksandSemiBold",
+    color: "#555555",
+  },
+  alertButtonTextDelete: {
+    fontSize: wp("4.3%"),
+    fontFamily: "QuicksandSemiBold",
+    color: "#FFFFFF",
+  },
+
+  // --- MODAL OVERLAY ---
   modalOverlay: {
-  flex: 1,
-  backgroundColor: "rgba(0,0,0,0.3)",
-  justifyContent: "center",
-  alignItems: "center",
-},
-optionsModal: {
-  backgroundColor: "#fff",
-  borderRadius: 10,
-  padding: 24,
-  width: "75%",
-},
-optionItem: {
-  flexDirection: "row",
-  alignItems: "center",
-  paddingVertical: 12,
-},
-optionIcon: {
-  width: 20,
-  height: 20,
-  marginRight: 24,
-  tintColor: "#f67009",
-},
-optionText: {
-  color: "#000",
-  fontFamily: "QuicksandBold",
-  fontSize: 15,
-},
-
-// ✅ Alerta personalizada de eliminación
-overlay: {
-  flex: 1,
-  backgroundColor: "rgba(0, 0, 0, 0.4)",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: wp("5%"),
-},
-alertContainer: {
-  width: "100%",
-  maxWidth: wp("85%"),
-  backgroundColor: "#FFFFFF",
-  borderRadius: wp("6%"),
-  padding: wp("6%"),
-  alignItems: "center",
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.2,
-  shadowRadius: 10,
-  elevation: 8,
-},
-alertIconContainer: {
-  width: wp("16%"),
-  height: wp("16%"),
-  borderRadius: wp("8%"),
-  backgroundColor: "#FFF2E8",
-  justifyContent: "center",
-  alignItems: "center",
-  marginBottom: hp("2%"),
-},
-alertIcon: {
-  width: wp("15%"),
-  height: wp("15%"),
-  marginBottom: hp("1%"),
-},
-alertTitle: {
-  fontSize: wp("5.5%"),
-  fontFamily: "QuicksandBold",
-  color: "#333333",
-  textAlign: "center",
-  marginBottom: hp("1.5%"),
-},
-alertMessage: {
-  fontSize: wp("4.2%"),
-  fontFamily: "QuicksandRegular",
-  color: "#666666",
-  textAlign: "center",
-  lineHeight: wp("6%"),
-  marginBottom: hp("3%"),
-},
-alertButtons: {
-  flexDirection: "row",
-  width: "100%",
-  justifyContent: "space-between",
-},
-alertButton: {
-  flex: 1,
-  paddingVertical: hp("1.6%"),
-  borderRadius: wp("4%"),
-  alignItems: "center",
-},
-cancelButtonAlert: {
-  backgroundColor: "#EEEEEE",
-  marginRight: wp("2%"),
-},
-deleteButtonAlert: {
-  backgroundColor: "#ff4848ff",
-  marginLeft: wp("2%"),
-},
-alertButtonTextCancel: {
-  fontSize: wp("4.3%"),
-  fontFamily: "QuicksandSemiBold",
-  color: "#555555",
-},
-alertButtonTextDelete: {
-  fontSize: wp("4.3%"),
-  fontFamily: "QuicksandSemiBold",
-  color: "#FFFFFF",
-},
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

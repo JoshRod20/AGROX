@@ -488,62 +488,65 @@ const CropScreen = () => {
             <View style={cropScreenStyle.modalOverlay}>
               <TouchableWithoutFeedback>
                 <View style={cropScreenStyle.activitySelectionModal}>
-                  <Text style={[cropScreenStyle.titleModal, { fontFamily: "CarterOne" }]}>
-                    Selecciona una actividad
-                  </Text>
-                  <FlatList
-                    data={activities}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => {
-                      const prepDone = activitiesDone.some((a) => a.name === "Preparación del terreno");
-                      const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(item.name);
-                      const uniqueActivities = [
-                        "Preparación del terreno",
-                        "Siembra",
-                        "Fertilización",
-                        "Riego",
-                        "Manejo Fitosanitario",
-                        "Monitoreo del cultivo",
-                        "Cosecha",
-                        "Postcosecha y comercialización",
-                        "Documentación adicional",
-                      ];
-                      const doneUnique = uniqueActivities.filter((name) =>
-                        activitiesDone.some((a) => a.name === name)
-                      );
-                      const allUniqueDone = doneUnique.length === 9;
-                      const canSelect = isRepeatable
-                        ? prepDone
-                        : !activitiesDone.some((a) => a.name === item.name) &&
-                          (item.id === "1" || prepDone) &&
-                          !allUniqueDone;
+                  <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                    <Text style={[cropScreenStyle.titleModal, { fontFamily: "CarterOne" }]}>
+                      Selecciona una actividad
+                    </Text>
+                    <FlatList
+                      data={activities}
+                      keyExtractor={(item) => item.id}
+                      renderItem={({ item }) => {
+                        const prepDone = activitiesDone.some((a) => a.name === "Preparación del terreno");
+                        const isRepeatable = ["Riego", "Fertilización", "Manejo Fitosanitario"].includes(item.name);
+                        const uniqueActivities = [
+                          "Preparación del terreno",
+                          "Siembra",
+                          "Fertilización",
+                          "Riego",
+                          "Manejo Fitosanitario",
+                          "Monitoreo del cultivo",
+                          "Cosecha",
+                          "Postcosecha y comercialización",
+                          "Documentación adicional",
+                        ];
+                        const doneUnique = uniqueActivities.filter((name) =>
+                          activitiesDone.some((a) => a.name === name)
+                        );
+                        const allUniqueDone = doneUnique.length === 9;
+                        const canSelect = isRepeatable
+                          ? prepDone
+                          : !activitiesDone.some((a) => a.name === item.name) &&
+                            (item.id === "1" || prepDone) &&
+                            !allUniqueDone;
 
-                      return (
-                        <Pressable
-                          style={[
-                            cropScreenStyle.activityModalItem,
-                            { opacity: canSelect ? 1 : 0.5 },
-                          ]}
-                          onPress={() => {
-                            if (canSelect) {
-                              setModalVisible(false);
-                              navigation.navigate(item.screen, { crop });
-                            }
-                          }}
-                          disabled={!canSelect}
-                        >
-                          <Image source={item.icon} style={cropScreenStyle.activityModalIcon} />
-                          <Text style={cropScreenStyle.activityModalText}>{item.name}</Text>
-                          {!isRepeatable && activitiesDone.some((a) => a.name === item.name) && (
-                            <Text style={cropScreenStyle.activityModalRegistered}>(Registrada)</Text>
-                          )}
-                        </Pressable>
-                      );
-                    }}
-                  />
-                  <TouchableOpacity onPress={() => setModalVisible(false)} style={cropScreenStyle.cancelButton}>
-                    <Text style={cropScreenStyle.cancelText}>Cancelar</Text>
-                  </TouchableOpacity>
+                        return (
+                          <Pressable
+                            style={[
+                              cropScreenStyle.activityModalItem,
+                              { opacity: canSelect ? 1 : 0.5 },
+                            ]}
+                            onPress={() => {
+                              if (canSelect) {
+                                setModalVisible(false);
+                                navigation.navigate(item.screen, { crop });
+                              }
+                            }}
+                            disabled={!canSelect}
+                          >
+                            <Image source={item.icon} style={cropScreenStyle.activityModalIcon} />
+                            <Text style={cropScreenStyle.activityModalText}>{item.name}</Text>
+                            {!isRepeatable && activitiesDone.some((a) => a.name === item.name) && (
+                              <Text style={cropScreenStyle.activityModalRegistered}>(Registrada)</Text>
+                            )}
+                          </Pressable>
+                        );
+                      }}
+                      scrollEnabled={false} // Ya está dentro de ScrollView
+                    />
+                    <TouchableOpacity onPress={() => setModalVisible(false)} style={cropScreenStyle.cancelButton}>
+                      <Text style={cropScreenStyle.cancelText}>Cancelar</Text>
+                    </TouchableOpacity>
+                  </ScrollView>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -560,7 +563,6 @@ const CropScreen = () => {
           <View style={cropScreenStyle.overlay}>
             <View style={cropScreenStyle.alertContainer}>
               <View style={cropScreenStyle.alertIconContainer}>
-                {/* Si no tienes warning.png, usa un emoji o elimina esta línea */}
                 <Image
                   source={require("../assets/warning.png")}
                   style={cropScreenStyle.alertIcon}
