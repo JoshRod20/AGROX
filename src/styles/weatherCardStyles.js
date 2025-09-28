@@ -32,7 +32,7 @@ export default StyleSheet.create({
     alignSelf: "center", // ← centrado
     borderRadius: wp("8%"),
     paddingHorizontal: wp("4%"),
-    paddingVertical: wp("3%"),
+    paddingVertical: wp("1%"),
     marginBottom: hp("2%"),
     shadowColor: "#000",
     shadowOpacity: 0.1,
@@ -48,7 +48,7 @@ export default StyleSheet.create({
     marginRight: wp("-1%"),
   },
   status: {
-    fontSize: wp("6.5%"),
+    fontSize: wp("5"),
     color: "#fff",
     flex: 1,
     textAlign: "center",
@@ -59,8 +59,11 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   temperature: {
-    fontSize: wp("13%"),
+    width: wp("20%"),
+    height: wp("19%"),
+    fontSize: wp("12%"),
     color: "#fff",
+    marginBottom: hp("0%"),
     marginRight: wp("3%"),
   },
   range: {
@@ -68,5 +71,48 @@ export default StyleSheet.create({
     color: "#ffffffff",
     marginTop: hp("-2%"),
     marginRight: wp("4%"),
+    marginBottom: hp("1%"),
+  },
+  // ✨ Estilos para usuario nuevo: ícono que sobresale
+  newUserIconContainer: {
+    position: "absolute",
+    top: -hp("3%"), // ← ícono sobresale hacia arriba
+    left: wp("2%"), // ← margen desde la izquierda
+    alignItems: "center",
+    zIndex: 10,
+  },
+  newUserIcon: {
+    width: wp("40%"),
+    height: wp("38%"),
+    resizeMode: "contain",
+  },
+  newUserStatus: {
+    fontSize: wp("5%"),
+    color: "#fff",
+    textAlign: "center",
+    marginTop: hp("1%"), // espacio debajo del ícono
+    width: wp("40%"), // para centrar mejor el texto
+  },
+  newUserTempContainer: {
+    alignItems: "flex-end",
+    justifyContent: "flex-start",
+    flex: 1,
+    marginTop: hp("2%"), // compensar el espacio del ícono
+  },
+  newUserTemperature: {
+    width: wp("40%"),
+    height: wp("29%"),
+    fontSize: wp("24%"),
+    top: -hp("4%"),
+    color: "#fff",
+    marginRight: wp("1%"),
+    marginBottom: hp("0.5%"),
+  },
+  newUserRange: {
+    fontSize: wp("6%"),
+    color: "#ffffff",
+    textAlign: "right",
+    top: -hp("4%"),
+    marginRight: wp("8%"),
   },
 });

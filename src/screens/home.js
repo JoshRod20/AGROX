@@ -130,7 +130,7 @@ export default function Home() {
       >
         <View>
           <WelcomeMessage isVisible={showWelcome} />
-          <WeatherCard />
+          <WeatherCard isNewUser={showWelcome} />
         </View>
         <AboutUsCard isVisible={showAboutUs} />
         <CropCard />

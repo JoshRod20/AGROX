@@ -359,7 +359,7 @@ const CropScreen = () => {
             onPress={() => navigation.navigate("CropGraphs", { crop })}
           >
             <Image
-              source={require("../assets/stats 1.png")} // Asegúrate de tener este ícono
+              source={require("../assets/stats.png")} // Asegúrate de tener este ícono
               style={cropScreenStyle.graphIcon}
             />
           </TouchableOpacity>

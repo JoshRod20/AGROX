@@ -1,5 +1,6 @@
 // WeatherCard.js
-import React, { useEffect, useState, useCallback } from "react";
+
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { View, Text, Image, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -15,9 +16,11 @@ import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync();
 
-const WeatherCard = () => {
+// Recibe isNewUser como prop desde Home
+const WeatherCard = ({ isNewUser = false }) => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(true);
 
   const [fontsLoaded] = useFonts({
     CarterOne: require("../utils/fonts/CarterOne-Regular.ttf"),
@@ -40,6 +43,9 @@ const WeatherCard = () => {
           lang: "es",
         },
       });
+
+      if (!isMounted.current) return;
+
       setWeather({
         temp: Math.round(data.main.temp),
         min: Math.round(data.main.temp_min),
@@ -50,29 +56,47 @@ const WeatherCard = () => {
     } catch (e) {
       console.error("Error al obtener el clima:", e);
     } finally {
-      setLoading(false);
+      if (isMounted.current) setLoading(false);
     }
   };
 
   const getLocationAndWeather = async () => {
+    if (!isMounted.current) return;
     setLoading(true);
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.warn("Permiso de ubicación denegado");
-      setLoading(false);
-      return;
+
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.warn("Permiso de ubicación denegado");
+        if (isMounted.current) setLoading(false);
+        return;
+      }
+
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      await fetchWeatherByCoords(latitude, longitude);
+    } catch (err) {
+      console.error("Error obteniendo ubicación:", err);
+      if (isMounted.current) setLoading(false);
     }
-    const {
-      coords: { latitude, longitude },
-    } = await Location.getCurrentPositionAsync({});
-    fetchWeatherByCoords(latitude, longitude);
   };
 
   useEffect(() => {
-    if (!fontsLoaded) return;
-    getLocationAndWeather();
-    const id = setInterval(getLocationAndWeather, 300_000); // 5 min
-    return () => clearInterval(id);
+    isMounted.current = true;
+
+    if (fontsLoaded) {
+      getLocationAndWeather();
+      const intervalId = setInterval(getLocationAndWeather, 60_000); // Cada 60s
+
+      return () => {
+        isMounted.current = false;
+        clearInterval(intervalId);
+      };
+    }
   }, [fontsLoaded]);
 
   const getIconSource = (icon) => {
@@ -83,34 +107,35 @@ const WeatherCard = () => {
         return require("../assets/cloudy.png");
       case "rain":
         return require("../assets/rain.png");
-        case "thunderstorm":
-      return require("../assets/storm.png");
+      case "thunderstorm":
+        return require("../assets/storm.png");
       case "fog":
+      case "mist":
         return require("../assets/fog.png");
       default:
         return require("../assets/sun.png");
     }
   };
 
-  if (!fontsLoaded) return null;
-
   const getGradientColors = (icon) => {
     switch (icon) {
-      case "clear": // Soleado
-        return ["#FFF153", "#145A86"]; // Amarillo → Azul cielo
-      case "clouds": // Nublado
-        return ["#AAAAAA", "#767E86"]; // Gris claro → Gris oscuro
-      case "rain": // Lluvioso
-        return ["#999999", "#145A86"]; // Gris semiclaro → Azul cielo
-      case "thunderstorm": // Tormenta
-        return ["#AAAAAA", "#60656A"]; // Gris claro → Gris oscuro
+      case "clear":
+        return ["#FFF153", "#145A86"];
+      case "clouds":
+        return ["#AAAAAA", "#767E86"];
+      case "rain":
+        return ["#999999", "#145A86"];
+      case "thunderstorm":
+        return ["#AAAAAA", "#60656A"];
       case "mist":
-      case "fog": // Niebla
-        return ["#AAAAAA", "#767E86"]; // Blanco niebla → Gris niebla
+      case "fog":
+        return ["#AAAAAA", "#767E86"];
       default:
-        return ["#FFD700", "#4A90E2"]; // Fallback: soleado
+        return ["#FFD700", "#4A90E2"];
     }
   };
+
+  if (!fontsLoaded) return null;
 
   return (
     <View onLayout={onLayoutRootView}>
@@ -139,18 +164,44 @@ const WeatherCard = () => {
             },
           ]}
         >
-          <Image source={getIconSource(weather?.icon)} style={styles.icon} />
-          <Text style={[styles.status, { fontFamily: "QuicksandBold" }]}>
-            {weather?.status}
-          </Text>
-          <View style={styles.tempBlock}>
-            <Text style={[styles.temperature, { fontFamily: "CarterOne" }]}>
-              {weather?.temp}°
-            </Text>
-            <Text style={[styles.range, { fontFamily: "QuicksandBold" }]}>
-              {weather?.min}° / {weather?.max}°
-            </Text>
-          </View>
+          {isNewUser ? (
+            // ✨ Diseño especial para primer uso
+            <>
+              <View style={styles.newUserIconContainer}>
+                <Image
+                  source={getIconSource(weather?.icon)}
+                  style={styles.newUserIcon}
+                />
+                <Text style={[styles.newUserStatus, { fontFamily: "QuicksandBold" }]}>
+                  {weather?.status}
+                </Text>
+              </View>
+              <View style={styles.newUserTempContainer}>
+                <Text style={[styles.newUserTemperature, { fontFamily: "CarterOne" }]}>
+                  {weather?.temp}°
+                </Text>
+                <Text style={[styles.newUserRange, { fontFamily: "QuicksandBold" }]}>
+                  {weather?.min}° / {weather?.max}°
+                </Text>
+              </View>
+            </>
+          ) : (
+            // 🔄 Diseño normal
+            <>
+              <Image source={getIconSource(weather?.icon)} style={styles.icon} />
+              <Text style={[styles.status, { fontFamily: "QuicksandBold" }]}>
+                {weather?.status}
+              </Text>
+              <View style={styles.tempBlock}>
+                <Text style={[styles.temperature, { fontFamily: "CarterOne" }]}>
+                  {weather?.temp}°
+                </Text>
+                <Text style={[styles.range, { fontFamily: "QuicksandBold" }]}>
+                  {weather?.min}° / {weather?.max}°
+                </Text>
+              </View>
+            </>
+          )}
         </LinearGradient>
       )}
     </View>
