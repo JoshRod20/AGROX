@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, Modal, TouchableWithoutFeedback, Alert, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../services/database";
+import { deleteDoc, doc } from "firebase/firestore";
 
 import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
@@ -13,6 +14,9 @@ const CropCard = () => {
   const navigation = useNavigation();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
+  const [selectedCrop, setSelectedCrop] = useState(null);
 
   useEffect(() => {
     const fetchCrops = async () => {
@@ -43,7 +47,13 @@ const CropCard = () => {
             };
           })
         );
-        setCrops(cropsData);
+        // --- ORDENAR POR FECHA DE CREACIÓN (más reciente primero) ---
+        const sortedCrops = cropsData.sort((a, b) => {
+          const dateA = new Date(a.createdAt);
+          const dateB = new Date(b.createdAt);
+          return dateB - dateA; // Orden descendente (más reciente primero)
+        });
+        setCrops(sortedCrops);
       } catch (error) {
         console.log("Error fetching crops:", error);
       } finally {
@@ -52,6 +62,26 @@ const CropCard = () => {
     };
     fetchCrops();
   }, []);
+
+  const handleUpdateCrop = () => {
+    setOptionsModalVisible(false);
+    // Se envían todos los datos del cultivo seleccionado
+    navigation.navigate("FormCrop", { 
+      crop: selectedCrop // Se envía el objeto completo del cultivo
+    });
+  };
+
+  const handleDeleteCrop = async () => {
+    try {
+      await deleteDoc(doc(db, "Crops", selectedCrop.id));
+      setCrops(prev => prev.filter(crop => crop.id !== selectedCrop.id));
+      setDeleteAlertVisible(false);
+      // Eliminado: Alert.alert("Éxito", "El cultivo ha sido eliminado.");
+    } catch (error) {
+      console.log("Error deleting crop:", error);
+      Alert.alert("Error", "No se pudo eliminar el cultivo.");
+    }
+  };
 
   if (loading) return null;
 
@@ -77,6 +107,20 @@ const CropCard = () => {
 
             {/* Tarjeta */}
             <View style={styles.cardContainer}>
+              {/* Botón de opciones en esquina superior derecha */}
+              <TouchableOpacity
+                style={styles.optionsButton}
+                onPress={() => {
+                  setSelectedCrop(crop);
+                  setOptionsModalVisible(true);
+                }}
+              >
+                <Image
+                  source={require("../assets/menu-dots.png")}
+                  style={styles.optionsIcon}
+                />
+              </TouchableOpacity>
+
               <View style={styles.card}>
                 <Text style={styles.label}>
                   Tipo de cultivo:{" "}
@@ -118,6 +162,94 @@ const CropCard = () => {
           </Text>
         </View>
       )}
+
+      {/* Modal de opciones (igual al de CropScreen) */}
+      <Modal
+        visible={optionsModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOptionsModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.optionsModal}>
+                <TouchableOpacity
+                  style={styles.optionItem}
+                  onPress={handleUpdateCrop}
+                >
+                  <Image
+                    source={require("../assets/edit.png")}
+                    style={styles.optionIcon}
+                  />
+                  <Text style={styles.optionText}>Actualizar cultivo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.optionItem}
+                  onPress={() => {
+                    setOptionsModalVisible(false);
+                    if (selectedCrop && selectedCrop.id) {
+                      setDeleteAlertVisible(true); // Abre alerta personalizada
+                    } else {
+                      Alert.alert("Error", "No se pudo identificar el cultivo.");
+                    }
+                  }}
+                >
+                  <Image
+                    source={require("../assets/trash.png")}
+                    style={[styles.optionIcon, { tintColor: "#4e4e4e" }]}
+                  />
+                  <Text style={styles.optionText}>Eliminar cultivo</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* ✅ Modal de alerta personalizada de eliminación */}
+      <Modal
+        visible={deleteAlertVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDeleteAlertVisible(false)}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.alertContainer}>
+            <View style={styles.alertIconContainer}>
+              <Image
+                source={require("../assets/warning.png")}
+                style={styles.alertIcon}
+              />
+            </View>
+            <Text style={styles.alertTitle}>¿Eliminar cultivo?</Text>
+            <Text style={styles.alertMessage}>
+              ¿Estás seguro de que deseas eliminar el cultivo "
+              <Text style={{ fontFamily: "QuicksandSemiBold" }}>
+                {selectedCrop?.cropName}
+              </Text>
+              "? Esta acción no se puede deshacer.
+            </Text>
+            <View style={styles.alertButtons}>
+              <TouchableOpacity
+                style={[styles.alertButton, styles.cancelButtonAlert]}
+                onPress={() => setDeleteAlertVisible(false)}
+              >
+                <Text style={styles.alertButtonTextCancel}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.alertButton, styles.deleteButtonAlert]}
+                onPress={async () => {
+                  setDeleteAlertVisible(false);
+                  await handleDeleteCrop();
+                }}
+              >
+                <Text style={styles.alertButtonTextDelete}>Eliminar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };

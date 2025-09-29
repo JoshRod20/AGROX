@@ -1,4 +1,8 @@
 import { StyleSheet, Dimensions, PixelRatio } from "react-native";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 const { width } = Dimensions.get("window");
 
@@ -40,29 +44,29 @@ export default StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-cropNameTag: {
-  backgroundColor: "#2E7D32",
-  paddingVertical: 4,
-  paddingHorizontal: 28,
-  borderTopLeftRadius: 8,
-  borderTopRightRadius: 8,
-  borderBottomLeftRadius: 2,
-  borderBottomRightRadius: 2,
-  alignSelf: "flex-start",
-  marginLeft: 2,
-  marginBottom: -5,
-  zIndex: 2,
-  // Sombra para iOS
-  shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 2,
+  cropNameTag: {
+    backgroundColor: "#2E7D32",
+    paddingVertical: 4,
+    paddingHorizontal: 28,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    alignSelf: "flex-start",
+    marginLeft: 2,
+    marginBottom: -5,
+    zIndex: 2,
+    // Sombra para iOS
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    // Sombra para Android
+    elevation: 3,
   },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-  // Sombra para Android
-  elevation: 3,
-},
   cropNameText: {
     color: "#fff",
     fontSize: scaleFont(18),
@@ -132,5 +136,131 @@ cropNameTag: {
     fontSize: scaleFont(14),
     color: "#666",
     textAlign: "center",
+  },
+   // --- ESTILOS DEL BOTÓN DE OPCIONES EN ESQUINA SUPERIOR DERECHA ---
+  optionsButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2, // Asegura que esté por encima de otros elementos
+    padding: 5, // Espacio para tocar más fácil
+  },
+  optionsIcon: {
+    width: 25,
+    height: 25,
+    tintColor: "#666", // Color del icono
+  },
+
+  // --- ESTILOS DEL MODAL ---
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  optionsModal: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  optionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    width: "100%",
+  },
+  optionIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 15,
+    tintColor: "#f67009",
+  },
+  optionText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  // --- MODAL DE ALERTA ---
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: wp("5%"),
+  },
+  alertContainer: {
+    width: "100%",
+    maxWidth: wp("85%"),
+    backgroundColor: "#FFFFFF",
+    borderRadius: wp("6%"),
+    padding: wp("6%"),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  alertIconContainer: {
+    width: wp("16%"),
+    height: wp("16%"),
+    borderRadius: wp("8%"),
+    backgroundColor: "#FFF2E8",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: hp("2%"),
+  },
+  alertIcon: {
+    width: wp("15%"),
+    height: wp("15%"),
+    marginBottom: hp("1%"),
+  },
+  alertTitle: {
+    fontSize: wp("5.5%"),
+    fontFamily: "QuicksandBold",
+    color: "#333333",
+    textAlign: "center",
+    marginBottom: hp("1.5%"),
+  },
+  alertMessage: {
+    fontSize: wp("4.2%"),
+    fontFamily: "QuicksandRegular",
+    color: "#666666",
+    textAlign: "center",
+    lineHeight: wp("6%"),
+    marginBottom: hp("3%"),
+  },
+  alertButtons: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+  alertButton: {
+    flex: 1,
+    paddingVertical: hp("1.6%"),
+    borderRadius: wp("4%"),
+    alignItems: "center",
+  },
+  cancelButtonAlert: {
+    backgroundColor: "#EEEEEE",
+    marginRight: wp("2%"),
+  },
+  deleteButtonAlert: {
+    backgroundColor: "#ff4848ff",
+    marginLeft: wp("2%"),
+  },
+  alertButtonTextCancel: {
+    fontSize: wp("4.3%"),
+    fontFamily: "QuicksandSemiBold",
+    color: "#555555",
+  },
+  alertButtonTextDelete: {
+    fontSize: wp("4.3%"),
+    fontFamily: "QuicksandSemiBold",
+    color: "#FFFFFF",
   },
 });
