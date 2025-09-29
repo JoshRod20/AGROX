@@ -36,7 +36,7 @@ const CropSowing = () => {
           sowingMark: activityData.sowingMark || "",
           seedType: activityData.seedType || "",
           variety: activityData.variety || "",
-          sowingDensity: activityData.sowingDensity || "",
+          // ✅ ELIMINADO: sowingDensity
           supplierName: activityData.supplierName || "",
           seedCost:
             activityData.seedCost !== undefined
@@ -62,7 +62,7 @@ const CropSowing = () => {
           sowingMark: "",
           seedType: "",
           variety: "",
-          sowingDensity: "",
+          // ✅ ELIMINADO: sowingDensity
           supplierName: "",
           seedCost: "",
           laborCost: "",
@@ -75,14 +75,13 @@ const CropSowing = () => {
   // ScrollView ref para scroll a errores
   const scrollViewRef = useRef(null);
 
-  // 1. Referencias Animated para animación shake de cada campo relevante
-  // Solo los campos que quieres que tiemblen (ejemplo: tillageType y soilCondition)
+  // Referencias Animated (sin sowingDensity)
   const shakeAnim = {
     sowingMethod: useRef(new Animated.Value(0)).current,
-    sowingMark: useRef(new Animated.Value(0)).current, // <-- Faltaba esta línea
+    sowingMark: useRef(new Animated.Value(0)).current,
     seedType: useRef(new Animated.Value(0)).current,
     variety: useRef(new Animated.Value(0)).current,
-    sowingDensity: useRef(new Animated.Value(0)).current,
+    // ✅ ELIMINADO: sowingDensity
     supplierName: useRef(new Animated.Value(0)).current,
     seedCost: useRef(new Animated.Value(0)).current,
     laborCost: useRef(new Animated.Value(0)).current,
@@ -91,8 +90,6 @@ const CropSowing = () => {
     totalCost: useRef(new Animated.Value(0)).current,
   };
 
-  // 2. Función para activar la animación shake
-  // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
   const triggerShake = (anim) => {
     Animated.sequence([
       Animated.timing(anim, {
@@ -120,11 +117,9 @@ const CropSowing = () => {
 
   const [errors, setErrors] = useState({});
 
-  // Calcula el costo total automáticamente cada vez que cambian los valores relevantes
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      // Parsear valores numéricos
       const seedCost = parseFloat(updated.seedCost) || 0;
       const laborCost = parseFloat(updated.laborCost) || 0;
       const machineCost = parseFloat(updated.machineCost) || 0;
@@ -139,7 +134,7 @@ const CropSowing = () => {
     sowingMark: "",
     seedType: "",
     variety: "",
-    sowingDensity: "",
+    // ✅ ELIMINADO: sowingDensity
     supplierName: "",
     seedCost: "",
     laborCost: "",
@@ -147,6 +142,7 @@ const CropSowing = () => {
     transportCost: "",
     totalCost: "",
   };
+
   const handleSave = async () => {
     let newErrors = {};
     if (!formData.sowingMethod) {
@@ -165,10 +161,7 @@ const CropSowing = () => {
       newErrors.variety = "Ingresa la variedad.";
       triggerShake(shakeAnim.variety);
     }
-    if (!formData.sowingDensity) {
-      newErrors.sowingDensity = "Ingresa la densidad de siembra.";
-      triggerShake(shakeAnim.sowingDensity);
-    }
+    // ✅ ELIMINADA: validación de sowingDensity
     if (!formData.supplierName) {
       newErrors.supplierName = "Ingresa el nombre del proveedor.";
       triggerShake(shakeAnim.supplierName);
@@ -198,7 +191,6 @@ const CropSowing = () => {
     setLoading(true);
     try {
       if (activityData && activityData.id) {
-        // Modo edición
         const docRef = doc(
           db,
           `Crops/${crop.id}/activities/${activityData.id}`
@@ -292,15 +284,7 @@ const CropSowing = () => {
         shakeAnim={shakeAnim.variety}
       />
 
-      {/* Densidad de siembra */}
-      <InputsFormFields
-        label="Densidad de siembra"
-        placeholder="Ingrese la densidad de siembra"
-        value={formData.sowingDensity}
-        onChangeText={(text) => handleInputChange("sowingDensity", text)}
-        error={errors.sowingDensity}
-        shakeAnim={shakeAnim.sowingDensity}
-      />
+      {/* ✅ ELIMINADO: el bloque de "Densidad de siembra" */}
 
       {/* Nombre del proveedor */}
       <InputsFormFields
