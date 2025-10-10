@@ -11,6 +11,7 @@ import Home from "../screens/home";
 import Crop from "../screens/crop";
 import LogoutButton from "../components/LogoutButton";
 import { drawerStyle } from "../styles/drawerStyle";
+import InventoryMenu from "../screens/inventory/inventoryMenu";
 
 const Drawer = createDrawerNavigator();
 
@@ -71,6 +72,18 @@ export default function NavigationDrawer() {
           drawerIcon: () => (
             <Image
               source={require("../assets/home.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Inventario"
+        component={InventoryMenu}
+        options={{
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/plus.png")}
               style={{ width: 24, height: 24, tintColor: "#fff" }}
             />
           ),

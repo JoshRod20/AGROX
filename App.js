@@ -15,6 +15,10 @@ import SignUp from './src/screens/signUp';
 import SignIn from './src/screens/signIn';
 import SignUp2 from './src/screens/signUp2';
 import Onboarding from './src/screens/onboardingScreen';
+import InventoryMenuStyles from './src/styles/inventoryStyles/inventoryMenuStyle';
+import InventoryMenu from './src/screens/inventory/inventoryMenu';
+import { employeesStyle as EmployeesStyle } from './src/styles/inventoryStyles/employeesStyle';
+import Employees from './src/screens/inventory/employees';
 import FormCrop from './src/screens/formCrop';
 import CropScreen from './src/screens/cropScreen';
 import CropPreparation from './src/screens/cropPreparation';
@@ -113,6 +117,49 @@ export default function App() {
             })}
           />
 
+          <Stack.Screen 
+            name="InventoryMenu" 
+            component={InventoryMenu} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={InventoryMenuStyles.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={InventoryMenuStyles.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+          <Stack.Screen 
+            name="Employees" 
+            component={Employees} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={EmployeesStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={EmployeesStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
             <Stack.Screen 
             name="FormCrop" 
             component={FormCrop} 
@@ -157,7 +204,7 @@ export default function App() {
             })}
           />
 
-           <Stack.Screen 
+          <Stack.Screen 
             name="CropPreparation" 
             component={CropPreparation} 
             options={({ navigation }) => ({
