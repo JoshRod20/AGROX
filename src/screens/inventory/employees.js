@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { employeesStyle } from "../../styles/inventoryStyles/employeesStyle"; // ✅ nombre correcto
+import { employeesStyle } from "../../styles/inventoryStyles/employeesStyle";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
