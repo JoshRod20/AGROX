@@ -49,23 +49,20 @@ const SeedsAndInputs = () => {
     return null;
   }
 
-  // Estado del formulario
   const [formData, setFormData] = useState({
     inputName: "",
     category: "",
     unit: "",
     unitPrice: "",
-    purchaseDate: "",
+    purchaseDate: "", // se guardará como "YYYY-MM-DD"
     supplier: "",
     stock: "",
   });
 
-  // Estados para los dropdowns
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [unitOpen, setUnitOpen] = useState(false);
-
-  // Errores y animaciones
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const shakeAnim = {
@@ -79,26 +76,10 @@ const SeedsAndInputs = () => {
 
   const triggerShake = (anim) => {
     Animated.sequence([
-      Animated.timing(anim, {
-        toValue: 10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: -10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: 10,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: -10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 10, duration: 100, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 100, useNativeDriver: true }),
     ]).start();
   };
 
@@ -106,7 +87,6 @@ const SeedsAndInputs = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Opciones estáticas para los dropdowns
   const categoryOptions = [
     { label: "Semilla", value: "semilla" },
     { label: "Fertilizante", value: "fertilizante" },
@@ -150,9 +130,9 @@ const SeedsAndInputs = () => {
     }
 
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) return;
 
+    setLoading(true);
     try {
       await addDoc(collection(db, "seedsAndInputs"), {
         ...formData,
@@ -160,11 +140,12 @@ const SeedsAndInputs = () => {
         stock: parseInt(formData.stock) || 0,
         createdAt: Timestamp.now(),
       });
-
       navigation.goBack();
     } catch (error) {
       console.error("Error al guardar:", error);
       Alert.alert("Error", "No se pudo guardar el insumo.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,28 +226,71 @@ const SeedsAndInputs = () => {
         />
 
         {/* Fecha de compra */}
-        <Text style={seedsAndInputsStyle.labelDate}>Fecha de compra</Text>
-        <Animated.View
-          style={[
-            seedsAndInputsStyle.dateInputContainer,
-            errors.purchaseDate && seedsAndInputsStyle.errorInput,
-            { transform: [{ translateX: shakeAnim.purchaseDate }] },
-          ]}
+<Text style={seedsAndInputsStyle.labelDate}>Fecha de compra</Text>
+
+{/* ✅ Función auxiliar dentro del componente */}
+{(() => {
+  const parseISODateToLocal = (isoString) => {
+    if (!isoString) return new Date();
+    const [year, month, day] = isoString.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  return (
+    <>
+      <Animated.View
+        style={[
+          seedsAndInputsStyle.dateInputContainer,
+          errors.purchaseDate && seedsAndInputsStyle.errorInput,
+          { transform: [{ translateX: shakeAnim.purchaseDate }] },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => setShowDatePicker(true)}
+          activeOpacity={0.8}
+          style={{ flex: 1 }}
         >
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            activeOpacity={0.8}
-            style={{ flex: 1 }}
-          >
-            <TextInput
-              style={seedsAndInputsStyle.dateInputText}
-              value={formData.purchaseDate}
-              placeholder="Seleccione la fecha"
-              editable={false}
-            />
-          </TouchableOpacity>
-          <Icon name="calendar-today" style={seedsAndInputsStyle.dateIcon} />
-        </Animated.View>
+          <TextInput
+            style={seedsAndInputsStyle.dateInputText}
+            value={
+              formData.purchaseDate
+                ? parseISODateToLocal(formData.purchaseDate).toLocaleDateString("es-NI")
+                : ""
+            }
+            placeholder="Seleccione la fecha"
+            editable={false}
+          />
+        </TouchableOpacity>
+        <Icon name="calendar-today" style={seedsAndInputsStyle.dateIcon} />
+      </Animated.View>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={parseISODateToLocal(formData.purchaseDate)}
+          mode="date"
+          display="default"
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              const year = selectedDate.getFullYear();
+              const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+              const day = String(selectedDate.getDate()).padStart(2, '0');
+              const isoDate = `${year}-${month}-${day}`;
+              handleInputChange("purchaseDate", isoDate);
+            }
+          }}
+        />
+      )}
+
+      {errors.purchaseDate && (
+        <Text style={{ color: "#f44336", fontSize: 13, marginTop: 2 }}>
+          {errors.purchaseDate}
+        </Text>
+      )}
+    </>
+  );
+})()}
+
         {errors.purchaseDate && (
           <Text style={{ color: "#f44336", fontSize: 13, marginTop: 2 }}>
             {errors.purchaseDate}
@@ -298,7 +322,11 @@ const SeedsAndInputs = () => {
         />
 
         {/* Botón Guardar */}
-        <FormButton title="Guardar insumo" onPress={handleSave} />
+        <FormButton
+          title={loading ? "Guardando..." : "Guardar insumo"}
+          onPress={handleSave}
+          loading={loading}
+        />
       </ScrollView>
     </SafeAreaView>
   );
