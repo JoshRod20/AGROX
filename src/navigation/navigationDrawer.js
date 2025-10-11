@@ -12,10 +12,13 @@ import Crop from "../screens/crop";
 import LogoutButton from "../components/LogoutButton";
 import { drawerStyle } from "../styles/drawerStyle";
 import InventoryMenu from "../screens/inventory/inventoryMenu";
+import { DrawerItem } from '@react-navigation/drawer'; //importacion de drawer item
 
 const Drawer = createDrawerNavigator();
 
 export default function NavigationDrawer() {
+  const PlaceholderScreen = () => null; //eliminarlo una vez las pantallas esten listas
+
   return (
     <Drawer.Navigator
       initialRouteName="Inicio"
@@ -56,10 +59,12 @@ export default function NavigationDrawer() {
             contentContainerStyle={drawerStyle.drawerScroll}
           >
             <DrawerItemList {...props} />
-          </DrawerContentScrollView>
 
+          </DrawerContentScrollView>
+          
           {/* Botón cerrar sesión */}
           <View style={drawerStyle.logoutContainer}>
+            <Image source={require("../assets/Line 6.png")} style={{ left: 8, position: "absolute", width: 230 }} />
             <LogoutButton />
           </View>
         </View>
@@ -83,7 +88,7 @@ export default function NavigationDrawer() {
         options={{
           drawerIcon: () => (
             <Image
-              source={require("../assets/plus.png")}
+              source={require("../assets/inventory-alt.png")}
               style={{ width: 24, height: 24, tintColor: "#fff" }}
             />
           ),
@@ -96,6 +101,68 @@ export default function NavigationDrawer() {
           drawerIcon: () => (
             <Image
               source={require("../assets/plus.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Mis cultivos"
+        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        options={{
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/seedling.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Trazabilidad"
+        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        options={{
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/qr.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Panel económico"
+        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        options={{
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/stats 1.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Mi cuenta"
+        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        options={{
+          drawerItemStyle: { height: 0 }, // Oculta el item del drawer
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/circle-user.png")}
+              style={{ width: 24, height: 24, tintColor: "#fff" }}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Acerca de "
+        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        options={{
+          drawerItemStyle: { height: 0 }, // Oculta el item del drawer
+          drawerIcon: () => (
+            <Image
+              source={require("../assets/info.png")}
               style={{ width: 24, height: 24, tintColor: "#fff" }}
             />
           ),

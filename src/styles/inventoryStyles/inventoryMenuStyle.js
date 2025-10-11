@@ -35,10 +35,10 @@ export const inventoryMenuStyle = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: hp("6%"), // ← espacio vertical entre filas
+    marginBottom: hp("8%"), // ← espacio vertical entre filas
   },
   moduleButton: {
-    width: wp("42%"), // ← ajustado para dejar espacio horizontal
+    width: wp("39%"), // ← ajustado para dejar espacio horizontal
     height: hp("20%"),
     backgroundColor: '#2E7D32',
     borderRadius: wp("3%"),
@@ -53,15 +53,20 @@ export const inventoryMenuStyle = StyleSheet.create({
   },
   iconContainer: {
     marginBottom: hp("1.5%"),
+    bottom: hp("0.5%"),
   },
   icon: {
     fontSize: wp("12%"), // ← ahora responsivo como moduleTitle
     color: '#fff',
+    width: wp("22%"),
+    height: wp("22%"),
+    resizeMode: "contain",
   },
   moduleText: {
     fontSize: wp("4.5%"), // ← ahora responsivo
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
+    bottom: hp("0.7%"),
   },
 });

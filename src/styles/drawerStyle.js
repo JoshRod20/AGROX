@@ -53,4 +53,7 @@ export const drawerStyle = StyleSheet.create({
     marginBottom: height * 0.03,
     paddingHorizontal: width * 0.04,
   },
+  logoutButton:{
+    backgroundColor: "#ffffff",
+  }
 });
