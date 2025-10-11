@@ -34,6 +34,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderRadius: 8,
     alignItems: "center",
+
+    //sombra 
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,          
+    shadowRadius: 6,            
+    elevation: 10,              
   },
   text: {
     marginLeft: 8,

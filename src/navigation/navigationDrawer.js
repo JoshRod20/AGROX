@@ -12,7 +12,9 @@ import Crop from "../screens/crop";
 import LogoutButton from "../components/LogoutButton";
 import { drawerStyle } from "../styles/drawerStyle";
 import InventoryMenu from "../screens/inventory/inventoryMenu";
-import { DrawerItem } from '@react-navigation/drawer'; //importacion de drawer item
+
+import { DrawerItem } from '@react-navigation/drawer';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -61,10 +63,38 @@ export default function NavigationDrawer() {
             <DrawerItemList {...props} />
 
           </DrawerContentScrollView>
-          
-          {/* Botón cerrar sesión */}
+
+          {/* view de cerrar sesion, mi cuenta y acerca de */}
           <View style={drawerStyle.logoutContainer}>
+            {/* Linea separadora */}
             <Image source={require("../assets/Line 6.png")} style={{ left: 8, position: "absolute", width: 230 }} />
+
+
+            {/* Botones personalizados */}
+            <DrawerItem
+              label="Mi cuenta"
+              labelStyle={drawerStyle.drawerLabel}
+              icon={() => (
+                <Image
+                  source={require("../assets/circle-user.png")}
+                  style={{ width: 24, height: 24, tintColor: "#fff" }}
+                />
+              )}
+              onPress={() => props.navigation.navigate("Mi cuenta")}
+            />
+            <DrawerItem
+              label="Acerca de"
+              labelStyle={drawerStyle.drawerLabel}
+              icon={() => (
+                <Image
+                  source={require("../assets/info.png")}
+                  style={{ width: 24, height: 24, tintColor: "#fff" }}
+                />
+              )}
+              onPress={() => props.navigation.navigate("Acerca de")}
+            />
+
+            {/* Botón cerrar sesión */}
             <LogoutButton />
           </View>
         </View>
