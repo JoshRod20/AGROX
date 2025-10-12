@@ -32,7 +32,7 @@ const SeedsAndInputs = () => {
   return (
      <SafeAreaView style={seedsAndInputsStyle.container} onLayout={onLayoutRootView}>
       <View>
-        <Text style={seedsAndInputsStyle.moduleTitle}>Insumos y Entradas</Text>
+        <Text style={seedsAndInputsStyle.moduleTitle}>Semillas e insumos</Text>
       </View>
      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
         <FormInputSearch

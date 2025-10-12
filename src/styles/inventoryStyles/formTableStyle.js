@@ -1,4 +1,8 @@
 import { StyleSheet } from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 export const formTableStyle = StyleSheet.create({
 	container: {
@@ -73,71 +77,81 @@ export const formTableStyle = StyleSheet.create({
 	// Estilos del modal de confirmación (consistentes con cropCard/cropScreen)
 	overlay: {
 		flex: 1,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingHorizontal: 24,
+		backgroundColor: "rgba(0, 0, 0, 0.4)",
+		justifyContent: "center",
+		alignItems: "center",
+		padding: wp("5%"),
 	},
-	alertContainer: {
-		width: '100%',
-		backgroundColor: '#fff',
-		borderRadius: 12,
-		padding: 16,
-		elevation: 6,
-		shadowColor: '#000',
-		shadowOpacity: 0.15,
-		shadowRadius: 10,
-		shadowOffset: { width: 0, height: 4 },
-	},
-	alertIconContainer: {
-		alignSelf: 'center',
-		marginBottom: 10,
-		backgroundColor: '#FFF3CD',
-		padding: 10,
-		borderRadius: 40,
-	},
-	alertIcon: {
-		width: 28,
-		height: 28,
-		tintColor: '#E65100',
-	},
-	alertTitle: {
-		fontSize: 18,
-		fontWeight: '700',
-		textAlign: 'center',
-		marginBottom: 8,
-		color: '#333',
-	},
-	alertMessage: {
-		fontSize: 14,
-		textAlign: 'center',
-		color: '#555',
-		marginBottom: 12,
-	},
-	alertButtons: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		gap: 12,
-	},
-	alertButton: {
-		flex: 1,
-		paddingVertical: 10,
-		borderRadius: 8,
-		alignItems: 'center',
-	},
-	cancelButtonAlert: {
-		backgroundColor: '#F5F5F5',
-	},
+  alertContainer: {
+    width: "100%",
+    maxWidth: wp("85%"),
+    backgroundColor: "#FFFFFF",
+    borderRadius: wp("6%"),
+    padding: wp("6%"),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  alertIconContainer: {
+    width: wp("16%"),
+    height: wp("16%"),
+    borderRadius: wp("8%"),
+    backgroundColor: "#FFF2E8",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: hp("2%"),
+  },
+  alertIcon: {
+    width: wp("15%"),
+    height: wp("15%"),
+    marginBottom: hp("1%"),
+  },
+  alertTitle: {
+    fontSize: wp("5.5%"),
+    fontFamily: "QuicksandBold",
+    color: "#333333",
+    textAlign: "center",
+    marginBottom: hp("1.5%"),
+  },
+	  alertMessage: {
+    fontSize: wp("4.2%"),
+    fontFamily: "QuicksandRegular",
+    color: "#666666",
+    textAlign: "center",
+    lineHeight: wp("6%"),
+    marginBottom: hp("3%"),
+  },
+alertButtons: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
+
+  },
+alertButton: {
+    flex: 1,
+    paddingVertical: hp("1.6%"),
+    borderRadius: wp("4%"),
+    alignItems: "center",
+  },
+ cancelButtonAlert: {
+    backgroundColor: "#EEEEEE",
+    marginRight: wp("2%"),
+  },
 	deleteButtonAlert: {
 		backgroundColor: '#D32F2F',
 	},
 	alertButtonTextCancel: {
-		color: '#333',
-		fontWeight: '600',
+		fontSize: wp("4.3%"),
+		color: '#000000ff',
+		fontFamily: "QuicksandSemiBold",
 	},
-	alertButtonTextDelete: {
-		color: '#fff',
-		fontWeight: '700',
-	},
+	  alertButtonTextDelete: {
+    fontSize: wp("4.3%"),
+    fontFamily: "QuicksandSemiBold",
+    color: "#FFFFFF",
+  },
 });
 
