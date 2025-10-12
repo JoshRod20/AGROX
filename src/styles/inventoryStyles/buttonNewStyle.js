@@ -25,6 +25,7 @@ export const buttonNewStyle = StyleSheet.create({
 		color: '#fff',
 		fontSize: 15,
 		fontWeight: '600',
+		fontFamily: 'CarterOne',
 	},
 });
 

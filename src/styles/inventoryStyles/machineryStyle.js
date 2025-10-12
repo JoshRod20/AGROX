@@ -22,6 +22,6 @@ export const machineryStyle = StyleSheet.create({
     color: '#2E7D32',
     marginBottom: hp("3%"),
     fontFamily: 'CarterOne',
-    marginLeft: wp("7%"),
+    marginLeft: wp("4%"),
   },
 });

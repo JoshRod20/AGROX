@@ -8,13 +8,14 @@ import * as SplashScreen from "expo-splash-screen";
 import FormInputSearch from "../../components/inventoryComponent/formInputSearch";
 import ButtonNew from "../../components/inventoryComponent/buttonNew";
 import FormTable from "../../components/inventoryComponent/formTable";
+import { seedsAndInputsStyle } from '../../styles/inventoryStyles/seedsAndInputsStyle';
 
 SplashScreen.preventAutoHideAsync();
 
 const Employees = () => {
   const navigation = useNavigation();
   const [search, setSearch] = useState('');
-  
+
   const [fontsLoaded] = useFonts({
     CarterOne: require("../../utils/fonts/CarterOne-Regular.ttf"),
   });
@@ -35,14 +36,16 @@ const Employees = () => {
         <Text style={employeesStyle.moduleTitle}>Empleados</Text>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
-        <FormInputSearch
-          value={search}
-          onChangeText={setSearch}
-          onPressButton={() => {}}
-          style={{ flex: 1 }}
-        />
-        <ButtonNew title="Nuevo" onPress={() => navigation.navigate('EmployeesForm')} />
+      <View style={{ position: 'relative' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
+          <FormInputSearch
+            value={search}
+            onChangeText={setSearch}
+            onPressButton={() => { }}
+            style={{ flex: 1 }}
+          />
+        </View>
+        <ButtonNew title="Nuevo" onPress={() => navigation.navigate('EmployeesForm')} style={seedsAndInputsStyle.button} />
       </View>
 
       <View style={{ paddingHorizontal: 16 }}>
@@ -53,7 +56,7 @@ const Employees = () => {
           emptyText="No hay empleados registrados"
           searchTerm={search}
           indexColumn={{ label: 'N°', start: 1, flex: 0.6 }}
-          filterKeys={[ 'fullName', 'role' ]}
+          filterKeys={['fullName', 'role']}
           columns={[
             { key: 'fullName', label: 'Nombre', flex: 1.4 },
             { key: 'role', label: 'Rol', flex: 1 },

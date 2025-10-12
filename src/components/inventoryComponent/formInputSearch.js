@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { formInputSearchStyle } from '../../styles/inventoryStyles/formInputSearchStyle';
+import { Ionicons } from '@expo/vector-icons';
 
 const FormInputSearch = ({
 	placeholder = 'Buscar...',
@@ -10,11 +11,11 @@ const FormInputSearch = ({
 	style,
 }) => {
 	return (
-		<View style={[formInputSearchStyle.container, style]}> 
+		<View style={[formInputSearchStyle.container, style]}>
 			<TextInput
 				style={formInputSearchStyle.input}
 				placeholder={placeholder}
-				placeholderTextColor="#9E9E9E"
+				placeholderTextColor="#C8C2C2"
 				value={value}
 				onChangeText={onChangeText}
 			/>
