@@ -22,32 +22,6 @@ export const transportStyle = StyleSheet.create({
     color: '#2E7D32',
     marginBottom: hp("3%"),
     fontFamily: 'CarterOne',
-    marginLeft: wp("0.5%"),
-  },
-
-    label: {
-    width: "90%",
-    fontSize: wp("4%"),
-    color: "#BC6C25",
-    marginTop: hp("2.5%"),
-    marginBottom: hp("0%"),
-    marginLeft: wp("3%"),
-    alignSelf: "flex-start",
-    fontFamily: "QuicksandBold",
-  },
-
-  inputContainer: {
-    width: wp("85%"),
-    borderBottomWidth: 2,
-    borderColor: "#2E7D32",
-    marginBottom: hp("2%"),
-    marginLeft: wp("0%"),
-    alignSelf: "center",
-  },
-  input: {
-    height: hp("6%"),
-    fontSize: wp("3.5%"),
-    color: "#000", // ✅ TEXTO NEGRO PARA COSTOS
-    fontFamily: "QuicksandRegular",
+    marginLeft: wp("7%"),
   },
 });
