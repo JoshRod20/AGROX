@@ -36,6 +36,12 @@ import CropMonitoring from './src/screens/cropMonitoring';
 import CropHarvest from './src/screens/cropHarvest';
 import CropPostharvest from './src/screens/cropPostharvest'
 import CropDocumentation from './src/screens/cropDocumentation'
+import SeedsAndInputsForm from './src/screens/inventory/seedsAndInputsForm';
+import TransportForm from './src/screens/inventory/transportForm';
+import EmployeesForm from './src/screens/inventory/employeesForm';
+import { employeesFormStyle } from './src/styles/inventoryStyles/employeesFormStyle';
+import MachineryForm from './src/screens/inventory/machineryForm';
+import { machineryFormStyle } from './src/styles/inventoryStyles/machineryFormStyle';
 
 const Stack = createStackNavigator();
 
@@ -230,6 +236,98 @@ export default function App() {
               ),
             })}
           />
+
+           <Stack.Screen 
+            name="SeedsAndInputsForm" 
+            component={SeedsAndInputsForm} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={seedsAndInputsStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={seedsAndInputsStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
+          
+           <Stack.Screen 
+            name="TransportForm" 
+            component={TransportForm} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={transportStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={transportStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
+               <Stack.Screen 
+            name="EmployeesForm" 
+            component={EmployeesForm} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={employeesFormStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={employeesFormStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
+                  <Stack.Screen 
+            name="MachineryForm" 
+            component={MachineryForm} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={machineryFormStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={machineryFormStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
+
+
 
             <Stack.Screen 
             name="FormCrop" 
