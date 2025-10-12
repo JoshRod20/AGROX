@@ -59,6 +59,8 @@ const InventoryMenu = () => {
                                 style={inventoryMenuStyle.icon}
                             />
                         </View>
+                        
+                        
                         <Text
                             style={inventoryMenuStyle.moduleText}
                             numberOfLines={1}

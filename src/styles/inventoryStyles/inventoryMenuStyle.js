@@ -39,7 +39,7 @@ export const inventoryMenuStyle = StyleSheet.create({
   },
   moduleButton: {
     width: wp("39%"), // ← ajustado para dejar espacio horizontal
-    height: hp("20%"),
+    height: hp("18%"),
     backgroundColor: '#2E7D32',
     borderRadius: wp("3%"),
     paddingVertical: hp("2%"),
@@ -53,20 +53,19 @@ export const inventoryMenuStyle = StyleSheet.create({
   },
   iconContainer: {
     marginBottom: hp("1.5%"),
-    bottom: hp("0.5%"),
+    top: hp("0.4%"),
   },
   icon: {
-    fontSize: wp("12%"), // ← ahora responsivo como moduleTitle
-    color: '#fff',
-    width: wp("22%"),
-    height: wp("22%"),
+    width: wp("12%"),
+    height: wp("12%"),
     resizeMode: "contain",
+    top: hp("0.5%"),
   },
   moduleText: {
     fontSize: wp("4.5%"), // ← ahora responsivo
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    bottom: hp("0.7%"),
+    top: hp("1.5%"),
   },
 });
