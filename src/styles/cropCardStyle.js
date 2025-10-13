@@ -140,7 +140,7 @@ export default StyleSheet.create({
    // --- ESTILOS DEL BOTÓN DE OPCIONES EN ESQUINA SUPERIOR DERECHA ---
   optionsButton: {
     position: "absolute",
-    top: 10,
+    top: wp("0%"),
     right: 10,
     zIndex: 2, // Asegura que esté por encima de otros elementos
     padding: 5, // Espacio para tocar más fácil
@@ -150,6 +150,25 @@ export default StyleSheet.create({
     height: 25,
     tintColor: "#666", // Color del icono
   },
+
+
+  // Nuevo estilo para la imagen del cultivo (modo full)
+cropImage: {
+  width: '100%',
+  height: 140,
+  marginTop: wp("5%"),
+  marginBottom: wp("4%"),
+  borderRadius: 8,
+  resizeMode: 'cover',
+},
+
+// Opcional: Estilo para las filas con label y value en modo full
+row: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 8, // Espaciado entre filas
+},
 
   // --- ESTILOS DEL MODAL ---
   modalOverlay: {
@@ -262,5 +281,15 @@ export default StyleSheet.create({
     fontSize: wp("4.3%"),
     fontFamily: "QuicksandSemiBold",
     color: "#FFFFFF",
+  },
+    backButton: {
+    marginLeft: wp("7%"),
+    marginTop: hp("5%"),
+  },
+  backIcon: {
+    width: wp("8%"),
+    height: wp("8%"),
+    tintColor: "#2E7D32",
+    resizeMode: "contain",
   },
 });

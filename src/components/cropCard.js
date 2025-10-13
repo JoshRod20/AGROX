@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Dimensions, Modal, TouchableWithoutFeedback, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Modal,
+  TouchableWithoutFeedback,
+  Alert,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../services/database";
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  deleteDoc,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
@@ -10,13 +26,14 @@ import { getUserCrops } from "../services/cropsService";
 
 const { width } = Dimensions.get("window");
 
-const CropCard = () => {
+const CropCard = ({ mode = "home" }) => {
   const navigation = useNavigation();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
+  const [cropImages, setCropImages] = useState({});
 
   useEffect(() => {
     const fetchCrops = async () => {
@@ -25,7 +42,6 @@ const CropCard = () => {
         const cropsData = await Promise.all(
           userCrops.map(async (crop) => {
             const acts = await getCropActivities(crop.id);
-            // Calcular progreso solo con las 9 actividades únicas
             const uniqueActivities = [
               "Preparación del terreno",
               "Siembra",
@@ -47,13 +63,31 @@ const CropCard = () => {
             };
           })
         );
-        // --- ORDENAR POR FECHA DE CREACIÓN (más reciente primero) ---
         const sortedCrops = cropsData.sort((a, b) => {
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
-          return dateB - dateA; // Orden descendente (más reciente primero)
+          return dateB - dateA;
         });
         setCrops(sortedCrops);
+
+        // Cargar imágenes desde la actividad "Documentación adicional" si es modo full
+        if (mode === "full") {
+          const images = {};
+          for (const crop of sortedCrops) {
+            const q = query(
+              collection(db, `Crops/${crop.id}/activities`),
+              where("name", "==", "Documentación adicional")
+            );
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+              const activity = querySnapshot.docs[0].data();
+              if (activity.imageBase64) {
+                images[crop.id] = `data:image/jpeg;base64,${activity.imageBase64}`;
+              }
+            }
+          }
+          setCropImages(images);
+        }
       } catch (error) {
         console.log("Error fetching crops:", error);
       } finally {
@@ -61,22 +95,18 @@ const CropCard = () => {
       }
     };
     fetchCrops();
-  }, []);
+  }, [mode]);
 
   const handleUpdateCrop = () => {
     setOptionsModalVisible(false);
-    // Se envían todos los datos del cultivo seleccionado
-    navigation.navigate("FormCrop", { 
-      crop: selectedCrop // Se envía el objeto completo del cultivo
-    });
+    navigation.navigate("FormCrop", { crop: selectedCrop });
   };
 
   const handleDeleteCrop = async () => {
     try {
       await deleteDoc(doc(db, "Crops", selectedCrop.id));
-      setCrops(prev => prev.filter(crop => crop.id !== selectedCrop.id));
+      setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
       setDeleteAlertVisible(false);
-      // Eliminado: Alert.alert("Éxito", "El cultivo ha sido eliminado.");
     } catch (error) {
       console.log("Error deleting crop:", error);
       Alert.alert("Error", "No se pudo eliminar el cultivo.");
@@ -87,27 +117,31 @@ const CropCard = () => {
 
   return (
     <>
-      {/* Encabezado de sección con separador */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recientes</Text>
-        <View style={styles.sectionLine} />
-      </View>
+      {/* 👇 Encabezado "Recientes" SOLO en modo "home" */}
+      {mode === "home" && (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recientes</Text>
+          <View style={styles.sectionLine} />
+        </View>
+      )}
 
       {crops.length > 0 ? (
         crops.map((crop) => (
           <TouchableOpacity
             key={crop.id}
             style={[styles.wrapper, { width: width * 0.9 }]}
-            onPress={() => navigation.navigate("CropScreen", { crop: crop })}
+            onPress={() =>
+              navigation.navigate("CropScreen", { crop: crop })
+            }
           >
-            {/* Etiqueta arriba, flotando */}
+            {/* Etiqueta con nombre del cultivo */}
             <View style={styles.cropNameTag}>
               <Text style={styles.cropNameText}>{crop.cropName}</Text>
             </View>
 
-            {/* Tarjeta */}
+            {/* Contenedor de la tarjeta */}
             <View style={styles.cardContainer}>
-              {/* Botón de opciones en esquina superior derecha */}
+              {/* Botón de opciones */}
               <TouchableOpacity
                 style={styles.optionsButton}
                 onPress={() => {
@@ -122,11 +156,21 @@ const CropCard = () => {
               </TouchableOpacity>
 
               <View style={styles.card}>
+                {/* Imagen del cultivo (solo en modo full) */}
+                {mode === "full" && cropImages[crop.id] ? (
+                  <Image
+                    source={{ uri: cropImages[crop.id] }}
+                    style={styles.cropImage}
+                  />
+                ) : null}
+
+                {/* Tipo de cultivo */}
                 <Text style={styles.label}>
                   Tipo de cultivo:{" "}
                   <Text style={styles.value}>{crop.cropType}</Text>
                 </Text>
 
+                {/* Fecha de registro */}
                 <View style={styles.row}>
                   <Text style={styles.label}>Registrado el:</Text>
                   <View style={styles.dateBox}>
@@ -139,6 +183,25 @@ const CropCard = () => {
                   </View>
                 </View>
 
+                {/* Datos adicionales (solo en modo full) */}
+                {mode === "full" && (
+                  <>
+                    <View style={styles.row}>
+                      <Text style={styles.label}>Área cultivada:</Text>
+                      <Text style={styles.value}>
+                        {crop.area ? `${crop.area} mz` : "N/A"}
+                      </Text>
+                    </View>
+                    <View style={styles.row}>
+                      <Text style={styles.label}>Responsable técnico:</Text>
+                      <Text style={styles.value}>
+                        {crop.technicalResponsible || "N/A"}
+                      </Text>
+                    </View>
+                  </>
+                )}
+
+                {/* Progreso */}
                 <View style={styles.progressContainer}>
                   <Text style={styles.label}>Progreso:</Text>
                   <View style={styles.progressBar}>
@@ -163,14 +226,16 @@ const CropCard = () => {
         </View>
       )}
 
-      {/* Modal de opciones (igual al de CropScreen) */}
+      {/* Modal de opciones */}
       <Modal
         visible={optionsModalVisible}
         transparent
         animationType="fade"
         onRequestClose={() => setOptionsModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
+        <TouchableWithoutFeedback
+          onPress={() => setOptionsModalVisible(false)}
+        >
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
               <View style={styles.optionsModal}>
@@ -189,7 +254,7 @@ const CropCard = () => {
                   onPress={() => {
                     setOptionsModalVisible(false);
                     if (selectedCrop && selectedCrop.id) {
-                      setDeleteAlertVisible(true); // Abre alerta personalizada
+                      setDeleteAlertVisible(true);
                     } else {
                       Alert.alert("Error", "No se pudo identificar el cultivo.");
                     }
@@ -207,7 +272,7 @@ const CropCard = () => {
         </TouchableWithoutFeedback>
       </Modal>
 
-      {/* ✅ Modal de alerta personalizada de eliminación */}
+      {/* Modal de confirmación de eliminación */}
       <Modal
         visible={deleteAlertVisible}
         transparent
