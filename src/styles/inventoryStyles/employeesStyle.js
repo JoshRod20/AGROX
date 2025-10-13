@@ -7,8 +7,10 @@ export const employeesStyle = StyleSheet.create({
     backgroundColor: '#fff',
   },
   backButton: {
-    marginLeft: wp("7%"),
+    marginLeft: wp("5.3%"),
     marginTop: hp("-5%"),
+    position: 'absolute',
+    zIndex: 1,
   },
   backIcon: {
     width: wp("8%"),
