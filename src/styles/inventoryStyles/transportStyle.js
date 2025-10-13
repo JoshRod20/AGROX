@@ -7,8 +7,10 @@ export const transportStyle = StyleSheet.create({
     backgroundColor: '#fff',
   },
   backButton: {
-    marginLeft: wp("7%"),
+    marginLeft: wp("5.3%"),
     marginTop: hp("-5%"),
+    position: 'absolute',
+    zIndex: 1,
   },
   backIcon: {
     width: wp("8%"),
@@ -22,6 +24,6 @@ export const transportStyle = StyleSheet.create({
     color: '#2E7D32',
     marginBottom: hp("3%"),
     fontFamily: 'CarterOne',
-    marginLeft: wp("7%"),
+    marginLeft: wp("4%"),
   },
 });

@@ -9,6 +9,8 @@ import FormInputSearch from "../../components/inventoryComponent/formInputSearch
 import ButtonNew from "../../components/inventoryComponent/buttonNew";
 import FormTable from "../../components/inventoryComponent/formTable";
 
+import { seedsAndInputsStyle } from '../../styles/inventoryStyles/seedsAndInputsStyle';
+
 SplashScreen.preventAutoHideAsync();
 
 const Machinery = () => {
@@ -35,14 +37,16 @@ const Machinery = () => {
         <Text style={machineryStyle.moduleTitle}>Maquinaria</Text>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
-        <FormInputSearch
-          value={search}
-          onChangeText={setSearch}
-          onPressButton={() => {}}
-          style={{ flex: 1 }}
-        />
-        <ButtonNew title="Nuevo" onPress={() => navigation.navigate('MachineryForm')} />
+      <View style={{ position: 'relative' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
+          <FormInputSearch
+            value={search}
+            onChangeText={setSearch}
+            onPressButton={() => { }}
+            style={{ flex: 1 }}
+          />
+        </View>
+        <ButtonNew title="Nuevo" onPress={() => navigation.navigate('MachineryForm')} style={seedsAndInputsStyle.button} />
       </View>
 
       <View style={{ paddingHorizontal: 16 }}>
@@ -53,7 +57,7 @@ const Machinery = () => {
           emptyText="No hay maquinaria registrada"
           searchTerm={search}
           indexColumn={{ label: 'N°', start: 1, flex: 0.6 }}
-          filterKeys={[ 'name', 'costType' ]}
+          filterKeys={['name', 'costType']}
           columns={[
             { key: 'name', label: 'Nombre', flex: 1.4 },
             { key: 'costType', label: 'Tipo costo', flex: 1 },

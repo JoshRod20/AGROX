@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import ButtonNew from '../../components/inventoryComponent/buttonNew';
 import FormTable from '../../components/inventoryComponent/formTable';
 import {transportStyle} from '../../styles/inventoryStyles/transportStyle';
+import { seedsAndInputsStyle } from '../../styles/inventoryStyles/seedsAndInputsStyle';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,14 +35,17 @@ const Transport = () => {
       <View>
         <Text style={transportStyle.moduleTitle}>Transporte</Text>
       </View>
-       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>  
-        <FormInputSearch
-          value={search}
-          onChangeText={setSearch}
-          onPressButton={() => {}}
-          style={{ flex: 1 }}
-        />
-         <ButtonNew title="Nuevo" onPress={() => navigation.navigate('TransportForm')} />
+
+       <View style={{ position: 'relative' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 }}>
+          <FormInputSearch
+            value={search}
+            onChangeText={setSearch}
+            onPressButton={() => { }}
+            style={{ flex: 1 }}
+          />
+        </View>
+        <ButtonNew title="Nuevo" onPress={() => navigation.navigate('TransportForm')} style={seedsAndInputsStyle.button} />
       </View>
 
 <View style={{ paddingHorizontal: 16 }}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { formInputSearchStyle } from '../../styles/inventoryStyles/formInputSearchStyle';
+import { Ionicons } from '@expo/vector-icons';
 
 const FormInputSearch = ({
 	placeholder = 'Buscar...',
@@ -10,15 +11,34 @@ const FormInputSearch = ({
 	style,
 }) => {
 	return (
-		<View style={[formInputSearchStyle.container, style]}> 
+		<View style={[formInputSearchStyle.container, style]}>
 			<TextInput
 				style={formInputSearchStyle.input}
 				placeholder={placeholder}
-				placeholderTextColor="#9E9E9E"
+				placeholderTextColor="#C8C2C2"
 				value={value}
 				onChangeText={onChangeText}
 			/>
-			<TouchableOpacity
+			<View
+				style={formInputSearchStyle.searchButton}
+				//onPress={onPressButton}
+				activeOpacity={0.8}
+			>
+				<Image
+					source={require('../../assets/search.png')}
+					style={formInputSearchStyle.searchIcon}
+				/>
+			</View>
+		</View>
+	);
+};
+
+export default FormInputSearch;
+
+
+//boton con TouchableOpacity
+{/*
+	<TouchableOpacity
 				style={formInputSearchStyle.searchButton}
 				onPress={onPressButton}
 				activeOpacity={0.8}
@@ -27,10 +47,6 @@ const FormInputSearch = ({
 					source={require('../../assets/search.png')}
 					style={formInputSearchStyle.searchIcon}
 				/>
-			</TouchableOpacity>
-		</View>
-	);
-};
+			</TouchableOpacity>	
 
-export default FormInputSearch;
-
+*/}
