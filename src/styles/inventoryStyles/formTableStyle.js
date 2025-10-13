@@ -23,6 +23,7 @@ export const formTableStyle = StyleSheet.create({
 		backgroundColor: '#2E7D32',
 		borderBottomWidth: 1,
 		borderBottomColor: '#ffffffff',
+		left: 1,
 
 	},
 	headerCell: {
@@ -30,11 +31,12 @@ export const formTableStyle = StyleSheet.create({
 		paddingHorizontal: 8,
 		borderLeftColor: '#ffffffff',
 		borderLeftWidth: 1,
+		right: 1,
 	},
 	headerText: {
 		color: '#ffffff',
 		fontWeight: '700',
-		fontSize: 13,
+		fontSize: 14,
 		fontFamily: 'QuicksandSemiBold',
 	},
 	row: {
@@ -51,11 +53,12 @@ export const formTableStyle = StyleSheet.create({
 		borderBottomColor: '#2E7D32',
 		borderLeftColor: '#2E7D32',
 		borderLeftWidth: 1,
+		left: 1,
 
 	},
 	cellText: {
 		color: '#000000',
-		fontSize: 13,
+		fontSize: 14,
 		fontFamily: 'QuicksandSemiBold',
 	},
 	actionsContainer: {

@@ -44,10 +44,12 @@ export const drawerStyle = StyleSheet.create({
     marginBottom: height * 0.015,
   },
   logo: {
-    width: width * 0.35, // proporcional al ancho de la pantalla
+    //width: width * 0.35, // proporcional al ancho de la pantalla
+    width: width * 0.25, // proporcional al ancho de la pantalla
     height: height * 0.05, // proporcional al alto de la pantalla
     resizeMode: "contain",
     marginTop: height * 0.005,
+    marginLeft: width * 0.04,
   },
   logoutContainer: {
     marginBottom: height * 0.03,

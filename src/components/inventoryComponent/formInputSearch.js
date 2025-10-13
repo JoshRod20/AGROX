@@ -19,7 +19,26 @@ const FormInputSearch = ({
 				value={value}
 				onChangeText={onChangeText}
 			/>
-			<TouchableOpacity
+			<View
+				style={formInputSearchStyle.searchButton}
+				//onPress={onPressButton}
+				activeOpacity={0.8}
+			>
+				<Image
+					source={require('../../assets/search.png')}
+					style={formInputSearchStyle.searchIcon}
+				/>
+			</View>
+		</View>
+	);
+};
+
+export default FormInputSearch;
+
+
+//boton con TouchableOpacity
+{/*
+	<TouchableOpacity
 				style={formInputSearchStyle.searchButton}
 				onPress={onPressButton}
 				activeOpacity={0.8}
@@ -28,10 +47,6 @@ const FormInputSearch = ({
 					source={require('../../assets/search.png')}
 					style={formInputSearchStyle.searchIcon}
 				/>
-			</TouchableOpacity>
-		</View>
-	);
-};
+			</TouchableOpacity>	
 
-export default FormInputSearch;
-
+*/}
