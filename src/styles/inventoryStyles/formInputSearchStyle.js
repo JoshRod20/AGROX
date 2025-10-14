@@ -40,7 +40,7 @@ export const formInputSearchStyle = StyleSheet.create({
 		tintColor: '#b2b2b2ff',
 		resizeMode: 'contain',
 		position: 'absolute',
-		right: wp('%'),
+		right: wp('4%'),
 		//marginRight: wp('3%'),
 	},
 });
