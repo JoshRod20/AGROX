@@ -13,8 +13,10 @@ import LogoutButton from "../components/LogoutButton";
 import { drawerStyle } from "../styles/drawerStyle";
 import InventoryMenu from "../screens/inventory/inventoryMenu";
 import MyCrops from "../screens/myCrops";
+import Traceability from "../screens/traceability";
 
 import { DrawerItem } from '@react-navigation/drawer';
+
 
 
 
@@ -152,7 +154,7 @@ export default function NavigationDrawer() {
       />
       <Drawer.Screen
         name="Trazabilidad"
-        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        component={Traceability} // Reemplazar con la pantalla correspondiente
         options={{
           drawerIcon: () => (
             <Image
