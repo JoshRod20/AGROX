@@ -7,7 +7,7 @@ export const seedsAndInputsStyle = StyleSheet.create({
     backgroundColor: '#fff',
   },
   backButton: {
-    marginLeft: wp("7%"),
+    marginLeft: wp("5.4%"),
     marginTop: hp("-5%"),
   },
   backIcon: {
@@ -22,13 +22,13 @@ export const seedsAndInputsStyle = StyleSheet.create({
     color: '#2E7D32',
     marginBottom: hp("3%"),
     fontFamily: 'CarterOne',
-    marginLeft: wp("4%"),
+    marginLeft: wp("4.5%"),
   },
   button:{
     width: wp("30%"),
     alignSelf: 'flex-start',
     marginTop: hp("3%"),
     marginBottom: hp("1%"),
-    marginLeft: wp("4%"),
+    marginLeft: wp("4.5%"),
   }
 });

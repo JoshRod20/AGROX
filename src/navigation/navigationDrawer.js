@@ -52,7 +52,7 @@ export default function NavigationDrawer() {
           {/* Logo arriba del drawer */}
           <View style={drawerStyle.logoContainer}>
             <Image
-              source={require("../assets/AGROX-Blanco.png")}
+              source={require("../assets/agrop11.png")}
               style={drawerStyle.logo}
             />
           </View>
