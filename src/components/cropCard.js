@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Dimensions, Modal, TouchableWithoutFeedback, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Modal,
+  TouchableWithoutFeedback,
+  Alert,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../services/database";
-import { deleteDoc, doc } from "firebase/firestore";
+import {
+  deleteDoc,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
@@ -10,22 +26,31 @@ import { getUserCrops } from "../services/cropsService";
 
 const { width } = Dimensions.get("window");
 
-const CropCard = () => {
+const CropCard = ({ mode = "home", cropsOverride = null }) => {
   const navigation = useNavigation();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
+  const [cropImages, setCropImages] = useState({});
 
   useEffect(() => {
+    // Si se proporcionan cultivos desde afuera, úsalos directamente
+    if (cropsOverride !== null) {
+      setCrops(cropsOverride);
+      setLoading(false);
+      return;
+    }
+
+    // Si no, carga los cultivos desde la base de datos
     const fetchCrops = async () => {
       try {
         const userCrops = await getUserCrops();
+
         const cropsData = await Promise.all(
           userCrops.map(async (crop) => {
             const acts = await getCropActivities(crop.id);
-            // Calcular progreso solo con las 9 actividades únicas
             const uniqueActivities = [
               "Preparación del terreno",
               "Siembra",
@@ -42,43 +67,70 @@ const CropCard = () => {
             );
             const progress = Math.round((doneUnique.length / 9) * 100);
             return {
-              ...crop,
+              id: crop.id || "",
+              cropName: crop.cropName || "Sin nombre",
+              cropType: crop.cropType || "No especificado",
+              createdAt: crop.createdAt || new Date(),
+              cultivatedArea: crop.cultivatedArea,
+              technicalManager: crop.technicalManager,
               progress,
             };
           })
         );
-        // --- ORDENAR POR FECHA DE CREACIÓN (más reciente primero) ---
+
         const sortedCrops = cropsData.sort((a, b) => {
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
-          return dateB - dateA; // Orden descendente (más reciente primero)
+          return dateB - dateA;
         });
+
         setCrops(sortedCrops);
+
+        // Cargar imágenes solo en modo "full" y solo si no usamos cropsOverride
+        if (mode === "full") {
+          const images = {};
+          for (const crop of sortedCrops) {
+            const q = query(
+              collection(db, `Crops/${crop.id}/activities`),
+              where("name", "==", "Documentación adicional")
+            );
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+              const activity = querySnapshot.docs[0].data();
+              if (activity.imageBase64) {
+                images[crop.id] = `data:image/jpeg;base64,${activity.imageBase64}`;
+              }
+            }
+          }
+          setCropImages(images);
+        }
       } catch (error) {
-        console.log("Error fetching crops:", error);
+        console.error("Error fetching crops:", error);
+        Alert.alert("Error", "No se pudieron cargar los cultivos.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCrops();
-  }, []);
+  }, [mode, cropsOverride]);
 
   const handleUpdateCrop = () => {
     setOptionsModalVisible(false);
-    // Se envían todos los datos del cultivo seleccionado
-    navigation.navigate("FormCrop", { 
-      crop: selectedCrop // Se envía el objeto completo del cultivo
-    });
+    navigation.navigate("FormCrop", { crop: selectedCrop });
   };
 
   const handleDeleteCrop = async () => {
     try {
       await deleteDoc(doc(db, "Crops", selectedCrop.id));
-      setCrops(prev => prev.filter(crop => crop.id !== selectedCrop.id));
+      // Si cropsOverride está en uso, el padre debe manejar la actualización.
+      // Pero si no, actualizamos localmente.
+      if (cropsOverride === null) {
+        setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
+      }
       setDeleteAlertVisible(false);
-      // Eliminado: Alert.alert("Éxito", "El cultivo ha sido eliminado.");
     } catch (error) {
-      console.log("Error deleting crop:", error);
+      console.error("Error deleting crop:", error);
       Alert.alert("Error", "No se pudo eliminar el cultivo.");
     }
   };
@@ -87,27 +139,26 @@ const CropCard = () => {
 
   return (
     <>
-      {/* Encabezado de sección con separador */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recientes</Text>
-        <View style={styles.sectionLine} />
-      </View>
+      {/* Encabezado "Recientes" solo en Home */}
+      {mode === "home" && (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recientes</Text>
+          <View style={styles.sectionLine} />
+        </View>
+      )}
 
       {crops.length > 0 ? (
         crops.map((crop) => (
           <TouchableOpacity
             key={crop.id}
             style={[styles.wrapper, { width: width * 0.9 }]}
-            onPress={() => navigation.navigate("CropScreen", { crop: crop })}
+            onPress={() => navigation.navigate("CropScreen", { crop })}
           >
-            {/* Etiqueta arriba, flotando */}
             <View style={styles.cropNameTag}>
               <Text style={styles.cropNameText}>{crop.cropName}</Text>
             </View>
 
-            {/* Tarjeta */}
             <View style={styles.cardContainer}>
-              {/* Botón de opciones en esquina superior derecha */}
               <TouchableOpacity
                 style={styles.optionsButton}
                 onPress={() => {
@@ -122,12 +173,21 @@ const CropCard = () => {
               </TouchableOpacity>
 
               <View style={styles.card}>
+                {/* Imagen: prioriza imageUri (de cropsOverride), luego cropImages (carga interna) */}
+                {mode === "full" && (crop.imageUri || cropImages[crop.id]) ? (
+                  <Image
+                    source={{ uri: crop.imageUri || cropImages[crop.id] }}
+                    style={styles.cropImage}
+                  />
+                ) : null}
+
                 <Text style={styles.label}>
                   Tipo de cultivo:{" "}
                   <Text style={styles.value}>{crop.cropType}</Text>
                 </Text>
 
-                <View style={styles.row}>
+                {/* Fecha de registro */}
+                <View style={styles.dataRow}>
                   <Text style={styles.label}>Registrado el:</Text>
                   <View style={styles.dateBox}>
                     <Text style={styles.dateText}>
@@ -138,6 +198,30 @@ const CropCard = () => {
                     </Text>
                   </View>
                 </View>
+
+                {/* Datos adicionales: solo en modo "full" */}
+                {mode === "full" && (
+                  <>
+                    <View style={styles.dataRow}>
+                      <Text style={styles.label}>Área cultivada:</Text>
+                      <Text style={styles.value}>
+                        {crop.cultivatedArea != null &&
+                        crop.cultivatedArea !== ""
+                          ? `${crop.cultivatedArea} mz`
+                          : "N/A"}
+                      </Text>
+                    </View>
+                    <View style={styles.dataRow}>
+                      <Text style={styles.label}>Responsable técnico:</Text>
+                      <Text style={styles.value}>
+                        {crop.technicalManager != null &&
+                        crop.technicalManager !== ""
+                          ? crop.technicalManager
+                          : "N/A"}
+                      </Text>
+                    </View>
+                  </>
+                )}
 
                 <View style={styles.progressContainer}>
                   <Text style={styles.label}>Progreso:</Text>
@@ -163,7 +247,7 @@ const CropCard = () => {
         </View>
       )}
 
-      {/* Modal de opciones (igual al de CropScreen) */}
+      {/* Modal de opciones */}
       <Modal
         visible={optionsModalVisible}
         transparent
@@ -188,10 +272,13 @@ const CropCard = () => {
                   style={styles.optionItem}
                   onPress={() => {
                     setOptionsModalVisible(false);
-                    if (selectedCrop && selectedCrop.id) {
-                      setDeleteAlertVisible(true); // Abre alerta personalizada
+                    if (selectedCrop?.id) {
+                      setDeleteAlertVisible(true);
                     } else {
-                      Alert.alert("Error", "No se pudo identificar el cultivo.");
+                      Alert.alert(
+                        "Error",
+                        "No se pudo identificar el cultivo."
+                      );
                     }
                   }}
                 >
@@ -207,7 +294,7 @@ const CropCard = () => {
         </TouchableWithoutFeedback>
       </Modal>
 
-      {/* ✅ Modal de alerta personalizada de eliminación */}
+      {/* Modal de confirmación de eliminación */}
       <Modal
         visible={deleteAlertVisible}
         transparent
