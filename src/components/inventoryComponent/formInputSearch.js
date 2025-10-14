@@ -15,7 +15,7 @@ const FormInputSearch = ({
 			<TextInput
 				style={formInputSearchStyle.input}
 				placeholder={placeholder}
-				placeholderTextColor="#C8C2C2"
+				placeholderTextColor="#8d9297ff"
 				value={value}
 				onChangeText={onChangeText}
 			/>

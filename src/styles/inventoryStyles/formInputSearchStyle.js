@@ -34,6 +34,7 @@ export const formInputSearchStyle = StyleSheet.create({
 		height: 25,
 		tintColor: '#b2b2b2ff',
 		resizeMode: 'contain',
+		marginLeft: wp('6%'),
 	},
 });
 
