@@ -39,6 +39,10 @@ const CropCard = ({ mode = "home" }) => {
     const fetchCrops = async () => {
       try {
         const userCrops = await getUserCrops();
+
+        // 👇 Depuración: Verifica qué campos trae cada cultivo
+        // console.log("Datos crudos de cultivos:", userCrops);
+
         const cropsData = await Promise.all(
           userCrops.map(async (crop) => {
             const acts = await getCropActivities(crop.id);
@@ -58,19 +62,26 @@ const CropCard = ({ mode = "home" }) => {
             );
             const progress = Math.round((doneUnique.length / 9) * 100);
             return {
-              ...crop,
+              id: crop.id || "",
+              cropName: crop.cropName || "Sin nombre",
+              cropType: crop.cropType || "No especificado",
+              createdAt: crop.createdAt || new Date(),
+              cultivatedArea: crop.cultivatedArea, // puede ser undefined
+              technicalManager: crop.technicalManager, // puede ser undefined
               progress,
             };
           })
         );
+
         const sortedCrops = cropsData.sort((a, b) => {
           const dateA = new Date(a.createdAt);
           const dateB = new Date(b.createdAt);
           return dateB - dateA;
         });
+
         setCrops(sortedCrops);
 
-        // Cargar imágenes desde la actividad "Documentación adicional" si es modo full
+        // Cargar imágenes solo en modo "full"
         if (mode === "full") {
           const images = {};
           for (const crop of sortedCrops) {
@@ -82,18 +93,22 @@ const CropCard = ({ mode = "home" }) => {
             if (!querySnapshot.empty) {
               const activity = querySnapshot.docs[0].data();
               if (activity.imageBase64) {
-                images[crop.id] = `data:image/jpeg;base64,${activity.imageBase64}`;
+                images[
+                  crop.id
+                ] = `data:image/jpeg;base64,${activity.imageBase64}`;
               }
             }
           }
           setCropImages(images);
         }
       } catch (error) {
-        console.log("Error fetching crops:", error);
+        console.error("Error fetching crops:", error);
+        Alert.alert("Error", "No se pudieron cargar los cultivos.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCrops();
   }, [mode]);
 
@@ -108,7 +123,7 @@ const CropCard = ({ mode = "home" }) => {
       setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
       setDeleteAlertVisible(false);
     } catch (error) {
-      console.log("Error deleting crop:", error);
+      console.error("Error deleting crop:", error);
       Alert.alert("Error", "No se pudo eliminar el cultivo.");
     }
   };
@@ -117,7 +132,7 @@ const CropCard = ({ mode = "home" }) => {
 
   return (
     <>
-      {/* 👇 Encabezado "Recientes" SOLO en modo "home" */}
+      {/* Encabezado "Recientes" solo en Home */}
       {mode === "home" && (
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recientes</Text>
@@ -130,18 +145,13 @@ const CropCard = ({ mode = "home" }) => {
           <TouchableOpacity
             key={crop.id}
             style={[styles.wrapper, { width: width * 0.9 }]}
-            onPress={() =>
-              navigation.navigate("CropScreen", { crop: crop })
-            }
+            onPress={() => navigation.navigate("CropScreen", { crop })}
           >
-            {/* Etiqueta con nombre del cultivo */}
             <View style={styles.cropNameTag}>
               <Text style={styles.cropNameText}>{crop.cropName}</Text>
             </View>
 
-            {/* Contenedor de la tarjeta */}
             <View style={styles.cardContainer}>
-              {/* Botón de opciones */}
               <TouchableOpacity
                 style={styles.optionsButton}
                 onPress={() => {
@@ -156,7 +166,7 @@ const CropCard = ({ mode = "home" }) => {
               </TouchableOpacity>
 
               <View style={styles.card}>
-                {/* Imagen del cultivo (solo en modo full) */}
+                {/* Imagen (solo en modo full) */}
                 {mode === "full" && cropImages[crop.id] ? (
                   <Image
                     source={{ uri: cropImages[crop.id] }}
@@ -164,14 +174,13 @@ const CropCard = ({ mode = "home" }) => {
                   />
                 ) : null}
 
-                {/* Tipo de cultivo */}
                 <Text style={styles.label}>
                   Tipo de cultivo:{" "}
                   <Text style={styles.value}>{crop.cropType}</Text>
                 </Text>
 
                 {/* Fecha de registro */}
-                <View style={styles.row}>
+                <View style={styles.dataRow}>
                   <Text style={styles.label}>Registrado el:</Text>
                   <View style={styles.dateBox}>
                     <Text style={styles.dateText}>
@@ -183,25 +192,30 @@ const CropCard = ({ mode = "home" }) => {
                   </View>
                 </View>
 
-                {/* Datos adicionales (solo en modo full) */}
+                {/* Datos adicionales: solo en modo "full" */}
                 {mode === "full" && (
                   <>
-                    <View style={styles.row}>
+                    <View style={styles.dataRow}>
                       <Text style={styles.label}>Área cultivada:</Text>
                       <Text style={styles.value}>
-                        {crop.area ? `${crop.area} mz` : "N/A"}
+                        {crop.cultivatedArea != null &&
+                        crop.cultivatedArea !== ""
+                          ? `${crop.cultivatedArea} mz`
+                          : "N/A"}
                       </Text>
                     </View>
-                    <View style={styles.row}>
+                    <View style={styles.dataRow}>
                       <Text style={styles.label}>Responsable técnico:</Text>
                       <Text style={styles.value}>
-                        {crop.technicalResponsible || "N/A"}
+                        {crop.technicalManager != null &&
+                        crop.technicalManager !== ""
+                          ? crop.technicalManager
+                          : "N/A"}
                       </Text>
                     </View>
                   </>
                 )}
 
-                {/* Progreso */}
                 <View style={styles.progressContainer}>
                   <Text style={styles.label}>Progreso:</Text>
                   <View style={styles.progressBar}>
@@ -233,9 +247,7 @@ const CropCard = ({ mode = "home" }) => {
         animationType="fade"
         onRequestClose={() => setOptionsModalVisible(false)}
       >
-        <TouchableWithoutFeedback
-          onPress={() => setOptionsModalVisible(false)}
-        >
+        <TouchableWithoutFeedback onPress={() => setOptionsModalVisible(false)}>
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
               <View style={styles.optionsModal}>
@@ -253,10 +265,13 @@ const CropCard = ({ mode = "home" }) => {
                   style={styles.optionItem}
                   onPress={() => {
                     setOptionsModalVisible(false);
-                    if (selectedCrop && selectedCrop.id) {
+                    if (selectedCrop?.id) {
                       setDeleteAlertVisible(true);
                     } else {
-                      Alert.alert("Error", "No se pudo identificar el cultivo.");
+                      Alert.alert(
+                        "Error",
+                        "No se pudo identificar el cultivo."
+                      );
                     }
                   }}
                 >

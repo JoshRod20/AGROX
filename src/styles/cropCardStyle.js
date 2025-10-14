@@ -6,7 +6,6 @@ import {
 
 const { width } = Dimensions.get("window");
 
-// Función para escalar el tamaño de texto
 const scaleFont = (size) =>
   Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
 
@@ -31,7 +30,7 @@ export default StyleSheet.create({
   },
   wrapper: {
     alignSelf: "center",
-    width: width * 0.9, // 90% del ancho
+    width: width * 0.9,
     marginBottom: 25,
   },
   cardContainer: {
@@ -56,15 +55,10 @@ export default StyleSheet.create({
     marginLeft: 2,
     marginBottom: -5,
     zIndex: 2,
-    // Sombra para iOS
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    // Sombra para Android
     elevation: 3,
   },
   cropNameText: {
@@ -77,31 +71,36 @@ export default StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#fff",
   },
+
   label: {
     fontSize: scaleFont(14),
-    fontWeight: "bold",
+    fontFamily: "QuicksandBold",
     color: "#A84300",
-    marginVertical: 6,
   },
   value: {
-    fontWeight: "normal",
-    color: "#333",
+    fontFamily: "Quicksandregular",
+    color: "#000000ff",
+    fontSize: scaleFont(14),
+    marginLeft: wp("1%"),
   },
-  row: {
+
+  dataRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginVertical: 6,
   },
+  //Cuadro verde para la fecha: pequeño y compacto
   dateBox: {
     backgroundColor: "#2E7D32",
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 2,
-    marginLeft: 5,
+    marginLeft: wp("2%"), // Espacio entre label y cuadro
   },
   dateText: {
     color: "#fff",
-    fontSize: scaleFont(13),
-    fontWeight: "600",
+    fontSize: scaleFont(14),
+    fontFamily: "QuicksandSemiBold",
   },
   progressContainer: {
     flexDirection: "row",
@@ -137,40 +136,27 @@ export default StyleSheet.create({
     color: "#666",
     textAlign: "center",
   },
-   // --- ESTILOS DEL BOTÓN DE OPCIONES EN ESQUINA SUPERIOR DERECHA ---
   optionsButton: {
     position: "absolute",
     top: wp("0%"),
     right: 10,
-    zIndex: 2, // Asegura que esté por encima de otros elementos
-    padding: 5, // Espacio para tocar más fácil
+    zIndex: 2,
+    padding: 5,
   },
   optionsIcon: {
     width: 25,
     height: 25,
-    tintColor: "#666", // Color del icono
+    tintColor: "#666",
   },
-
-
-  // Nuevo estilo para la imagen del cultivo (modo full)
-cropImage: {
-  width: '100%',
-  height: 140,
-  marginTop: wp("5%"),
-  marginBottom: wp("4%"),
-  borderRadius: 8,
-  resizeMode: 'cover',
-},
-
-// Opcional: Estilo para las filas con label y value en modo full
-row: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 8, // Espaciado entre filas
-},
-
-  // --- ESTILOS DEL MODAL ---
+  cropImage: {
+    width: '100%',
+    height: 140,
+    marginTop: wp("5%"),
+    marginBottom: wp("4%"),
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  // --- MODAL ---
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -203,7 +189,6 @@ row: {
     fontSize: 16,
     color: "#333",
   },
-  // --- MODAL DE ALERTA ---
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -282,7 +267,9 @@ row: {
     fontFamily: "QuicksandSemiBold",
     color: "#FFFFFF",
   },
-    backButton: {
+
+  // --- Estilos para MyCrops.js ---
+  backButton: {
     marginLeft: wp("7%"),
     marginTop: hp("5%"),
   },
@@ -291,5 +278,13 @@ row: {
     height: wp("8%"),
     tintColor: "#2E7D32",
     resizeMode: "contain",
+  },
+  titleMyCrop: {
+    fontSize: wp("6%"),
+    marginTop: hp("1%"),
+    marginBottom: hp("4%"),
+    textAlign: "center",
+    paddingHorizontal: wp("4%"),
+    alignSelf: "center",
   },
 });
