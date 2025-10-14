@@ -26,7 +26,7 @@ import { getUserCrops } from "../services/cropsService";
 
 const { width } = Dimensions.get("window");
 
-const CropCard = ({ mode = "home" }) => {
+const CropCard = ({ mode = "home", cropsOverride = null }) => {
   const navigation = useNavigation();
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,12 +36,17 @@ const CropCard = ({ mode = "home" }) => {
   const [cropImages, setCropImages] = useState({});
 
   useEffect(() => {
+    // Si se proporcionan cultivos desde afuera, úsalos directamente
+    if (cropsOverride !== null) {
+      setCrops(cropsOverride);
+      setLoading(false);
+      return;
+    }
+
+    // Si no, carga los cultivos desde la base de datos
     const fetchCrops = async () => {
       try {
         const userCrops = await getUserCrops();
-
-        // 👇 Depuración: Verifica qué campos trae cada cultivo
-        // console.log("Datos crudos de cultivos:", userCrops);
 
         const cropsData = await Promise.all(
           userCrops.map(async (crop) => {
@@ -66,8 +71,8 @@ const CropCard = ({ mode = "home" }) => {
               cropName: crop.cropName || "Sin nombre",
               cropType: crop.cropType || "No especificado",
               createdAt: crop.createdAt || new Date(),
-              cultivatedArea: crop.cultivatedArea, // puede ser undefined
-              technicalManager: crop.technicalManager, // puede ser undefined
+              cultivatedArea: crop.cultivatedArea,
+              technicalManager: crop.technicalManager,
               progress,
             };
           })
@@ -81,7 +86,7 @@ const CropCard = ({ mode = "home" }) => {
 
         setCrops(sortedCrops);
 
-        // Cargar imágenes solo en modo "full"
+        // Cargar imágenes solo en modo "full" y solo si no usamos cropsOverride
         if (mode === "full") {
           const images = {};
           for (const crop of sortedCrops) {
@@ -93,9 +98,7 @@ const CropCard = ({ mode = "home" }) => {
             if (!querySnapshot.empty) {
               const activity = querySnapshot.docs[0].data();
               if (activity.imageBase64) {
-                images[
-                  crop.id
-                ] = `data:image/jpeg;base64,${activity.imageBase64}`;
+                images[crop.id] = `data:image/jpeg;base64,${activity.imageBase64}`;
               }
             }
           }
@@ -110,7 +113,7 @@ const CropCard = ({ mode = "home" }) => {
     };
 
     fetchCrops();
-  }, [mode]);
+  }, [mode, cropsOverride]);
 
   const handleUpdateCrop = () => {
     setOptionsModalVisible(false);
@@ -120,7 +123,11 @@ const CropCard = ({ mode = "home" }) => {
   const handleDeleteCrop = async () => {
     try {
       await deleteDoc(doc(db, "Crops", selectedCrop.id));
-      setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
+      // Si cropsOverride está en uso, el padre debe manejar la actualización.
+      // Pero si no, actualizamos localmente.
+      if (cropsOverride === null) {
+        setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
+      }
       setDeleteAlertVisible(false);
     } catch (error) {
       console.error("Error deleting crop:", error);
@@ -166,10 +173,10 @@ const CropCard = ({ mode = "home" }) => {
               </TouchableOpacity>
 
               <View style={styles.card}>
-                {/* Imagen (solo en modo full) */}
-                {mode === "full" && cropImages[crop.id] ? (
+                {/* Imagen: prioriza imageUri (de cropsOverride), luego cropImages (carga interna) */}
+                {mode === "full" && (crop.imageUri || cropImages[crop.id]) ? (
                   <Image
-                    source={{ uri: cropImages[crop.id] }}
+                    source={{ uri: crop.imageUri || cropImages[crop.id] }}
                     style={styles.cropImage}
                   />
                 ) : null}

@@ -269,9 +269,14 @@ export default StyleSheet.create({
   },
 
   // --- Estilos para MyCrops.js ---
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: hp("0%"),
+  },
   backButton: {
     marginLeft: wp("7%"),
-    marginTop: hp("5%"),
+    marginTop: hp("3.5%"),
   },
   backIcon: {
     width: wp("8%"),
@@ -281,10 +286,9 @@ export default StyleSheet.create({
   },
   titleMyCrop: {
     fontSize: wp("6%"),
-    marginTop: hp("1%"),
-    marginBottom: hp("4%"),
+    marginTop: hp("-2%"),
+    marginBottom: hp("2%"),
     textAlign: "center",
-    paddingHorizontal: wp("4%"),
     alignSelf: "center",
   },
 });

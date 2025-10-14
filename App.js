@@ -330,7 +330,7 @@ export default function App() {
 
 
 
-<Stack.Screen 
+          <Stack.Screen 
             name="MyCrops" 
             component={MyCrops} 
             options={({ navigation }) => ({
