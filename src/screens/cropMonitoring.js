@@ -34,30 +34,17 @@ const CropMonitoring = () => {
           growthObservations: activityData.growthObservations || "",
           pestObservations: activityData.pestObservations || "",
           actionsTaken: activityData.actionsTaken || "",
-          laborCost:
-            activityData.laborCost !== undefined
-              ? String(activityData.laborCost)
-              : "",
-          totalCost:
-            activityData.totalCost !== undefined
-              ? String(activityData.totalCost)
-              : "",
         }
       : {
           growthObservations: "",
           pestObservations: "",
           actionsTaken: "",
-          laborCost: "",
-          totalCost: "",
         }
   );
   const shakeAnim = {
     growthObservations: useRef(new Animated.Value(0)).current,
     pestObservations: useRef(new Animated.Value(0)).current,
     actionsTaken: useRef(new Animated.Value(0)).current,
-    laborCost: useRef(new Animated.Value(0)).current,
-    machineCost: useRef(new Animated.Value(0)).current,
-    totalCost: useRef(new Animated.Value(0)).current,
   };
   // 2. Función para activar la animación shake
   // Llama a triggerShake(shakeAnim.tillageType) cuando haya error en ese campo
@@ -102,8 +89,6 @@ const CropMonitoring = () => {
     growthObservations: "",
     pestObservations: "",
     actionsTaken: "",
-    laborCost: "",
-    totalCost: "",
   };
   const handleSave = async () => {
     let newErrors = {};
@@ -121,14 +106,6 @@ const CropMonitoring = () => {
       newErrors.actionsTaken = "Ingresa las acciones tomadas.";
       triggerShake(shakeAnim.actionsTaken);
     }
-    if (!formData.laborCost) {
-      newErrors.laborCost = "Ingresa el costo de mano de obra.";
-      triggerShake(shakeAnim.laborCost);
-    }
-    if (!formData.totalCost) {
-      newErrors.totalCost = "Ingresa el costo total de monitoreo.";
-      triggerShake(shakeAnim.totalCost);
-    }
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
     setLoading(true);
@@ -141,14 +118,10 @@ const CropMonitoring = () => {
         );
         await updateDoc(docRef, {
           ...formData,
-          laborCost: parseInt(formData.laborCost) || 0,
-          totalCost: parseInt(formData.totalCost) || 0,
         });
       } else {
         await addDoc(collection(db, `Crops/${crop.id}/activities`), {
           ...formData,
-          laborCost: parseInt(formData.laborCost) || 0,
-          totalCost: parseInt(formData.totalCost) || 0,
           name: "Monitoreo del cultivo",
           createdAt: Timestamp.now(),
         });
@@ -216,32 +189,6 @@ const CropMonitoring = () => {
         style={{ textAlignVertical: "top" }}
         error={errors.actionsTaken}
         shakeAnim={shakeAnim.actionsTaken}
-      />
-      {/* Mano de obra de monitoreo */}
-      <CostInput
-        label="Costo de mano de obra de monitoreo"
-        value={formData.laborCost}
-        onChangeText={(text) =>
-          handleInputChange("laborCost", text.replace(/[^0-9]/g, ""))
-        }
-        placeholder="0"
-        keyboardType="numeric"
-        error={errors.laborCost}
-        shakeAnim={shakeAnim.laborCost}
-        rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
-      />
-      {/* Costo total de monitoreo */}
-      <CostInput
-        label="Costo total de monitoreo"
-        value={formData.totalCost}
-        onChangeText={(text) =>
-          handleInputChange("totalCost", text.replace(/[^0-9]/g, ""))
-        }
-        placeholder="0"
-        keyboardType="numeric"
-        error={errors.totalCost}
-        shakeAnim={shakeAnim.totalCost}
-        rightAdornment={<Text style={{ color: "#888", fontSize: 16 }}>C$</Text>}
       />
       <FormButton
         title={loading ? "Guardando..." : "Guardar"}
