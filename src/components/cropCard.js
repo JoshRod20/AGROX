@@ -23,6 +23,7 @@ import {
 import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
 import { getUserCrops } from "../services/cropsService";
+import CropPDFGenerator from "../components/traceabilityComponent/cropPDFGenerator";
 
 const { width } = Dimensions.get("window");
 
@@ -38,9 +39,9 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
   // Función para filtrar cultivos según el modo
   const applyFilter = (cropsList) => {
     if (mode === "home" || mode === "full") {
-      return cropsList.filter(crop => crop.progress < 100);
+      return cropsList.filter((crop) => crop.progress < 100);
     } else if (mode === "traceability") {
-      return cropsList.filter(crop => crop.progress === 100);
+      return cropsList.filter((crop) => crop.progress === 100);
     }
     return cropsList;
   };
@@ -110,7 +111,9 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
             if (!querySnapshot.empty) {
               const activity = querySnapshot.docs[0].data();
               if (activity.imageBase64) {
-                images[crop.id] = `data:image/jpeg;base64,${activity.imageBase64}`;
+                images[
+                  crop.id
+                ] = `data:image/jpeg;base64,${activity.imageBase64}`;
               }
             }
           }
@@ -150,6 +153,19 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
   };
 
   if (loading) return null;
+
+  const generatePDF = async (crop) => {
+    try {
+      // Obtener todas las actividades del cultivo
+      const acts = await getCropActivities(crop.id);
+      // Filtrar solo las actividades registradas (no vacías)
+      const filteredActs = acts.filter((a) => a.name && a.createdAt);
+      // Generar PDF
+      await CropPDFGenerator(crop, filteredActs);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo generar el PDF.");
+    }
+  };
 
   return (
     <>
@@ -239,7 +255,10 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
                         style={styles.traceabilityActionIcon}
                       />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.traceabilityActionButton}>
+                    <TouchableOpacity
+                      style={styles.traceabilityActionButton}
+                      onPress={() => generatePDF(crop)}
+                    >
                       <Image
                         source={require("../assets/document-signed.png")}
                         style={styles.traceabilityActionIcon}
@@ -319,9 +338,7 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
         ))
       ) : (
         <View style={styles.noData}>
-          <Text style={styles.noDataText}>
-            No hay cultivos aún.
-          </Text>
+          <Text style={styles.noDataText}>No hay cultivos aún.</Text>
         </View>
       )}
 
