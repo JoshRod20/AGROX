@@ -24,6 +24,7 @@ import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
 import { getUserCrops } from "../services/cropsService";
 import CropPDFGenerator from "../components/traceabilityComponent/cropPDFGenerator";
+import QRModal from "../components/traceabilityComponent/qrModal";
 
 const { width } = Dimensions.get("window");
 
@@ -35,6 +36,7 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [cropImages, setCropImages] = useState({});
+    const [qrModalVisible, setQrModalVisible] = useState(false);
 
   // Función para filtrar cultivos según el modo
   const applyFilter = (cropsList) => {
@@ -249,12 +251,19 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
 
                   {/* Botones QR y PDF: esquina inferior derecha */}
                   <View style={styles.traceabilityActionButtons}>
-                    <TouchableOpacity style={styles.traceabilityActionButton}>
+                    <TouchableOpacity
+                      style={styles.traceabilityActionButton}
+                      onPress={() => {
+                        setSelectedCrop(crop);
+                        setQrModalVisible(true);
+                      }}
+                    >
                       <Image
                         source={require("../assets/qr-2.png")}
                         style={styles.traceabilityActionIcon}
                       />
                     </TouchableOpacity>
+
                     <TouchableOpacity
                       style={styles.traceabilityActionButton}
                       onPress={() => generatePDF(crop)}
@@ -435,6 +444,13 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
           </View>
         </View>
       </Modal>
+
+      <QRModal
+  visible={qrModalVisible}
+  onClose={() => setQrModalVisible(false)}
+  crop={selectedCrop}
+  cropName={selectedCrop?.cropName || "Cultivo"}
+/>
     </>
   );
 };
