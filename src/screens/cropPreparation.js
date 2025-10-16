@@ -13,6 +13,8 @@ import { db } from "../services/database";
 import FormCheckBox from "../components/formCheckBox";
 import FormSelectPicker from "../components/formSelectPicker";
 import InputsFormFields from "../components/inputsFormFields";
+import InputSearch from "../components/activitiesCrop/inputSearch";
+import ModalList from "../components/activitiesCrop/modalList";
 import CostInput from "../components/costInputs";
 import HoursInput from "../components/hoursInput";
 import FormButton from "../components/formButton";
@@ -22,6 +24,7 @@ import {
   Timestamp,
   doc,
   updateDoc,
+  getDocs,
 } from "firebase/firestore";
 import { useRoute, useNavigation } from "@react-navigation/native";
 const CropPreparation = () => {
@@ -34,51 +37,85 @@ const CropPreparation = () => {
   const [formData, setFormData] = useState(
     activityData
       ? {
-          laborType: activityData.laborType || "",
-          tillageType: activityData.tillageType || "",
-          soilCondition: activityData.soilCondition || "",
-          tools: activityData.tools || "",
-          amendments: activityData.amendments || "",
-          weedControl: activityData.weedControl || "",
-          manHours:
-            activityData.manHours !== undefined
-              ? String(activityData.manHours)
-              : "",
-          laborCost:
-            activityData.laborCost !== undefined
-              ? String(activityData.laborCost)
-              : "",
-          machineHours:
-            activityData.machineHours !== undefined
-              ? String(activityData.machineHours)
-              : "",
-          machineCost:
-            activityData.machineCost !== undefined
-              ? String(activityData.machineCost)
-              : "",
-          inputCost:
-            activityData.inputCost !== undefined
-              ? String(activityData.inputCost)
-              : "",
-          totalCost:
-            activityData.totalCost !== undefined ? activityData.totalCost : 0,
-          observations: activityData.observations || "",
-        }
+        workForce: activityData.workForce || "",
+        workForceId: activityData.workForceId || "",
+        workForceHourlyCost:
+          activityData.workForceHourlyCost !== undefined
+            ? String(activityData.workForceHourlyCost)
+            : "",
+        laborType: activityData.laborType || "",
+          quantityEmployees:
+          activityData.quantityEmployees !== undefined
+            ? String(activityData.quantityEmployees)
+            : "",
+        tillageType: activityData.tillageType || "",
+        soilCondition: activityData.soilCondition || "",
+        tools: activityData.tools || "",
+        machineHourlyDepreciation:
+          activityData.machineHourlyDepreciation !== undefined
+            ? String(activityData.machineHourlyDepreciation)
+            : "",
+         amendments: 
+          activityData.amendments !== undefined
+            ? String(activityData.amendments)
+            : "",
+        amendmentsId: activityData.amendmentsId || "",
+        amendmentsUnitPrice:
+          activityData.amendmentsUnitPrice !== undefined
+            ? String(activityData.amendmentsUnitPrice)
+            : "",
+        weedControl: activityData.weedControl || "",
+        workHours:
+          activityData.workHours !== undefined
+            ? String(activityData.workHours)
+            : "",
+        inputQuantity:
+          activityData.inputQuantity !== undefined
+            ? String(activityData.inputQuantity)
+            : "",
+        laborCost:
+          activityData.laborCost !== undefined
+            ? String(activityData.laborCost)
+            : "",
+        machineHours:
+          activityData.machineHours !== undefined
+            ? String(activityData.machineHours)
+            : "",
+        machineCost:
+          activityData.machineCost !== undefined
+            ? String(activityData.machineCost)
+            : "",
+        inputCost:
+          activityData.inputCost !== undefined
+            ? String(activityData.inputCost)
+            : "",
+        totalCost:
+          activityData.totalCost !== undefined ? activityData.totalCost : 0,
+        observations: activityData.observations || "",
+      }
       : {
-          laborType: "",
-          tillageType: "",
-          soilCondition: "",
-          tools: "",
-          amendments: "",
-          weedControl: "",
-          manHours: "",
-          laborCost: "",
-          machineHours: "",
-          machineCost: "",
-          inputCost: "",
-          totalCost: 0,
-          observations: "",
-        }
+        workForce: "",
+        workForceId: "",
+        workForceHourlyCost: "",
+        laborType: "",
+        tillageType: "",
+        soilCondition: "",
+        quantityEmployees: 0,
+        tools: "",
+        machineHourlyDepreciation: "",
+        amendments: "",
+        amendmentsId: "",
+        amendmentsUnitPrice: "",
+        weedControl: "",
+        workHours: "",
+        inputQuantity: "",
+        laborCost: "",
+        machineHours: "",
+        machineCost: "",
+        inputCost: "",
+        totalCost: 0,
+        observations: "",
+      }
   );
   // Estado para controlar la apertura de los selectores
   const [openTillageType, setOpenTillageType] = useState(false);
@@ -86,19 +123,23 @@ const CropPreparation = () => {
   const [openTools, setOpenTools] = useState(false);
   const [openAmendments, setOpenAmendments] = useState(false);
 
+
   // ScrollView ref para scroll a errores
   const scrollViewRef = useRef(null);
 
   // 1. Referencias Animated para animación shake de cada campo relevante
   // Solo los campos que quieres que tiemblen (ejemplo: tillageType y soilCondition)
   const shakeAnim = {
+    workForce: useRef(new Animated.Value(0)).current,
     tillageType: useRef(new Animated.Value(0)).current,
     soilCondition: useRef(new Animated.Value(0)).current,
+    quantityEmployees: useRef(new Animated.Value(0)).current,
     laborType: useRef(new Animated.Value(0)).current,
     tools: useRef(new Animated.Value(0)).current,
     amendments: useRef(new Animated.Value(0)).current,
     weedControl: useRef(new Animated.Value(0)).current,
-    manHours: useRef(new Animated.Value(0)).current,
+    workHours: useRef(new Animated.Value(0)).current,
+    inputQuantity: useRef(new Animated.Value(0)).current,
     machineHours: useRef(new Animated.Value(0)).current,
     laborCost: useRef(new Animated.Value(0)).current,
     machineCost: useRef(new Animated.Value(0)).current,
@@ -149,13 +190,16 @@ const CropPreparation = () => {
   };
 
   const initialForm = {
+    workForce: "",
     laborType: "",
     tillageType: "",
+    quantityEmployees: 0,
     soilCondition: "",
     tools: "",
+    machineHourlyDepreciation: 0,
     amendments: "",
+    inputQuantity: "",
     weedControl: "",
-    manHours: 0,
     machineHours: 0,
     laborCost: 0,
     machineCost: 0,
@@ -163,9 +207,98 @@ const CropPreparation = () => {
     totalCost: 0,
     observations: "",
   };
+  // Modal para seleccionar personal de trabajo
+  const [workForceModalOpen, setWorkForceModalOpen] = useState(false);
+  // Modal para seleccionar maquinaria
+  const [machineModalOpen, setMachineModalOpen] = useState(false);
+  // Modal para seleccionar enmiendas
+  const [amendmentsModalOpen, setAmendmentsModalOpen] = useState(false);
+
+  // Meta de empleados: total y costo por hora promedio
+  const [employeesMeta, setEmployeesMeta] = useState({ count: 0, avgHourlyCost: 0 });
+
+  // Cargar empleados para obtener count y promedio de hourlyCost
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, 'employees'));
+        if (cancelled) return;
+        const count = snap.size;
+        let sum = 0;
+        snap.forEach((d) => {
+          const data = d.data() || {};
+          let hc = Number(data.hourlyCost);
+          if (!hc && data.dailyCost && data.standardHours) {
+            const daily = Number(data.dailyCost) || 0;
+            const hours = Number(data.standardHours) || 0;
+            hc = hours > 0 ? daily / hours : 0;
+          }
+          if (Number.isFinite(hc)) sum += hc;
+        });
+        const avg = count > 0 ? sum / count : 0;
+        setEmployeesMeta({ count, avgHourlyCost: avg });
+      } catch (e) {
+        // Si falla, mantener 0s; no interrumpe la UI
+        setEmployeesMeta({ count: 0, avgHourlyCost: 0 });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Costo de maquinaria = depreciación_por_hora (maquinaria seleccionada) × horas_uso (machineHours)
+  React.useEffect(() => {
+    const depH = parseFloat(formData.machineHourlyDepreciation) || 0;
+    const hours = parseFloat(formData.machineHours) || 0;
+    const mCost = Math.round(depH * hours) || 0;
+    setFormData((prev) => {
+      const laborCost = parseFloat(prev.laborCost) || 0;
+      const inputCost = parseFloat(prev.inputCost) || 0;
+      const totalCost = laborCost + mCost + inputCost;
+      return { ...prev, machineCost: String(mCost), totalCost };
+    });
+  }, [formData.machineHourlyDepreciation, formData.machineHours]);
+
+  // Calcular automáticamente Costo de mano de obra = costo_por_hora (empleado seleccionado o promedio) × horas_trabajo × cantidad_empleados
+  React.useEffect(() => {
+    const hours = parseFloat(formData.workHours) || 0;
+    const qty = parseInt(formData.quantityEmployees) || 0;
+    const hourly = parseFloat(formData.workForceHourlyCost) || employeesMeta.avgHourlyCost || 0;
+    const cost = hourly * hours * qty;
+    const laborCost = Math.round(cost) || 0; // entero para mantener consistencia con parseInt al guardar
+    setFormData((prev) => {
+      // Recalcular total al actualizar laborCost
+      const machineCost = parseFloat(prev.machineCost) || 0;
+      const inputCost = parseFloat(prev.inputCost) || 0;
+      const totalCost = (laborCost || 0) + machineCost + inputCost;
+      return { ...prev, laborCost: String(laborCost), totalCost };
+    });
+  }, [employeesMeta.avgHourlyCost, formData.workForceHourlyCost, formData.workHours, formData.quantityEmployees]);
+
+  // Costo de insumos = precio_unitario (de seedsAndInputs) × cantidad (inputQuantity)
+  React.useEffect(() => {
+    const unitPrice = parseFloat(formData.amendmentsUnitPrice) || 0;
+    const qty = parseFloat(formData.inputQuantity) || 0;
+    const iCost = Math.round(unitPrice * qty) || 0;
+    setFormData((prev) => {
+      const laborCost = parseFloat(prev.laborCost) || 0;
+      const machineCost = parseFloat(prev.machineCost) || 0;
+      const totalCost = laborCost + machineCost + iCost;
+      return { ...prev, inputCost: String(iCost), totalCost };
+    });
+  }, [formData.amendmentsUnitPrice, formData.inputQuantity]);
+
   // 3. Validación con animación shake: dispara triggerShake si hay error en el campo
   const handleSave = async () => {
     let newErrors = {};
+    if (!formData.workForce) {
+      newErrors.workForce = "Selecciona el personal de trabajo.";
+      triggerShake(shakeAnim.workForce);
+    }
+    if (!formData.quantityEmployees) {
+      newErrors.quantityEmployees = "Ingresa la cantidad de empleados.";
+      triggerShake(shakeAnim.quantityEmployees);
+    }
     if (!formData.laborType) {
       newErrors.laborType = "Selecciona el tipo de labor.";
       triggerShake(shakeAnim.laborType);
@@ -186,13 +319,17 @@ const CropPreparation = () => {
       newErrors.amendments = "Ingresa las enmiendas.";
       triggerShake(shakeAnim.amendments);
     }
+    if (!formData.inputQuantity) {
+      newErrors.inputQuantity = "Ingresa la cantidad de insumos.";
+      triggerShake(shakeAnim.inputQuantity);
+    }
     if (!formData.weedControl) {
       newErrors.weedControl = "Selecciona el control de malezas.";
       triggerShake(shakeAnim.weedControl);
     }
-    if (!formData.manHours) {
-      newErrors.manHours = "Ingresa las horas hombre.";
-      triggerShake(shakeAnim.manHours);
+    if (!formData.workHours) {
+      newErrors.workHours = "Ingresa las horas trabajadas.";
+      triggerShake(shakeAnim.workHours);
     }
     if (!formData.machineHours) {
       newErrors.machineHours = "Ingresa las horas máquina.";
@@ -226,23 +363,33 @@ const CropPreparation = () => {
         );
         await updateDoc(docRef, {
           ...formData,
-          manHours: parseInt(formData.manHours) || 0,
+          workHours: parseInt(formData.workHours) || 0,
           machineHours: parseInt(formData.machineHours) || 0,
           laborCost: parseInt(formData.laborCost) || 0,
           machineCost: parseInt(formData.machineCost) || 0,
+          machineHourlyDepreciation: parseFloat(formData.machineHourlyDepreciation) || 0,
+          quantityEmployees: parseInt(formData.quantityEmployees) || 0,
+          inputQuantity: parseInt(formData.inputQuantity) || 0,
+          amendmentsUnitPrice: parseFloat(formData.amendmentsUnitPrice) || 0,
           inputCost: parseInt(formData.inputCost) || 0,
           totalCost: parseInt(formData.totalCost) || 0,
+          workForceHourlyCost: parseFloat(formData.workForceHourlyCost) || 0,
           observations: formData.observations,
         });
       } else {
         await addDoc(collection(db, `Crops/${crop.id}/activities`), {
           ...formData,
-          manHours: parseInt(formData.manHours) || 0,
+          workHours: parseInt(formData.workHours) || 0,
           machineHours: parseInt(formData.machineHours) || 0,
           laborCost: parseInt(formData.laborCost) || 0,
+          quantityEmployees: parseInt(formData.quantityEmployees) || 0,
           machineCost: parseInt(formData.machineCost) || 0,
+          machineHourlyDepreciation: parseFloat(formData.machineHourlyDepreciation) || 0,
+          inputQuantity: parseInt(formData.inputQuantity) || 0,
+          amendmentsUnitPrice: parseFloat(formData.amendmentsUnitPrice) || 0,
           inputCost: parseInt(formData.inputCost) || 0,
           totalCost: parseInt(formData.totalCost) || 0,
+          workForceHourlyCost: parseFloat(formData.workForceHourlyCost) || 0,
           name: "Preparación del terreno",
           createdAt: Timestamp.now(),
         });
@@ -345,72 +492,16 @@ const CropPreparation = () => {
           error={errors.soilCondition}
           shakeAnim={shakeAnim.soilCondition}
         />
-        <Text style={cropStyle.label}>Herramientas o maquinaria usada</Text>
-        <FormSelectPicker
-          label={null}
+        {/* Herramientas o maquinaria usada (selección desde maquinaria) */}
+        <InputSearch
+          label="Herramientas o maquinaria usada"
           value={formData.tools}
-          setValue={(callback) =>
-            setFormData((prev) => ({ ...prev, tools: callback(prev.tools) }))
-          }
-          open={openTools}
-          setOpen={setOpenTools}
-          items={[
-            { label: "Arado de disco", value: "Arado de disco" },
-            { label: "Arado de vertedera", value: "Arado de vertedera" },
-            { label: "Rastra", value: "Rastra" },
-            { label: "Subsolador", value: "Subsolador" },
-            { label: "Con Cincel", value: "Con Cincel" },
-          ]}
-          placeholder="Seleccione"
+          placeholder="Selecciona maquinaria o herramienta"
+          onOpen={() => setMachineModalOpen(true)}
           error={errors.tools}
           shakeAnim={shakeAnim.tools}
         />
-        <Text style={cropStyle.label}>
-          Enmiendas aplicadas (cal, abono, etc)
-        </Text>
-        <FormSelectPicker
-          label={null}
-          value={formData.amendments}
-          setValue={(callback) =>
-            setFormData((prev) => ({
-              ...prev,
-              amendments: callback(prev.amendments),
-            }))
-          }
-          open={openAmendments}
-          setOpen={setOpenAmendments}
-          items={[
-            { label: "Ninguna", value: "Ninguna" },
-            { label: "Cal agrícola", value: "Cal agrícola" },
-            { label: "Yeso agrícola", value: "Yeso agrícola" },
-            { label: "Compost", value: "Compost" },
-            { label: "Estiércol", value: "Estiércol" },
-            { label: "Humus de lombriz", value: "Humus de lombriz" },
-            { label: "Ceniza", value: "Ceniza" },
-          ]}
-          placeholder="Seleccione"
-          error={errors.amendments}
-          shakeAnim={shakeAnim.amendments}
-        />
-        <FormCheckBox
-          label="Control de malezas previo"
-          options={["Sí", "No"]}
-          value={formData.weedControl}
-          onChange={(val) => handleInputChange("weedControl", val)}
-          error={errors.weedControl}
-          shakeAnim={shakeAnim.weedControl}
-        />
-        {/* Inputs de HORAS */}
-        <HoursInput
-          label="Horas hombre invertidas"
-          value={formData.manHours}
-          onChangeText={(val) =>
-            handleInputChange("manHours", val.replace(/[^0-9]/g, ""))
-          }
-          error={errors.manHours}
-          shakeAnim={shakeAnim.manHours}
-        />
-
+        {/* Horas de maquinaria utilizadas */}
         <HoursInput
           label="Horas de maquinaria utilizadas"
           value={formData.machineHours}
@@ -420,53 +511,111 @@ const CropPreparation = () => {
           error={errors.machineHours}
           shakeAnim={shakeAnim.machineHours}
         />
-
+        {/* Personal de trabajo (selección desde empleados) */}
+        <InputSearch
+          label="Personal de trabajo"
+          value={formData.workForce}
+          placeholder="Selecciona personal"
+          onOpen={() => setWorkForceModalOpen(true)}
+          error={errors.workForce}
+          shakeAnim={shakeAnim.workForce}
+        />
+        {/* Input de cantidad de empleados */}
+        <InputsFormFields
+          label="Cantidad de empleados"
+          value={formData.quantityEmployees}
+          onChangeText={(val) =>
+            handleInputChange("quantityEmployees", val.replace(/[^0-9]/g, ""))
+          }
+          placeholder="0"
+          keyboardType="numeric"
+          error={errors.quantityEmployees}
+          shakeAnim={shakeAnim.quantityEmployees}
+        />
+        {/* Inputs de HORAS */}
+        <HoursInput
+          label="Horas trabajadas"
+          value={formData.workHours}
+          onChangeText={(val) =>
+            handleInputChange("workHours", val.replace(/[^0-9]/g, ""))
+          }
+          error={errors.workHours}
+          shakeAnim={shakeAnim.workHours}
+        />
+        {/* Enmiendas aplicadas (cal, abono, etc) - selección desde insumos */}
+        <InputSearch
+          label="Enmiendas aplicadas (cal, abono, etc)"
+          value={formData.amendments}
+          placeholder="Seleccione enmiendas"
+          onOpen={() => setAmendmentsModalOpen(true)}
+          error={errors.amendments}
+          shakeAnim={shakeAnim.amendments}
+        />
+        {/* Input de cantidad de insumos utilizados */}
+        <InputsFormFields
+          label="Cantidad de insumos utilizados"
+          value={formData.inputQuantity}
+          onChangeText={(val) =>
+            handleInputChange("inputQuantity", val.replace(/[^0-9]/g, ""))
+          }
+          placeholder="0"
+          keyboardType="numeric"
+          error={errors.inputQuantity}
+          shakeAnim={shakeAnim.inputQuantity}
+        />
+        {/* Input de control de malezas */}
+        <FormCheckBox
+          label="Control de malezas previo"
+          options={["Sí", "No"]}
+          value={formData.weedControl}
+          onChange={(val) => handleInputChange("weedControl", val)}
+          error={errors.weedControl}
+          shakeAnim={shakeAnim.weedControl}
+        />
         {/* Inputs de COSTO */}
         <CostInput
           label="Costo de mano de obra"
-          value={formData.laborCost}
-          onChangeText={(val) =>
-            handleInputChange("laborCost", val.replace(/[^0-9]/g, ""))
-          }
+          value={String(formData.laborCost)}
+          onChangeText={() => { }}
           error={errors.laborCost}
           shakeAnim={shakeAnim.laborCost}
+          editable={false}
         />
-
+        {/* Costo de maquinaria */}
         <CostInput
           label="Costo de maquinaria"
-          value={formData.machineCost}
-          onChangeText={(val) =>
-            handleInputChange("machineCost", val.replace(/[^0-9]/g, ""))
-          }
+          value={String(formData.machineCost)}
+          onChangeText={() => { }}
           error={errors.machineCost}
           shakeAnim={shakeAnim.machineCost}
+          editable={false}
         />
-
+        {/* Costo de insumos aplicados */}
         <CostInput
           label="Costo de insumos aplicados"
-          value={formData.inputCost}
-          onChangeText={(val) =>
-            handleInputChange("inputCost", val.replace(/[^0-9]/g, ""))
-          }
+          value={String(formData.inputCost)}
+          onChangeText={() => { }}
           error={errors.inputCost}
           shakeAnim={shakeAnim.inputCost}
+          editable={false}
         />
-
+        {/* Costo total de preparación */}
         <CostInput
-          label="Costo total"
+          label="Costo total de preparación"
           value={formData.totalCost.toString()}
-          onChangeText={() => {}}
+          onChangeText={() => { }}
           error={errors.totalCost}
           shakeAnim={shakeAnim.totalCost}
           editable={false}
         />
+        {/* Inputs de observaciones */}
         <InputsFormFields
           label="Observaciones (opcional)"
           value={formData.observations}
           onChangeText={(val) =>
             setFormData({ ...formData, observations: val })
           }
-          placeholder="Ingrese sus observaciones"
+          placeholder="El suelo no presentó ninguna dificultad de preparación."
           keyboardType="default"
           error={errors.observations}
           shakeAnim={shakeAnim.observations}
@@ -474,6 +623,85 @@ const CropPreparation = () => {
         {/* Botón Guardar */}
         <FormButton onPress={handleSave} loading={loading} disabled={loading} />
       </ScrollView>
+      {/* Modal de lista para seleccionar empleado */}
+      <ModalList
+        visible={workForceModalOpen}
+        onClose={() => setWorkForceModalOpen(false)}
+        collectionPath="employees"
+        orderByField="createdAt"
+        orderDirection="desc"
+        title="Seleccionar personal de trabajo"
+        searchPlaceholder="Buscar por nombre o rol"
+        searchKeys={["fullName", "role"]}
+        renderItem={(item) => (
+          <Text style={{ color: "#333", fontSize: 14 }}>
+            {item.fullName} — {item.role}
+          </Text>
+        )}
+        onSelect={(item) =>
+          setFormData((prev) => ({
+            ...prev,
+            workForce: item.fullName,
+            workForceId: item.id || prev.workForceId,
+            workForceHourlyCost:
+              item.hourlyCost != null
+                ? String(item.hourlyCost)
+                : prev.workForceHourlyCost,
+          }))
+        }
+      />
+      {/* Modal de lista para seleccionar maquinaria */}
+      <ModalList
+        visible={machineModalOpen}
+        onClose={() => setMachineModalOpen(false)}
+        collectionPath="machinery"
+        orderByField="createdAt"
+        orderDirection="desc"
+        title="Seleccionar maquinaria"
+        searchPlaceholder="Buscar por nombre o tipo"
+        searchKeys={["name", "costType"]}
+        renderItem={(item) => (
+          <Text style={{ color: "#333", fontSize: 14 }}>
+            {item.name} — {item.costType}
+          </Text>
+        )}
+        onSelect={(item) =>
+          setFormData((prev) => ({
+            ...prev,
+            tools: item.name,
+            machineId: item.id || prev.machineId,
+            machineHourlyDepreciation:
+              item.hourlyDepreciation != null
+                ? String(item.hourlyDepreciation)
+                : prev.machineHourlyDepreciation,
+          }))
+        }
+      />
+      {/* Modal de lista para seleccionar enmiendas */}
+      <ModalList
+        visible={amendmentsModalOpen}
+        onClose={() => setAmendmentsModalOpen(false)}
+        collectionPath="seedsAndInputs"
+        orderByField="createdAt"
+        orderDirection="desc"
+        title="Seleccionar enmiendas"
+        searchPlaceholder="Buscar por nombre"
+        searchKeys={["inputName"]}
+        renderItem={(item) => (
+          <Text style={{ color: "#333", fontSize: 14 }}>
+            {item.inputName}
+          </Text>
+        )}
+        onSelect={(item) =>
+          setFormData((prev) => ({
+            ...prev,
+            amendments: item.inputName,
+            amendmentsId: item.id || prev.amendmentsId,
+            amendmentsUnitPrice:
+              item.unitPrice != null ? String(item.unitPrice) : prev.amendmentsUnitPrice,
+          }))
+        }
+      />
     </View>
   );
 };

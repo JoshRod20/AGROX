@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { formTableStyle } from '../../styles/inventoryStyles/formTableStyle';
-import { db } from '../../services/database';
-import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { db, auth } from '../../services/database';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, onSnapshot, query, orderBy, deleteDoc, doc, where } from 'firebase/firestore';
 
 /**
  * FormTable - Tabla reusable con datos en vivo de Firestore
@@ -19,6 +20,8 @@ import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase
  * - horizontalScroll?: boolean // habilita scroll horizontal cuando hay muchas columnas
  * - minColumnUnitWidth?: number // ancho base en px por unidad de flex (default 120)
  * - indexColumn?: boolean | { label?: string, start?: number, flex?: number, width?: number } // agrega columna N°
+ * - userScoped?: boolean // filtra por userId === auth.currentUser.uid (default true)
+ * - userIdField?: string // nombre del campo que almacena el id de usuario (default 'userId')
  */
 const FormTable = ({
 	collectionPath,
@@ -34,21 +37,83 @@ const FormTable = ({
 	onDeleted,
 	horizontalScroll = true,
 	minColumnUnitWidth = 120,
-    indexColumn = false,
+	indexColumn = false,
+	userScoped = true,
+	userIdField = 'userId',
 }) => {
 	const [data, setData] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [confirmVisible, setConfirmVisible] = useState(false);
 	const [itemToDelete, setItemToDelete] = useState(null);
+	const [uid, setUid] = useState(auth?.currentUser?.uid || null);
+
+	// Mantener uid actualizado cuando cambie el estado de autenticación
+	useEffect(() => {
+		if (!userScoped) return;
+		const unsubAuth = onAuthStateChanged(auth, (user) => {
+			setUid(user?.uid || null);
+		});
+		return () => unsubAuth();
+	}, [userScoped]);
 
 	useEffect(() => {
 		try {
 			const ref = collection(db, collectionPath);
-			const q = orderByField
-				? query(ref, orderBy(orderByField, orderDirection))
-				: ref;
+			const constraints = [];
+			// Filtro por usuario autenticado si está habilitado
+			if (userScoped) {
+				if (!uid) {
+					// Si aún no hay usuario disponible, mostramos vacío y salimos
+					setData([]);
+					setLoading(false);
+					return;
+				}
+				constraints.push(where(userIdField, '==', uid));
+			}
+			// Si hay filtro por usuario y además ordenamiento, evitamos orderBy en Firestore
+			// para no requerir índice compuesto; ordenaremos en cliente.
+			const shouldClientSort = Boolean(userScoped && orderByField);
+			if (orderByField && !shouldClientSort) {
+				constraints.push(orderBy(orderByField, orderDirection));
+			}
+
+			const q = constraints.length ? query(ref, ...constraints) : ref;
 			const unsub = onSnapshot(q, (snap) => {
-				const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+				let docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+				// Ordenamiento en cliente si corresponde
+				if (orderByField && (userScoped || constraints.length === 0)) {
+					const dir = String(orderDirection || 'desc').toLowerCase() === 'asc' ? 1 : -1;
+					const getVal = (v) => {
+						if (!v && v !== 0) return null;
+						// Firestore Timestamp
+						if (v?.toDate) {
+							try { return v.toDate().getTime(); } catch { /* ignore */ }
+						}
+						// Date
+						if (v instanceof Date) return v.getTime();
+						// number
+						if (typeof v === 'number') return v;
+						// string fecha ISO o general
+						if (typeof v === 'string') {
+							const n = Number(v);
+							if (!Number.isNaN(n)) return n;
+							const t = Date.parse(v);
+							if (!Number.isNaN(t)) return t;
+							return v.toLowerCase();
+						}
+						return v;
+					};
+					docs = docs.sort((a, b) => {
+						const av = getVal(a?.[orderByField]);
+						const bv = getVal(b?.[orderByField]);
+						if (av == null && bv == null) return 0;
+						if (av == null) return 1; // nulls last
+						if (bv == null) return -1;
+						if (av < bv) return -1 * dir;
+						if (av > bv) return 1 * dir;
+						return 0;
+					});
+				}
 				setData(docs);
 				setLoading(false);
 			});
@@ -57,7 +122,7 @@ const FormTable = ({
 			console.error('FormTable subscribe error:', e);
 			setLoading(false);
 		}
-	}, [collectionPath, orderByField, orderDirection]);
+	}, [collectionPath, orderByField, orderDirection, userScoped, userIdField, uid]);
 
 	const keyExtractor = useMemo(() => (item) => item.id, []);
 

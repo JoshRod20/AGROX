@@ -25,7 +25,7 @@ import FormButton from "../../components/formButton";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 // Firebase
-import { db } from "../../services/database";
+import { db, auth } from "../../services/database";
 import { collection, addDoc, Timestamp, updateDoc, doc } from "firebase/firestore";
 
 SplashScreen.preventAutoHideAsync();
@@ -159,6 +159,7 @@ const SeedsAndInputsForm = () => {
           purchaseDate: formData.purchaseDate,
           supplier: formData.supplier,
           stock: parseInt(formData.stock) || 0,
+          userId: auth?.currentUser?.uid || editingItem?.userId || null,
         });
       } else {
         await addDoc(collection(db, "seedsAndInputs"), {
@@ -166,6 +167,7 @@ const SeedsAndInputsForm = () => {
           unitPrice: parseFloat(formData.unitPrice) || 0,
           stock: parseInt(formData.stock) || 0,
           createdAt: Timestamp.now(),
+          userId: auth?.currentUser?.uid || null,
         });
       }
       navigation.goBack();
