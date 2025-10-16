@@ -19,6 +19,7 @@ const FinanDashboard = () => {
 	const [totalCultivatedArea, setTotalCultivatedArea] = React.useState(0);
 	const [totalYieldAccum, setTotalYieldAccum] = React.useState(0);
     const [totalRevenueAccum, setTotalRevenueAccum] = React.useState(0);
+	const [netProfit, setNetProfit] = React.useState(0);
 
 	React.useEffect(() => {
 		let cancelled = false;
@@ -246,6 +247,57 @@ const FinanDashboard = () => {
 					</>
 				) : (
 					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la cantidad procesada y el precio de venta en Postcosecha.</Text>
+				)}
+			</View>
+
+			{/* Tarjeta: Utilidad neta (Ingresos - Costo Total) */}
+			<View style={finanDashboardStyle.card}>
+				<Text style={finanDashboardStyle.cardTitle}>Utilidad neta</Text>
+				{loading ? (
+					<ActivityIndicator color="#2E7D32" />
+				) : Number(totalYieldAccum) > 0 ? (
+					<>
+						<View style={finanDashboardStyle.currencyRow}>
+							<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
+							<Text style={finanDashboardStyle.amount}>
+								{(
+									Number(totalRevenueAccum || 0) - Number(totalYieldAccum)
+								).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+							</Text>
+						</View>
+						<Text style={finanDashboardStyle.helper}>
+							Total: C$ {Number(totalRevenueAccum || 0).toLocaleString('es-NI')} - Producción total: {Number(totalYieldAccum || 0).toLocaleString('es-NI')} Kg
+						</Text>
+					</>
+				) : (
+					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la producción en la etapa de Cosecha.</Text>
+				)}
+			</View>
+			{/* Tarjeta: Rentabilidad (Utilidad neta / Costo Total) × 100. */}
+			<View style={finanDashboardStyle.card}>
+				<Text style={finanDashboardStyle.cardTitle}>Rentabilidad</Text>
+				{loading ? (
+					<ActivityIndicator color="#2E7D32" />
+				) : Number(totalCostAccum) > 0 ? (
+					<>
+						{(() => {
+							// Reutiliza el mismo cálculo de "Utilidad neta" de la otra tarjeta
+							const profitFromCard = (Number(totalRevenueAccum || 0) - Number(totalYieldAccum || 0));
+							const marginPct = Number(totalCostAccum) > 0 ? (profitFromCard / Number(totalCostAccum)) * 100 : 0;
+							return (
+								<View style={finanDashboardStyle.currencyRow}>
+									<Text style={finanDashboardStyle.amount}>
+										{marginPct.toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %
+									</Text>
+								</View>
+							);
+						})()}
+						<Text style={finanDashboardStyle.helper}>
+							Rentabilidad = (Utilidad neta / Costos totales) × 100
+						</Text>
+					</>
+				) : (
+					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra costos en las actividades del cultivo.</Text>
 				)}
 			</View>
 
