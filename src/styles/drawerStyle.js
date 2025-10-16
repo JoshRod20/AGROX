@@ -11,6 +11,8 @@ export const drawerStyle = StyleSheet.create({
     borderBottomRightRadius: width * 0.05,
     overflow: "hidden",
     paddingTop: height * 0.02, // espacio superior proporcional
+    //width: 420,
+    //right: 170,
   },
   menuButton: {
     marginTop: height * 0.01,

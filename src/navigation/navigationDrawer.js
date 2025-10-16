@@ -15,6 +15,7 @@ import InventoryMenu from "../screens/inventory/inventoryMenu";
 import MyCrops from "../screens/myCrops";
 import Traceability from "../screens/traceability";
 import FinanDashboard from "../screens/graphic/finanDashboard";
+import MiproFile from "../screens/myProfile/myProfile";
 
 import { DrawerItem } from '@react-navigation/drawer';
 
@@ -179,7 +180,7 @@ export default function NavigationDrawer() {
       />
       <Drawer.Screen
         name="Mi cuenta"
-        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        component={MiproFile} // Reemplazar con la pantalla correspondiente
         options={{
           drawerItemStyle: { height: 0 }, // Oculta el item del drawer
           drawerIcon: () => (

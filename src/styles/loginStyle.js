@@ -21,10 +21,10 @@ export const loginStyle = StyleSheet.create({
   },
   buttonLogin: {
     width: wp("80%"), // 80% del ancho de la pantalla
-    height: hp("6%"), // Altura relativa
+    height: hp("6.5%"), // Altura relativa
     paddingVertical: hp("1.5%"),
     paddingHorizontal: wp("5%"),
-    borderRadius: wp("2.5%"), // Border radius relativo.
+    borderRadius: wp("2.8%"), // Border radius relativo.
     alignItems: "center",
     justifyContent: "center",
     marginTop: hp("5%"),
@@ -137,7 +137,7 @@ export const loginStyle = StyleSheet.create({
   },
   buttonSignIn: {
     width: wp("80%"),
-    height: hp("5.6%"),
+    height: hp("6.5%"),
     paddingVertical: hp("1.5%"),
     paddingHorizontal: wp("5%"),
     borderRadius: wp("2.5%"),
