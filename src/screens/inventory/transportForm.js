@@ -21,7 +21,7 @@ import CostInput from "../../components/costInputs";
 import FormButton from "../../components/formButton";
 
 // Firebase
-import { db } from "../../services/database";
+import { db, auth } from "../../services/database";
 import { collection, addDoc, Timestamp, updateDoc, doc } from "firebase/firestore";
 
 SplashScreen.preventAutoHideAsync();
@@ -119,6 +119,7 @@ const TransportForm = () => {
           transportType: formData.transportType,
           capacity: formData.capacity,
           costPerTrip: parseFloat(formData.costPerTrip) || 0,
+          userId: auth?.currentUser?.uid || editingItem?.userId || null,
         });
       } else {
         await addDoc(collection(db, "transport"), {
@@ -126,6 +127,7 @@ const TransportForm = () => {
           capacity: formData.capacity,
           costPerTrip: parseFloat(formData.costPerTrip) || 0,
           createdAt: Timestamp.now(),
+          userId: auth?.currentUser?.uid || null,
         });
       }
       navigation.goBack();

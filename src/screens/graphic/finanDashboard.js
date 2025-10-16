@@ -3,8 +3,8 @@ import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import Svg, { G, Circle } from 'react-native-svg';
 import finanDashboardStyle from '../../styles/graphicStyles/finanDashboardStyle';
 import { useRoute } from '@react-navigation/native';
-import { db } from '../../services/database';
-import { collection, getDocs } from 'firebase/firestore';
+import { db, auth } from '../../services/database';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 // Regla de negocio: el costo total acumulado es la suma de totalCost
 // de todas las actividades del cultivo actual.
@@ -24,7 +24,7 @@ const FinanDashboard = () => {
 				setLoading(true);
 						let acc = 0;
 						const stageMap = new Map();
-				if (crop?.id) {
+						if (crop?.id) {
 					// Sumar totalCost de las actividades del cultivo
 					const actsRef = collection(db, `Crops/${crop.id}/activities`);
 					const snap = await getDocs(actsRef);
@@ -37,8 +37,11 @@ const FinanDashboard = () => {
 								stageMap.set(stage, stageMap.get(stage) + (Number(tc) || 0));
 					});
 				} else {
-					// Si no hay crop, opcionalmente sumar de todos los cultivos
-					const cropsSnap = await getDocs(collection(db, 'Crops'));
+							// Si no hay crop, sumar de todos los cultivos del usuario actual
+							const uid = auth.currentUser?.uid;
+							if (!uid) throw new Error('Usuario no autenticado');
+							const cropsQ = query(collection(db, 'Crops'), where('userId', '==', uid));
+							const cropsSnap = await getDocs(cropsQ);
 					for (const c of cropsSnap.docs) {
 						const actsRef = collection(db, `Crops/${c.id}/activities`);
 						const actsSnap = await getDocs(actsRef);
