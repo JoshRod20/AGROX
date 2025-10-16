@@ -6,7 +6,6 @@ import {
 
 const { width } = Dimensions.get("window");
 
-// Función para escalar el tamaño de texto
 const scaleFont = (size) =>
   Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
 
@@ -31,7 +30,7 @@ export default StyleSheet.create({
   },
   wrapper: {
     alignSelf: "center",
-    width: width * 0.9, // 90% del ancho
+    width: width * 0.9,
     marginBottom: 25,
   },
   cardContainer: {
@@ -56,15 +55,10 @@ export default StyleSheet.create({
     marginLeft: 2,
     marginBottom: -5,
     zIndex: 2,
-    // Sombra para iOS
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    // Sombra para Android
     elevation: 3,
   },
   cropNameText: {
@@ -77,31 +71,36 @@ export default StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: "#fff",
   },
+
   label: {
     fontSize: scaleFont(14),
-    fontWeight: "bold",
+    fontFamily: "QuicksandBold",
     color: "#A84300",
-    marginVertical: 6,
   },
   value: {
-    fontWeight: "normal",
-    color: "#333",
+    fontFamily: "Quicksandregular",
+    color: "#000000ff",
+    fontSize: scaleFont(14),
+    marginLeft: wp("1%"),
   },
-  row: {
+
+  dataRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginVertical: 6,
   },
+  //Cuadro verde para la fecha: pequeño y compacto
   dateBox: {
     backgroundColor: "#2E7D32",
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 2,
-    marginLeft: 5,
+    marginLeft: wp("2%"), // Espacio entre label y cuadro
   },
   dateText: {
     color: "#fff",
-    fontSize: scaleFont(13),
-    fontWeight: "600",
+    fontSize: scaleFont(14),
+    fontFamily: "QuicksandSemiBold",
   },
   progressContainer: {
     flexDirection: "row",
@@ -137,21 +136,27 @@ export default StyleSheet.create({
     color: "#666",
     textAlign: "center",
   },
-   // --- ESTILOS DEL BOTÓN DE OPCIONES EN ESQUINA SUPERIOR DERECHA ---
   optionsButton: {
     position: "absolute",
-    top: 10,
+    top: wp("0%"),
     right: 10,
-    zIndex: 2, // Asegura que esté por encima de otros elementos
-    padding: 5, // Espacio para tocar más fácil
+    zIndex: 2,
+    padding: 5,
   },
   optionsIcon: {
     width: 25,
     height: 25,
-    tintColor: "#666", // Color del icono
+    tintColor: "#666",
   },
-
-  // --- ESTILOS DEL MODAL ---
+  cropImage: {
+    width: '100%',
+    height: 140,
+    marginTop: wp("5%"),
+    marginBottom: wp("4%"),
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  // --- MODAL ---
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -184,7 +189,6 @@ export default StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
-  // --- MODAL DE ALERTA ---
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -263,4 +267,99 @@ export default StyleSheet.create({
     fontFamily: "QuicksandSemiBold",
     color: "#FFFFFF",
   },
+
+  // --- Estilos para MyCrops.js ---
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: hp("0%"),
+  },
+  backButton: {
+    marginLeft: wp("7%"),
+    marginTop: hp("3.5%"),
+  },
+  backIcon: {
+    width: wp("8%"),
+    height: wp("8%"),
+    tintColor: "#2E7D32",
+    resizeMode: "contain",
+  },
+  titleMyCrop: {
+    fontSize: wp("6%"),
+    marginTop: hp("-2%"),
+    marginBottom: hp("2%"),
+    textAlign: "center",
+    alignSelf: "center",
+  },
+
+// --- ESTILOS PARA TRAZABILIDAD ---
+traceabilityCard: {
+  paddingVertical: hp("5%"),
+  paddingHorizontal: wp("4%"),
+  backgroundColor: "#fff",
+  position: "relative",
+  borderRadius: wp("2.5%"),
+},
+
+traceabilityCropImage: {
+  width: "100%",
+  height: hp("20%"), // ~140px en dispositivos estándar, pero responsive
+  borderRadius: wp("2%"),
+  resizeMode: "cover",
+  marginBottom: hp("3%"),
+  top: wp("-2%"),
+},
+
+imageContainer: {
+  position: "relative",
+  marginBottom: hp("-2.8%"),
+},
+
+completedBadge: {
+  position: "absolute",
+  bottom: hp("3.9%"),
+  right: wp("0%"),
+  backgroundColor: "#4CAF50",
+  borderRadius: wp("2%"),
+  paddingHorizontal: wp("4%"),
+  paddingVertical: hp("0.6%"),
+  zIndex: 2,
+},
+
+completedText: {
+  color: "#fff",
+  fontSize: wp("3.5%"),
+  fontFamily: "CarterOne",
+},
+
+// Botones QR y PDF: esquina INFERIOR DERECHA de la TARJETA
+traceabilityActionButtons: {
+  position: "absolute",
+  bottom: hp("1.5%"),
+  right: wp("4%"),
+  flexDirection: "row",
+  gap: wp("2%"),
+  zIndex: 2,
+},
+
+traceabilityActionButton: {
+  backgroundColor: "#f0f0f0",
+  borderRadius: wp("2%"),
+  padding: wp("2%"),
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+traceabilityActionIcon: {
+  width: wp("5%"),
+  height: wp("5%"),
+  tintColor: "#2E7D32",
+},
+
+placeholderText: {
+  color: "#666",
+  fontSize: wp("3.8%"),
+  textAlign: "center",
+  marginTop: hp("8%"),
+},
 });

@@ -14,7 +14,7 @@ import HoursInput from "../../components/hoursInput";
 import FormButton from "../../components/formButton";
 
 // Firebase
-import { db } from "../../services/database";
+import { db, auth } from "../../services/database";
 import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore";
 
 SplashScreen.preventAutoHideAsync();
@@ -132,6 +132,7 @@ const EmployeesForm = () => {
           dailyCost: parseFloat(formData.dailyCost) || 0,
           standardHours: parseFloat(formData.standardHours) || 0,
           hourlyCost: parseFloat(hourlyCost) || 0,
+          userId: auth?.currentUser?.uid || editingItem?.userId || null,
         });
       } else {
         await addDoc(collection(db, "employees"), {
@@ -141,6 +142,7 @@ const EmployeesForm = () => {
           standardHours: parseFloat(formData.standardHours) || 0,
           hourlyCost: parseFloat(hourlyCost) || 0,
           createdAt: Timestamp.now(),
+          userId: auth?.currentUser?.uid || null,
         });
       }
       navigation.goBack();

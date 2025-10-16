@@ -42,6 +42,8 @@ import EmployeesForm from './src/screens/inventory/employeesForm';
 import { employeesFormStyle } from './src/styles/inventoryStyles/employeesFormStyle';
 import MachineryForm from './src/screens/inventory/machineryForm';
 import { machineryFormStyle } from './src/styles/inventoryStyles/machineryFormStyle';
+import MyCrops from './src/screens/myCrops';
+import cropCardStyle from './src/styles/cropCardStyle';
 
 const Stack = createStackNavigator();
 
@@ -328,6 +330,27 @@ export default function App() {
 
 
 
+          <Stack.Screen 
+            name="MyCrops" 
+            component={MyCrops} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={cropCardStyle.backButton}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={cropCardStyle.backIcon}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
 
             <Stack.Screen 
             name="FormCrop" 

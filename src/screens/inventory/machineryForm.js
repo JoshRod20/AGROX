@@ -14,7 +14,7 @@ import HoursInput from "../../components/hoursInput";
 import FormButton from "../../components/formButton";
 
 // Firebase
-import { db } from "../../services/database";
+import { db, auth } from "../../services/database";
 import { collection, addDoc, Timestamp, doc, updateDoc } from "firebase/firestore";
 
 SplashScreen.preventAutoHideAsync();
@@ -162,9 +162,9 @@ const MachineryForm = () => {
         hourlyDepreciation: parseFloat(hourlyDepreciation) || 0,
       };
       if (editingItem?.id) {
-        await updateDoc(doc(db, 'machinery', editingItem.id), payload);
+        await updateDoc(doc(db, 'machinery', editingItem.id), { ...payload, userId: auth?.currentUser?.uid || editingItem?.userId || null });
       } else {
-        await addDoc(collection(db, "machinery"), { ...payload, createdAt: Timestamp.now() });
+        await addDoc(collection(db, "machinery"), { ...payload, createdAt: Timestamp.now(), userId: auth?.currentUser?.uid || null });
       }
       navigation.goBack();
     } catch (error) {

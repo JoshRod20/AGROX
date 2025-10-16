@@ -12,8 +12,13 @@ import Crop from "../screens/crop";
 import LogoutButton from "../components/LogoutButton";
 import { drawerStyle } from "../styles/drawerStyle";
 import InventoryMenu from "../screens/inventory/inventoryMenu";
+import MyCrops from "../screens/myCrops";
+import Traceability from "../screens/traceability";
+import FinanDashboard from "../screens/graphic/finanDashboard";
 
 import { DrawerItem } from '@react-navigation/drawer';
+
+
 
 
 const Drawer = createDrawerNavigator();
@@ -138,7 +143,7 @@ export default function NavigationDrawer() {
       />
       <Drawer.Screen
         name="Mis cultivos"
-        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        component={MyCrops} // Reemplazar con la pantalla correspondiente
         options={{
           drawerIcon: () => (
             <Image
@@ -150,7 +155,7 @@ export default function NavigationDrawer() {
       />
       <Drawer.Screen
         name="Trazabilidad"
-        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        component={Traceability} // Reemplazar con la pantalla correspondiente
         options={{
           drawerIcon: () => (
             <Image
@@ -162,7 +167,7 @@ export default function NavigationDrawer() {
       />
       <Drawer.Screen
         name="Panel económico"
-        component={PlaceholderScreen} // Reemplazar con la pantalla correspondiente
+        component={FinanDashboard} // Reemplazar con la pantalla correspondiente
         options={{
           drawerIcon: () => (
             <Image
