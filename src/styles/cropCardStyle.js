@@ -291,4 +291,75 @@ export default StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
   },
+
+// --- ESTILOS PARA TRAZABILIDAD ---
+traceabilityCard: {
+  paddingVertical: hp("5%"),
+  paddingHorizontal: wp("4%"),
+  backgroundColor: "#fff",
+  position: "relative",
+  borderRadius: wp("2.5%"),
+},
+
+traceabilityCropImage: {
+  width: "100%",
+  height: hp("20%"), // ~140px en dispositivos estándar, pero responsive
+  borderRadius: wp("2%"),
+  resizeMode: "cover",
+  marginBottom: hp("3%"),
+  top: wp("-2%"),
+},
+
+imageContainer: {
+  position: "relative",
+  marginBottom: hp("-2.8%"),
+},
+
+completedBadge: {
+  position: "absolute",
+  bottom: hp("3.9%"),
+  right: wp("0%"),
+  backgroundColor: "#4CAF50",
+  borderRadius: wp("2%"),
+  paddingHorizontal: wp("4%"),
+  paddingVertical: hp("0.6%"),
+  zIndex: 2,
+},
+
+completedText: {
+  color: "#fff",
+  fontSize: wp("3.5%"),
+  fontFamily: "CarterOne",
+},
+
+// Botones QR y PDF: esquina INFERIOR DERECHA de la TARJETA
+traceabilityActionButtons: {
+  position: "absolute",
+  bottom: hp("1.5%"),
+  right: wp("4%"),
+  flexDirection: "row",
+  gap: wp("2%"),
+  zIndex: 2,
+},
+
+traceabilityActionButton: {
+  backgroundColor: "#f0f0f0",
+  borderRadius: wp("2%"),
+  padding: wp("2%"),
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+traceabilityActionIcon: {
+  width: wp("5%"),
+  height: wp("5%"),
+  tintColor: "#2E7D32",
+},
+
+placeholderText: {
+  color: "#666",
+  fontSize: wp("3.8%"),
+  textAlign: "center",
+  marginTop: hp("8%"),
+},
 });
