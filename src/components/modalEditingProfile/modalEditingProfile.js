@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { TextInput } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import InputsFormFields from '../inputsFormFields';
+import signUpStyle from "../../../src/styles/signUpStyle";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -121,7 +122,14 @@ const ModalEditingProfile = ({ visible, onClose }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={modalEditingProfileStyle.Button}>
-                        <Text style={modalEditingProfileStyle.textB}>Guardar</Text>
+                        <LinearGradient
+                            colors={["rgba(46, 125, 50, 1)", "rgba(76, 175, 80, 0.7)"]}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={modalEditingProfileStyle.buttonSignIn}
+                        >
+                            <Text style={modalEditingProfileStyle.textB1}>Guardar</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
                 </View>
             </View>

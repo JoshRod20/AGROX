@@ -9,6 +9,10 @@ const scaleFont = (size) =>
     Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
 const isSmallDevice = width < 360; // Adjust threshold as needed for small devices
 const isLargeDevice = width > 400; // Adjust threshold as needed for large devices
+
+const isTablet = width >= 768;
+
+const drawerWidth = isTablet ? wp("100%") : wp("100%");
 /*
 QuicksandSemiBold
 QuicksandRegular
@@ -59,7 +63,7 @@ export const myPorfileStyle = StyleSheet.create({
         bottom: 15,
     },
     profileName: {
-        fontSize: scaleFont(23),
+        fontSize:  isTablet ? height * 0.03 : height * 0.03,
         fontFamily: "QuicksandBold",
         marginTop: wp("2%"),
         color: "#2E7D32",
@@ -67,7 +71,7 @@ export const myPorfileStyle = StyleSheet.create({
 
     },
     gmail: {
-        fontSize: scaleFont(15),
+        fontSize:  isTablet ? height * 0.02 : height * 0.02,
         fontFamily: "QuicksandRegular",
         color: "#000000",
         bottom: 55,
@@ -96,18 +100,18 @@ export const myPorfileStyle = StyleSheet.create({
         marginLeft: wp("20%"),
     },
     tex: {
-        fontSize: scaleFont(15),
+        fontSize:  isTablet ? height * 0.02 : height * 0.02,
         fontFamily: "QuicksandBold",
     },
     texp: {
         left: wp("2%"),
-        fontSize: scaleFont(15),
+        fontSize:  isTablet ? height * 0.02 : height * 0.02,
         fontFamily: "QuicksandRegular",
     },
     section: {
         marginBottom: hp("2%"),
         right: wp("1%"),
-        height: hp("26%"),
+        height: isTablet ? height * 0.21 : height * 0.25,
     },
     line: {
         borderBottomColor: '#BC6C25',
@@ -129,9 +133,9 @@ export const myPorfileStyle = StyleSheet.create({
         padding: 8,
     },
     imgra: {
-        width: wp("20%"),
-        height: hp("8%"),
-        borderRadius: wp("3%"),
+        width: isTablet ? height * 0.1 : height * 0.1,
+        height: isTablet ? height * 0.05 : height * 0.08,
+        borderRadius:  isTablet ? height * 0.01 : height * 0.01,
     },
     texts1: {
         justifyContent: 'center',
@@ -139,12 +143,12 @@ export const myPorfileStyle = StyleSheet.create({
     textS1: {
         fontFamily: "QuicksandBold",
         color: "#2E7D32",
-        fontSize: 18,
+        fontSize:  isTablet ? height * 0.02 : height * 0.02,
     },
     textS2: {
         fontFamily: "QuicksandRegular",
         color: "#000",
-        fontSize: 14,
+        fontSize:  isTablet ? height * 0.012 : height * 0.015,
     },
     backButton: {
         marginRight: wp("72%"),

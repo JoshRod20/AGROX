@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { View, Image, TouchableOpacity } from "react-native";
+import { View, Image, TouchableOpacity, Dimensions } from "react-native";
 import {
   DrawerContentScrollView,
   DrawerItemList,
@@ -19,6 +19,14 @@ import MiproFile from "../screens/myProfile/myProfile";
 
 import { DrawerItem } from '@react-navigation/drawer';
 
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
+const { width, height } = Dimensions.get("window");
+
+//const { width } = useWindowDimensions();
+const isTablet = width >= 768;
+
+const drawerWidth = isTablet ? wp("30%") : wp("62%");
 
 
 
@@ -49,7 +57,9 @@ export default function NavigationDrawer() {
           >
             <Image
               source={menuBurger2}
-              style={{ width: 30, height: 30, resizeMode: "contain" }}
+              style={{ width: 30, height: 30, resizeMode: "contain",
+                right: isTablet ? height * 0.01 : height * 0.00,
+              }}
             />
           </TouchableOpacity>
 
