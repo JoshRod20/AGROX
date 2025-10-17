@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get("window");
 //const { width } = useWindowDimensions();
 const isTablet = width >= 768;
 
-const drawerWidth = isTablet ? wp("30%") : wp("62%");
+const drawerWidth = isTablet ? wp("30%") : wp("59%");
 const logoSize = isTablet ? PixelRatio.getPixelSizeForLayoutSize(30) : PixelRatio.getPixelSizeForLayoutSize(40);
 
 export const drawerStyle = StyleSheet.create({
