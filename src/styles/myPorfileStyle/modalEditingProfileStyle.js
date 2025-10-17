@@ -38,7 +38,7 @@ export const modalEditingProfileStyle = StyleSheet.create({
         backgroundColor: "#ffffffff",
         borderRadius: hp("2"),
         position: "absolute",
-        top: isTablet ? height * 0.4 : height * 0.4,
+        top: isTablet ? height * 0.5 : height * 0.4,
         width: wp("90%"),
         height: isTablet ? height * 0.6 : height * 0.5,
         // width: width * 0.3, // 30% del ancho de la pantalla
@@ -80,10 +80,10 @@ export const modalEditingProfileStyle = StyleSheet.create({
     containerB: {
         flexDirection: "row",
         padding: 15,
-        right: wp("1%"),
+        right: wp("0.4%"),
     },
     Button: {
-        marginLeft: wp("2%"),
+        marginLeft: wp("4%"),
         width: wp("25%"),
         height: hp("5%"),
         alignItems: "center",
@@ -91,7 +91,7 @@ export const modalEditingProfileStyle = StyleSheet.create({
     },
     Button1: {
         backgroundColor: "#9F9898",
-        marginLeft: wp("2%"),
+        marginLeft: wp("3%"),
         width: wp("25%"),
         height: hp("5%"),
         alignItems: "center",
@@ -112,7 +112,7 @@ export const modalEditingProfileStyle = StyleSheet.create({
         color: "#ffffff",
     },
     buttonSignIn: {
-        width: wp("25%"),
+        width: wp("29%"),
         height: hp("5%"),
         paddingVertical: hp("1.5%"),
         paddingHorizontal: wp("5%"),

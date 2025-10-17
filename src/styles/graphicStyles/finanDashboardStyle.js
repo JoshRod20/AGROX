@@ -61,7 +61,7 @@ export const finanDashboardStyle = StyleSheet.create({
   },
   rentability: {
     fontSize: 60,
-    left: 150,
+    left: 130,
     fontFamily: 'QuicksandBold',
   },
   // Donut chart styles

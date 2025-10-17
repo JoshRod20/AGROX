@@ -62,11 +62,11 @@ export default function Login() {
       >
         <Text
           style={[
-            { fontFamily: "QuicksandBold", color: "#fff" },
+            { fontFamily: "QuicksandBold", color: "#ffffffff" },
             loginStyle.buttonTextSignUp,
           ]}
         >
-          Registrar cuenta
+          Registrar cuenta 
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
