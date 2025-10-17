@@ -1,14 +1,19 @@
-import React from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
-import Svg, { G, Circle } from 'react-native-svg';
+import React, { useCallback } from "react";
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import Svg, { G, Circle, Rect } from 'react-native-svg';
 import finanDashboardStyle from '../../styles/graphicStyles/finanDashboardStyle';
 import { useRoute } from '@react-navigation/native';
 import { db, auth } from '../../services/database';
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useNavigation } from "@react-navigation/native";
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
+SplashScreen.preventAutoHideAsync();
 // Regla de negocio: el costo total acumulado es la suma de totalCost
 // de todas las actividades del cultivo actual.
 const FinanDashboard = () => {
+	const navigation = useNavigation();
 	const route = useRoute();
 	const crop = route.params?.crop; // si el panel abre desde un cultivo, traerá crop
 
@@ -18,8 +23,21 @@ const FinanDashboard = () => {
 	const [byStage, setByStage] = React.useState([]); // [{name, value, color}]
 	const [totalCultivatedArea, setTotalCultivatedArea] = React.useState(0);
 	const [totalYieldAccum, setTotalYieldAccum] = React.useState(0);
-    const [totalRevenueAccum, setTotalRevenueAccum] = React.useState(0);
-	const [netProfit, setNetProfit] = React.useState(0);
+	const [totalRevenueAccum, setTotalRevenueAccum] = React.useState(0);
+
+	const [fontsLoaded] = useFonts({
+		CarterOne: require("../../utils/fonts/CarterOne-Regular.ttf"),
+	});
+
+	const onLayoutRootView = useCallback(async () => {
+		if (fontsLoaded) {
+			await SplashScreen.hideAsync();
+		}
+	}, [fontsLoaded]);
+
+	if (!fontsLoaded) {
+		return null;
+	}
 
 	React.useEffect(() => {
 		let cancelled = false;
@@ -28,7 +46,7 @@ const FinanDashboard = () => {
 				setLoading(true);
 				let acc = 0;
 				let yieldAcc = 0;
-                let revenueAcc = 0;
+				let revenueAcc = 0;
 				const stageMap = new Map();
 				let areaAcc = 0;
 				if (crop?.id) {
@@ -45,13 +63,13 @@ const FinanDashboard = () => {
 							const y = Number(data.totalYield) || 0;
 							if (Number.isFinite(y)) yieldAcc += y;
 						}
-                        // Ingresos totales: en Postcosecha y comercialización -> processedAmount * salePrice
-                        if (stageName.includes('postcosecha') && (data.processedAmount != null || data.salePrice != null)) {
-                            const qty = Number(data.processedAmount) || 0;
-                            const price = Number(data.salePrice) || 0;
-                            const rev = qty * price;
-                            if (Number.isFinite(rev)) revenueAcc += rev;
-                        }
+						// Ingresos totales: en Postcosecha y comercialización -> processedAmount * salePrice
+						if (stageName.includes('postcosecha') && (data.processedAmount != null || data.salePrice != null)) {
+							const qty = Number(data.processedAmount) || 0;
+							const price = Number(data.salePrice) || 0;
+							const rev = qty * price;
+							if (Number.isFinite(rev)) revenueAcc += rev;
+						}
 						const stage = data.name || 'Actividad';
 						if (!stageMap.has(stage)) stageMap.set(stage, 0);
 						stageMap.set(stage, stageMap.get(stage) + (Number(tc) || 0));
@@ -76,12 +94,12 @@ const FinanDashboard = () => {
 								const y = Number(data.totalYield) || 0;
 								if (Number.isFinite(y)) yieldAcc += y;
 							}
-                            if (stageName.includes('postcosecha') && (data.processedAmount != null || data.salePrice != null)) {
-                                const qty = Number(data.processedAmount) || 0;
-                                const price = Number(data.salePrice) || 0;
-                                const rev = qty * price;
-                                if (Number.isFinite(rev)) revenueAcc += rev;
-                            }
+							if (stageName.includes('postcosecha') && (data.processedAmount != null || data.salePrice != null)) {
+								const qty = Number(data.processedAmount) || 0;
+								const price = Number(data.salePrice) || 0;
+								const rev = qty * price;
+								if (Number.isFinite(rev)) revenueAcc += rev;
+							}
 							const stage = data.name || 'Actividad';
 							if (!stageMap.has(stage)) stageMap.set(stage, 0);
 							stageMap.set(stage, stageMap.get(stage) + (Number(tc) || 0));
@@ -96,7 +114,7 @@ const FinanDashboard = () => {
 					setTotalCostAccum(acc);
 					setTotalYieldAccum(yieldAcc);
 					setTotalCultivatedArea(areaAcc || 0);
-                    setTotalRevenueAccum(revenueAcc);
+					setTotalRevenueAccum(revenueAcc);
 					// preparar dataset por etapa con colores
 					const palette = ['#2E7D32', '#66BB6A', '#81C784', '#A5D6A7', '#C8E6C9', '#388E3C', '#4CAF50'];
 					const data = Array.from(stageMap.entries()).map(([name, value], idx) => ({
@@ -115,9 +133,32 @@ const FinanDashboard = () => {
 		return () => { cancelled = true; };
 	}, [crop?.id]);
 
+	// Datos para gráfico de barras: Ingresos vs Costos vs Utilidad
+	const barData = React.useMemo(() => {
+		const ingresos = Number(totalRevenueAccum || 0);
+		const costos = Number(totalYieldAccum || 0);
+		const utilidad = ingresos - costos; // misma lógica que la tarjeta de Utilidad neta pedida por el usuario
+		return [
+			{ label: 'Ingresos', value: ingresos, color: '#2E7D32' },
+			{ label: 'Costos', value: costos, color: '#2E7D32' },
+			{ label: 'Utilidad', value: utilidad, color: utilidad >= 0 ? '#2E7D32' : '#C62828' },
+		];
+	}, [totalRevenueAccum, totalCostAccum]);
+
 	return (
-		<ScrollView contentContainerStyle={finanDashboardStyle.container}>
-			<Text style={finanDashboardStyle.title}>Panel económico</Text>
+		<ScrollView contentContainerStyle={finanDashboardStyle.container} onLayout={onLayoutRootView}>
+			<TouchableOpacity
+				onPress={() => navigation.navigate('Inicio')}
+				style={finanDashboardStyle.backButton}
+			>
+				<Image
+					source={require('../../assets/arrow-left.png')}
+					style={finanDashboardStyle.backIcon}
+				/>
+			</TouchableOpacity>
+			<View>
+				<Text style={finanDashboardStyle.title}>Panel económico</Text>
+			</View>
 
 			{/* Tarjeta: Costo total acumulado */}
 			<View style={finanDashboardStyle.card}>
@@ -141,7 +182,6 @@ const FinanDashboard = () => {
 					</Text>
 				)}
 			</View>
-
 
 			{/* Gráfico circular: distribución de costo por etapa */}
 			<View style={finanDashboardStyle.card}>
@@ -172,12 +212,6 @@ const FinanDashboard = () => {
 								})()}
 							</Text>
 						</View>
-						<Text style={finanDashboardStyle.helper}>
-							{(() => {
-								const area = Number(crop?.cultivatedArea) > 0 ? Number(crop.cultivatedArea) : Number(totalCultivatedArea) || 0;
-								return `Total: C$ ${Number(totalCostAccum || 0).toLocaleString('es-NI')} / Área cultivada: ${area} mz`;
-							})()}
-						</Text>
 					</>
 				) : (
 					<Text style={finanDashboardStyle.helper}>
@@ -186,93 +220,95 @@ const FinanDashboard = () => {
 				)}
 			</View>
 
-			{/* Tarjeta: Producción total (suma de totalYield en Cosecha) */}
-			<View style={finanDashboardStyle.card}>
-				<Text style={finanDashboardStyle.cardTitle}>Producción total</Text>
-				{loading ? (
-					<ActivityIndicator color="#2E7D32" />
-				) : (
-					<View style={finanDashboardStyle.currencyRow}>
-						<Text style={finanDashboardStyle.amount}>
-							{Number(totalYieldAccum || 0).toLocaleString('es-NI')}
-						</Text>
-						<Text style={finanDashboardStyle.currencySymbol}>Kg</Text>
-					</View>
-				)}
-				{!loading && (crop?.cropName || crop?.name) && (
-					<Text style={finanDashboardStyle.helper}>
-						Cultivo: {crop.cropName || crop.name}
-					</Text>
-				)}
-			</View>
-
-			{/* Tarjeta: Costo por unidad producida (total / producción) */}
-			<View style={finanDashboardStyle.card}>
-				<Text style={finanDashboardStyle.cardTitle}>Costo por unidad</Text>
-				{loading ? (
-					<ActivityIndicator color="#2E7D32" />
-				) : Number(totalYieldAccum) > 0 ? (
-					<>
+			{/* Tarjetas en fila: Producción total y Costo por unidad */}
+			<View style={finanDashboardStyle.cardsRow}>
+				{/* Producción total */}
+				<View style={[finanDashboardStyle.card, finanDashboardStyle.halfCard, finanDashboardStyle.halfCardLeft]}>
+					<Text style={finanDashboardStyle.cardTitle}>Producción total</Text>
+					{loading ? (
+						<ActivityIndicator color="#2E7D32" />
+					) : (
 						<View style={finanDashboardStyle.currencyRow}>
-							<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
 							<Text style={finanDashboardStyle.amount}>
-								{(
-									Number(totalCostAccum || 0) / Number(totalYieldAccum)
-								).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+								{Number(totalYieldAccum || 0).toLocaleString('es-NI')}
 							</Text>
+							<Text style={finanDashboardStyle.currencySymbol}>Kg</Text>
 						</View>
+					)}
+					{!loading && (crop?.cropName || crop?.name) && (
 						<Text style={finanDashboardStyle.helper}>
-							Total: C$ {Number(totalCostAccum || 0).toLocaleString('es-NI')} / Producción total: {Number(totalYieldAccum || 0).toLocaleString('es-NI')} Kg
+							Cultivo: {crop.cropName || crop.name}
 						</Text>
-					</>
-				) : (
-					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la producción en la etapa de Cosecha.</Text>
-				)}
+					)}
+				</View>
+				{/* Costo por unidad */}
+				<View style={[finanDashboardStyle.card, finanDashboardStyle.halfCard]}>
+					<Text style={finanDashboardStyle.cardTitle}>Costo por unidad</Text>
+					{loading ? (
+						<ActivityIndicator color="#2E7D32" />
+					) : Number(totalYieldAccum) > 0 ? (
+						<>
+							<View style={finanDashboardStyle.currencyRow}>
+								<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
+								<Text style={finanDashboardStyle.amount}>
+									{(
+										Number(totalCostAccum || 0) / Number(totalYieldAccum)
+									).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+								</Text>
+							</View>
+						</>
+					) : (
+						<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la producción en la etapa de Cosecha.</Text>
+					)}
+				</View>
 			</View>
 
-			{/* Tarjeta: Ingresos totales (cantidad procesada x precio de venta en Postcosecha) */}
-			<View style={finanDashboardStyle.card}>
-				<Text style={finanDashboardStyle.cardTitle}>Ingresos totales</Text>
-				{loading ? (
-					<ActivityIndicator color="#2E7D32" />
-				) : Number(totalRevenueAccum) > 0 ? (
-					<>
-						<View style={finanDashboardStyle.currencyRow}>
-							<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
-							<Text style={finanDashboardStyle.amount}>
-								{Number(totalRevenueAccum || 0).toLocaleString('es-NI')}
-							</Text>
-						</View>
-						{/* Nota: Si se requiere, se puede mostrar desglose en el futuro */}
-					</>
-				) : (
-					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la cantidad procesada y el precio de venta en Postcosecha.</Text>
-				)}
+
+			{/* Tarjetas en fila: Ingresos totales y Utilidad neta */}
+			<View style={finanDashboardStyle.cardsRow}>
+				{/* Ingresos totales */}
+				<View style={[finanDashboardStyle.card, finanDashboardStyle.halfCard, finanDashboardStyle.halfCardLeft]}>
+					<Text style={finanDashboardStyle.cardTitle}>Ingresos totales</Text>
+					{loading ? (
+						<ActivityIndicator color="#2E7D32" />
+					) : Number(totalRevenueAccum) > 0 ? (
+						<>
+							<View style={finanDashboardStyle.currencyRow}>
+								<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
+								<Text style={finanDashboardStyle.amount}>
+									{Number(totalRevenueAccum || 0).toLocaleString('es-NI')}
+								</Text>
+							</View>
+							{/* Nota: Si se requiere, se puede mostrar desglose en el futuro */}
+						</>
+					) : (
+						<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la cantidad procesada y el precio de venta en Postcosecha.</Text>
+					)}
+				</View>
+				{/* Tarjeta: Utilidad neta (Ingresos - Costo Total) */}
+				<View style={[finanDashboardStyle.card, finanDashboardStyle.halfCard]}>
+					<Text style={finanDashboardStyle.cardTitle}>Utilidad neta</Text>
+					{loading ? (
+						<ActivityIndicator color="#2E7D32" />
+					) : Number(totalYieldAccum) > 0 ? (
+						<>
+							<View style={finanDashboardStyle.currencyRow}>
+
+								<Text style={finanDashboardStyle.amount}>
+									{(
+										Number(totalRevenueAccum || 0) - Number(totalYieldAccum)
+									).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+								</Text>
+							</View>
+						</>
+					) : (
+						<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la producción en la etapa de Cosecha.</Text>
+					)}
+				</View>
 			</View>
 
-			{/* Tarjeta: Utilidad neta (Ingresos - Costo Total) */}
-			<View style={finanDashboardStyle.card}>
-				<Text style={finanDashboardStyle.cardTitle}>Utilidad neta</Text>
-				{loading ? (
-					<ActivityIndicator color="#2E7D32" />
-				) : Number(totalYieldAccum) > 0 ? (
-					<>
-						<View style={finanDashboardStyle.currencyRow}>
-							<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
-							<Text style={finanDashboardStyle.amount}>
-								{(
-									Number(totalRevenueAccum || 0) - Number(totalYieldAccum)
-								).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-							</Text>
-						</View>
-						<Text style={finanDashboardStyle.helper}>
-							Total: C$ {Number(totalRevenueAccum || 0).toLocaleString('es-NI')} - Producción total: {Number(totalYieldAccum || 0).toLocaleString('es-NI')} Kg
-						</Text>
-					</>
-				) : (
-					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra la producción en la etapa de Cosecha.</Text>
-				)}
-			</View>
+
+
 			{/* Tarjeta: Rentabilidad (Utilidad neta / Costo Total) × 100. */}
 			<View style={finanDashboardStyle.card}>
 				<Text style={finanDashboardStyle.cardTitle}>Rentabilidad</Text>
@@ -286,18 +322,29 @@ const FinanDashboard = () => {
 							const marginPct = Number(totalCostAccum) > 0 ? (profitFromCard / Number(totalCostAccum)) * 100 : 0;
 							return (
 								<View style={finanDashboardStyle.currencyRow}>
-									<Text style={finanDashboardStyle.amount}>
+									<Text style={finanDashboardStyle.rentability}>
 										{marginPct.toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %
 									</Text>
 								</View>
 							);
 						})()}
-						<Text style={finanDashboardStyle.helper}>
-							Rentabilidad = (Utilidad neta / Costos totales) × 100
-						</Text>
 					</>
 				) : (
 					<Text style={finanDashboardStyle.helper}>Para calcular este indicador, registra costos en las actividades del cultivo.</Text>
+				)}
+			</View>
+
+			{/* Gráfico de barras: Ingresos vs Costos vs Utilidad */}
+			<View style={finanDashboardStyle.card}>
+				<Text style={finanDashboardStyle.cardTitle}>Ingresos vs Costos vs Utilidad</Text>
+				{loading ? (
+					<ActivityIndicator color="#2E7D32" />
+				) : (barData?.some(d => Number(d.value) !== 0)) ? (
+					<>
+						<BarChart data={barData} width={320} height={180} barWidth={36} barSpacing={28} />
+					</>
+				) : (
+					<Text style={finanDashboardStyle.helper}>Sin datos para graficar.</Text>
 				)}
 			</View>
 
@@ -329,7 +376,7 @@ const DonutChart = ({ total, data, size = 220, strokeWidth = 24 }) => {
 	});
 
 	return (
-		<View style={{ alignItems: 'center', justifyContent: 'center' }}>
+		<View style={finanDashboardStyle.donutContainer}>
 			<Svg width={size} height={size}>
 				<G rotation="-90" origin={`${cx}, ${cy}`}>
 					{/* fondo */}
@@ -352,20 +399,61 @@ const DonutChart = ({ total, data, size = 220, strokeWidth = 24 }) => {
 				</G>
 			</Svg>
 			{/* total en el centro */}
-			<View style={{ position: 'absolute', alignItems: 'center' }}>
-				<Text style={{ fontSize: 14, color: '#666' }}>C$</Text>
-				<Text style={{ fontSize: 22, fontWeight: '800', color: '#111' }}>
-					{Number(safeTotal || 0).toLocaleString('es-NI')}
+			<View style={finanDashboardStyle.donutCenter}>
+				<Text style={finanDashboardStyle.donutCenterTotal}>
+					C$ {Number(safeTotal || 0).toLocaleString('es-NI')}
 				</Text>
 			</View>
 			{/* leyenda simple */}
-			<View style={{ marginTop: 12, width: '100%' }}>
+			<View style={finanDashboardStyle.donutLegend}>
 				{(data || []).map((d, i) => (
-					<View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-						<View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: d.color, marginRight: 8 }} />
-						<Text style={{ flex: 1, color: '#333' }} numberOfLines={1}>{d.name}</Text>
-						<Text style={{ color: '#111', fontWeight: '600' }}>
+					<View key={i} style={finanDashboardStyle.donutLegendRow}>
+						<View style={[finanDashboardStyle.legendColorBox, { backgroundColor: d.color }]} />
+						<Text style={finanDashboardStyle.donutLegendLabel} numberOfLines={1}>{d.name}</Text>
+						<Text style={finanDashboardStyle.donutLegendValue}>
 							C$ {Number(d.value || 0).toLocaleString('es-NI')}
+						</Text>
+					</View>
+				))}
+			</View>
+		</View>
+	);
+};
+
+// Componente de gráfico de barras simple
+const BarChart = ({ data = [], width = 320, height = 180, barWidth = 36, barSpacing = 24, padding = 16 }) => {
+	const max = Math.max(1, ...data.map(d => Math.abs(Number(d.value) || 0)));
+	const chartHeight = height - padding * 2 - 20; // espacio para valores
+	const chartWidth = width - padding * 2;
+	const zeroY = padding + chartHeight * (Number(Math.max(0, 0)) / max); // 0 en la base
+
+	const totalBarsWidth = data.length * barWidth + (data.length - 1) * barSpacing;
+	const startX = padding + Math.max(0, (chartWidth - totalBarsWidth) / 2);
+
+	return (
+		<View style={finanDashboardStyle.barChartContainer}>
+			<Svg width={width} height={height}>
+				<G>
+					{data.map((d, i) => {
+						const val = Number(d.value) || 0;
+						const barHeight = (Math.abs(val) / max) * chartHeight;
+						const x = startX + i * (barWidth + barSpacing);
+						const y = val >= 0 ? (height - padding - barHeight) : (height - padding);
+						return (
+							<G key={i}>
+								<Rect x={x} y={y} width={barWidth} height={barHeight} fill={d.color || '#2E7D32'} rx={6} />
+							</G>
+						);
+					})}
+				</G>
+			</Svg>
+			{/* Etiquetas debajo */}
+			<View style={[finanDashboardStyle.barLabelsRow, { width }]}>
+				{data.map((d, i) => (
+					<View key={i} style={[finanDashboardStyle.barLabelItem, { width: barWidth + barSpacing }]}>
+						<Text style={finanDashboardStyle.barLabelText} numberOfLines={1}>{d.label}</Text>
+						<Text style={finanDashboardStyle.barValueText}>
+							{Number(d.value || 0).toLocaleString('es-NI', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
 						</Text>
 					</View>
 				))}
