@@ -144,6 +144,28 @@ const MyProfile = () => {
                             <Text style={myPorfileStyle.textS2}>Granos Básicos</Text>
                         </View>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={myPorfileStyle.myCol}>
+                        <Image
+                            source={require("../../assets/granos basicos.webp")}
+                            style={myPorfileStyle.imgra}
+                        />
+                        <View style={myPorfileStyle.texts1}>
+                            <Text style={myPorfileStyle.textS1}>Frijoles rojos</Text>
+                            <Text style={myPorfileStyle.textS2}>Granos Básicos</Text>
+                        </View>
+                    </TouchableOpacity>
+                     <TouchableOpacity style={myPorfileStyle.myCol}>
+                        <Image
+                            source={require("../../assets/granos basicos.webp")}
+                            style={myPorfileStyle.imgra}
+                        />
+                        <View style={myPorfileStyle.texts1}>
+                            <Text style={myPorfileStyle.textS1}>Frijoles rojos</Text>
+                            <Text style={myPorfileStyle.textS2}>Granos Básicos</Text>
+                        </View>
+                    </TouchableOpacity>
+                    
                 </ScrollView>
             </View>
 
