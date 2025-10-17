@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, TouchableWithoutFeedback, TextInput, FlatList, ActivityIndicator } from 'react-native';
 import { modalListStyle } from '../../styles/activitiesCrop/modalListStyle';
-import { db } from '../../services/database';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db, auth } from '../../services/database';
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 /**
  * ModalList - Modal reusable para listar y seleccionar items con búsqueda
@@ -31,10 +32,21 @@ const ModalList = ({
   renderItem,
   onSelect,
   title = 'Seleccionar',
+  userScoped = true,
+  userIdField = 'userId',
 }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [term, setTerm] = useState('');
+  const [uid, setUid] = useState(auth?.currentUser?.uid || null);
+
+  useEffect(() => {
+    if (!userScoped) return;
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
+      setUid(user?.uid || null);
+    });
+    return () => unsubAuth();
+  }, [userScoped]);
 
   useEffect(() => {
     if (!visible) return; // evitar suscripción cuando no está visible
@@ -46,9 +58,46 @@ const ModalList = ({
     if (!collectionPath) { setItems([]); setLoading(false); return; }
     try {
       const ref = collection(db, collectionPath);
-      const q = orderByField ? query(ref, orderBy(orderByField, orderDirection)) : ref;
+      const constraints = [];
+      const shouldClientSort = Boolean(userScoped && orderByField);
+      if (userScoped) {
+        if (!uid) { setItems([]); setLoading(false); return; }
+        constraints.push(where(userIdField, '==', uid));
+      }
+      if (orderByField && !shouldClientSort) {
+        constraints.push(orderBy(orderByField, orderDirection));
+      }
+
+      const q = constraints.length ? query(ref, ...constraints) : ref;
       const unsub = onSnapshot(q, (snap) => {
-        const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        let docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        if (orderByField) {
+          const dir = String(orderDirection || 'desc').toLowerCase() === 'asc' ? 1 : -1;
+          const getVal = (v) => {
+            if (!v && v !== 0) return null;
+            if (v?.toDate) { try { return v.toDate().getTime(); } catch { } }
+            if (v instanceof Date) return v.getTime();
+            if (typeof v === 'number') return v;
+            if (typeof v === 'string') {
+              const n = Number(v);
+              if (!Number.isNaN(n)) return n;
+              const t = Date.parse(v);
+              if (!Number.isNaN(t)) return t;
+              return v.toLowerCase();
+            }
+            return v;
+          };
+          docs = docs.sort((a, b) => {
+            const av = getVal(a?.[orderByField]);
+            const bv = getVal(b?.[orderByField]);
+            if (av == null && bv == null) return 0;
+            if (av == null) return 1;
+            if (bv == null) return -1;
+            if (av < bv) return -1 * dir;
+            if (av > bv) return 1 * dir;
+            return 0;
+          });
+        }
         setItems(docs);
         setLoading(false);
       });
@@ -57,7 +106,7 @@ const ModalList = ({
       console.error('ModalList subscribe error:', e);
       setLoading(false);
     }
-  }, [visible, collectionPath, orderByField, orderDirection, data]);
+  }, [visible, collectionPath, orderByField, orderDirection, data, userScoped, userIdField, uid]);
 
   const filtered = useMemo(() => {
     const t = String(term || '').toLowerCase().trim();
