@@ -1,3 +1,5 @@
+// src/components/CropCard.js
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -20,6 +22,10 @@ import {
   getDocs,
 } from "firebase/firestore";
 
+// Importaciones adicionales para Auth y Firestore
+import { getAuth } from "firebase/auth";
+import { doc as docFS, getDoc as getDocFS } from "firebase/firestore";
+
 import styles from "../styles/cropCardStyle";
 import { getCropActivities } from "../services/activitiesService";
 import { getUserCrops } from "../services/cropsService";
@@ -36,7 +42,7 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
   const [deleteAlertVisible, setDeleteAlertVisible] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [cropImages, setCropImages] = useState({});
-    const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
 
   // Función para filtrar cultivos según el modo
   const applyFilter = (cropsList) => {
@@ -143,8 +149,6 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
       if (cropsOverride === null) {
         setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
       } else {
-        // Si usas cropsOverride, el padre debe manejar la actualización.
-        // Pero por seguridad, actualizamos localmente también.
         setCrops((prev) => prev.filter((crop) => crop.id !== selectedCrop.id));
       }
       setDeleteAlertVisible(false);
@@ -156,15 +160,32 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
 
   if (loading) return null;
 
+  // Función actualizada para pasar userName y technicalManager
   const generatePDF = async (crop) => {
     try {
-      // Obtener todas las actividades del cultivo
       const acts = await getCropActivities(crop.id);
-      // Filtrar solo las actividades registradas (no vacías)
       const filteredActs = acts.filter((a) => a.name && a.createdAt);
-      // Generar PDF
-      await CropPDFGenerator(crop, filteredActs);
+
+      // Obtener nombre del usuario logueado
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      let userName = "Usuario no registrado";
+      if (currentUser?.uid) {
+        const userDoc = await getDocFS(docFS(db, "Users", currentUser.uid));
+        if (userDoc.exists()) {
+          userName = userDoc.data().name || currentUser.displayName || "Usuario no registrado";
+        }
+      }
+
+      // Generar PDF con los datos correctos
+      await CropPDFGenerator(
+        crop,
+        filteredActs,
+        userName,
+        crop.technicalManager || null
+      );
     } catch (error) {
+      console.error("Error generating PDF:", error);
       Alert.alert("Error", "No se pudo generar el PDF.");
     }
   };
@@ -446,11 +467,11 @@ const CropCard = ({ mode = "home", cropsOverride = null }) => {
       </Modal>
 
       <QRModal
-  visible={qrModalVisible}
-  onClose={() => setQrModalVisible(false)}
-  crop={selectedCrop}
-  cropName={selectedCrop?.cropName || "Cultivo"}
-/>
+        visible={qrModalVisible}
+        onClose={() => setQrModalVisible(false)}
+        crop={selectedCrop}
+        cropName={selectedCrop?.cropName || "Cultivo"}
+      />
     </>
   );
 };

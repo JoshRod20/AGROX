@@ -26,7 +26,8 @@
       "favicon": "./src/assets/Isotipo_AGROX-sinFondo.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ]
   }
 }
