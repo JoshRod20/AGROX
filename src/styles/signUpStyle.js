@@ -9,7 +9,7 @@ const signUpStyle = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    paddingTop: hp("2%"),
+    paddingTop: hp("0.02%"),
   },
   backButton: {
     marginLeft: wp("8%"),
@@ -20,6 +20,7 @@ const signUpStyle = StyleSheet.create({
     height: wp("8%"),
     tintColor: "#2E7D32",
     resizeMode: "contain",
+    bottom: 5,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -114,10 +115,11 @@ const signUpStyle = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: hp("2%"),
+    bottom: 3,
   },
   buttonTextSR: {
     color: "#fff",
-    fontSize: wp("4.5%"),
+    fontSize: 20,
     textAlign: "center",
   },
   signUpTextContainer: {

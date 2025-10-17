@@ -1,5 +1,10 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions} from 'react-native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+const { width } = Dimensions.get("window");
+
+// Función para escalar el tamaño de texto
+const scaleFont = (size) =>
+  Math.round(PixelRatio.roundToNearestPixel(size * (width / 375)));
 
 export const formInputSearchStyle = StyleSheet.create({
 	container: {
@@ -18,7 +23,7 @@ export const formInputSearchStyle = StyleSheet.create({
 		flex: 1,
 		color: '#333',
 		fontSize: 16,
-		left: 35,
+		left: wp('13%'),
 	},
 	searchButton: {
 		width: hp('6%'),
@@ -27,14 +32,16 @@ export const formInputSearchStyle = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		//backgroundColor: '#2E7D32',
-		right: 300,
+		right: wp('72%'),
 	},
 	searchIcon: {
 		width: 25,
 		height: 25,
 		tintColor: '#b2b2b2ff',
 		resizeMode: 'contain',
-		marginLeft: wp('6%'),
+		position: 'absolute',
+		right: wp('4%'),
+		//marginRight: wp('3%'),
 	},
 });
 
