@@ -21,10 +21,10 @@ export const finanDashboardStyle = StyleSheet.create({
   title: {
        marginTop: hp("4%"),
        fontSize: wp("7%"),
-       color: '#2E7D32',
+    color: '#2E7D32',
        textAlign: 'center',
        marginBottom: hp("3%"),
-       fontFamily: 'CarterOne',
+    fontFamily: 'CarterOne',
        marginLeft: wp("4%"),
   },
   card: {
@@ -37,31 +37,32 @@ export const finanDashboardStyle = StyleSheet.create({
     marginBottom: 16,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: '#2E7D32',
     marginBottom: 8,
+    fontFamily: 'QuicksandBold',
   },
   currencyRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
   currencySymbol: {
-    fontSize: 27,
+    fontSize: 24,
     bottom: 1,
     color: '#111',
-    fontWeight: '800',
+    fontFamily: 'QuicksandRegular',
     marginRight: 6,
   },
   amount: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 25,
     color: '#111',
+    fontFamily: 'QuicksandRegular',
   },
   rentability: {
     fontSize: 60,
     left: 150,
-    fontWeight: '600',
+    fontFamily: 'QuicksandBold',
   },
   // Donut chart styles
   donutContainer: {
@@ -75,8 +76,8 @@ export const finanDashboardStyle = StyleSheet.create({
   },
   donutCenterTotal: {
     fontSize: 22,
-    fontWeight: '800',
     color: '#111',
+    fontFamily: 'QuicksandRegular',
   },
   donutLegend: {
     marginTop: 12,
@@ -100,6 +101,7 @@ export const finanDashboardStyle = StyleSheet.create({
   donutLegendValue: {
     color: '#111',
     fontWeight: '600',
+    fontFamily: 'QuicksandRegular',
   },
   // Bar chart styles
   barChartContainer: {
@@ -121,6 +123,7 @@ export const finanDashboardStyle = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: '#111',
+    fontFamily: 'QuicksandRegular',
   },
   // flecha de retroceso
   backButton: {
