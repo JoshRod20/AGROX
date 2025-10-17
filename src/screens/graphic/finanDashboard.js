@@ -27,6 +27,8 @@ const FinanDashboard = () => {
 
 	const [fontsLoaded] = useFonts({
 		CarterOne: require("../../utils/fonts/CarterOne-Regular.ttf"),
+		QuicksandBold: require("../../utils/fonts/Quicksand-Bold.ttf"),
+		QuicksandRegular: require("../../utils/fonts/Quicksand-Regular.ttf"),
 	});
 
 	const onLayoutRootView = useCallback(async () => {
@@ -292,9 +294,9 @@ const FinanDashboard = () => {
 						<ActivityIndicator color="#2E7D32" />
 					) : Number(totalYieldAccum) > 0 ? (
 						<>
-							<View style={finanDashboardStyle.currencyRow}>
-
-								<Text style={finanDashboardStyle.amount}>
+								<View style={finanDashboardStyle.currencyRow}>
+									<Text style={finanDashboardStyle.currencySymbol}>C$</Text>
+									<Text style={finanDashboardStyle.amount}>
 									{(
 										Number(totalRevenueAccum || 0) - Number(totalYieldAccum)
 									).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -322,7 +324,12 @@ const FinanDashboard = () => {
 							const marginPct = Number(totalCostAccum) > 0 ? (profitFromCard / Number(totalCostAccum)) * 100 : 0;
 							return (
 								<View style={finanDashboardStyle.currencyRow}>
-									<Text style={finanDashboardStyle.rentability}>
+									<Text
+										style={[
+											finanDashboardStyle.rentability,
+											{ color: marginPct > 0 ? '#2E7D32' : (marginPct < 0 ? '#C62828' : '#111') }
+										]}
+									>
 										{marginPct.toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %
 									</Text>
 								</View>
