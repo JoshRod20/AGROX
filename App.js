@@ -44,6 +44,8 @@ import MachineryForm from './src/screens/inventory/machineryForm';
 import { machineryFormStyle } from './src/styles/inventoryStyles/machineryFormStyle';
 import MyCrops from './src/screens/myCrops';
 import cropCardStyle from './src/styles/cropCardStyle';
+import FinanDashboard from './src/screens/graphic/finanDashboard';
+import { finanDashboardStyle } from './src/styles/graphicStyles/finanDashboardStyle'; 
 
 const Stack = createStackNavigator();
 
@@ -586,6 +588,28 @@ export default function App() {
               ),
             })}
           />
+                <Stack.Screen 
+            name="FinanDashboard" 
+            component={FinanDashboard} 
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: '',
+              headerTransparent: true,
+              headerBackTitleVisible: false,
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  style={finanDashboardStyle.backButton2}
+                >
+                  <Image
+                    source={require('./src/assets/arrow-left.png')}
+                    style={finanDashboardStyle.backIcon2}
+                  />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+
           <Stack.Screen 
             name="Onboarding" 
             component={Onboarding} 

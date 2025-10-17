@@ -25,6 +25,46 @@ const FinanDashboard = () => {
 	const [totalYieldAccum, setTotalYieldAccum] = React.useState(0);
 	const [totalRevenueAccum, setTotalRevenueAccum] = React.useState(0);
 
+	// Si venimos con el parámetro hideDrawerBack, ocultar la flecha del parent (Drawer)
+	React.useEffect(() => {
+		let parentHidden = false;
+		const parent = navigation.getParent && navigation.getParent();
+		try {
+			if (route?.params?.hideDrawerBack && parent) {
+				// ocultar headerLeft del parent (si aplica)
+				parent.setOptions({ headerLeft: () => null });
+				parentHidden = true;
+			}
+			// ocultar headerLeft de la pantalla actual (definido en App.js) para eliminar la flecha duplicada
+			if (route?.params?.hideDrawerBack) {
+				navigation.setOptions({ headerLeft: () => null });
+			}
+			// además establecer el headerLeft local (Stack) para mostrar la flecha de App.js
+			navigation.setOptions({
+				headerLeft: () => (
+					<TouchableOpacity
+						onPress={() => navigation.navigate('CropScreen')}
+						style={finanDashboardStyle.backButton2}
+					>
+						<Image
+							source={require('../../assets/arrow-left.png')}
+							style={finanDashboardStyle.backIcon2}
+						/>
+					</TouchableOpacity>
+				),
+			});
+		} catch (e) {
+			// ignore
+		}
+		return () => {
+			try {
+				if (parentHidden && parent) parent.setOptions({ headerLeft: undefined });
+				// restaurar headerLeft de la pantalla actual
+				try { navigation.setOptions({ headerLeft: undefined }); } catch (e) {}
+			} catch (e) {}
+		};
+	}, [route?.params?.hideDrawerBack]);
+
 	const [fontsLoaded] = useFonts({
 		CarterOne: require("../../utils/fonts/CarterOne-Regular.ttf"),
 		QuicksandBold: require("../../utils/fonts/Quicksand-Bold.ttf"),
@@ -149,15 +189,17 @@ const FinanDashboard = () => {
 
 	return (
 		<ScrollView contentContainerStyle={finanDashboardStyle.container} onLayout={onLayoutRootView}>
-			<TouchableOpacity
-				onPress={() => navigation.navigate('Inicio')}
-				style={finanDashboardStyle.backButton}
-			>
-				<Image
-					source={require('../../assets/arrow-left.png')}
-					style={finanDashboardStyle.backIcon}
-				/>
-			</TouchableOpacity>
+			{!route?.params?.hideDrawerBack && (
+				<TouchableOpacity
+					onPress={() => navigation.navigate('Inicio')}
+					style={finanDashboardStyle.backButton3}
+				>
+					<Image
+						source={require('../../assets/arrow-left.png')}
+						style={finanDashboardStyle.backIcon3}
+					/>
+				</TouchableOpacity>
+			)}
 			<View>
 				<Text style={finanDashboardStyle.title}>Panel económico</Text>
 			</View>
