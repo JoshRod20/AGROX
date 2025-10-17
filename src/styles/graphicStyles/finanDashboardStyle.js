@@ -139,6 +139,30 @@ export const finanDashboardStyle = StyleSheet.create({
     tintColor: "#2E7D32",
     resizeMode: "contain",
   },
+    backButton2: {
+    marginRight: wp("72%"),
+    bottom: 43.1,
+    left: 30,
+    marginBottom: wp("-6%"),
+  },
+  backIcon2: {
+    width: wp("8%"),
+    height: wp("8%"),
+    tintColor: "#2E7D32",
+    resizeMode: "contain",
+  },
+    backButton3: {
+      marginRight: wp("72%"),
+    top : 8,
+    left: 10,
+    marginBottom: wp("-6%"),
+  },
+  backIcon3: {
+    width: wp("8%"),
+    height: wp("8%"),
+    tintColor: "#2E7D32",
+    resizeMode: "contain",
+  },
 });
 
 export default finanDashboardStyle;

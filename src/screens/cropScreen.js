@@ -341,7 +341,7 @@ const CropScreen = () => {
 
             <TouchableOpacity
               style={cropScreenStyle.buttonGraph}
-              onPress={() => navigation.navigate("CropGraphs", { crop })}
+              onPress={() => navigation.navigate("FinanDashboard", { crop, hideDrawerBack: true })}
             >
               <Image
                 source={require("../assets/stats.png")}
